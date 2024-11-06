@@ -143,6 +143,7 @@ for category, url in category_urls.items():
 
         except Exception as e:
             print(f"Error while checking or clicking next button: {e}")
+            print(f"Current page source: {driver.page_source}")
             break  # Exit the loop on any exception
 
 # Create DataFrame from the list
