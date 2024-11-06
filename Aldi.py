@@ -26,8 +26,51 @@ def create_undetected_headless_driver():
 driver = create_undetected_headless_driver()
 
 category_urls = {
-    "fruits" : "https://groceries.aldi.co.uk/en-GB/fresh-food/fruit?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-fruit&clickedon=fresh-fruit"
+    "fruits" : "https://groceries.aldi.co.uk/en-GB/fresh-food/fruit?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-fruit&clickedon=fresh-fruit",
+    "vegetables": "https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-vegetables?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-vegetables&clickedon=fresh-vegetables",
+    "fresh_food_vegan": "https://groceries.aldi.co.uk/en-GB/fresh-food?&fn1=Lifestyle&fv1=Vegetarian%7CVegan",
+    "milk_butter_eggs": "https://groceries.aldi.co.uk/en-GB/chilled-food?&fn1=CategoryLevel2_Facet&fv1=L2DA",
+    "cheese": "https://groceries.aldi.co.uk/en-GB/chilled-food/cheese?origin=dropdown&c1=groceries&c2=chilled-food&c3=cheese&clickedon=cheese",
+    "yogurts": "https://groceries.aldi.co.uk/en-GB/chilled-food/yogurts?origin=dropdown&c1=groceries&c2=chilled-food&c3=yogurts&clickedon=yogurts",
+    "meat_poultry": "https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry?origin=dropdown&c1=groceries&c2=fresh-food&c3=meat-poultry&clickedon=meat-poultry",
+    "seafood": "https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-fish-seafood?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-fish-seafood&clickedon=fresh-fish-seafood",
+    "party_food_salads_dips": "https://groceries.aldi.co.uk/en-GB/chilled-food?&fn1=CategoryLevel2_Facet&fv1=L2DJ",
+    "chilled_desserts": "https://groceries.aldi.co.uk/en-GB/chilled-food?&fn1=CategoryLevel2_Facet&fv1=L2DD",
+    "pizza_pasta_gbread": "https://groceries.aldi.co.uk/en-GB/chilled-food/pizza-pasta-garlic-bread?origin=dropdown&c1=groceries&c2=chilled-food&c3=pizza-pasta-garlic-bread&clickedon=pizza-pasta-garlic-bread",
+    "chilled_meats": "https://groceries.aldi.co.uk/en-GB/chilled-food/chilled-meats?origin=dropdown&c1=groceries&c2=chilled-food&c3=chilled-meats&clickedon=chilled-meats",
+    
+    # Bakery:
+    "bakery": "https://groceries.aldi.co.uk/en-GB/bakery?origin=dropdown&c1=groceries&c2=bakery&clickedon=bakery",
 
+    # Frozen food: 
+    "frozen_vegetarian": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GF",
+    "frozen_vegtables": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GE",
+    "chips_related": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GA",
+    "frozen_meat_poultry": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GC",
+    "frozen_seafood": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GB",
+    "frozen_pizza": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GI",
+    "frozen_desserts_icecream": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GG",
+    "frozen_fruit": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GH",
+
+    # Treats & cupboard
+    "treats": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EC",
+    "snacks": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2ED",
+    "seed_nuts": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EE",
+    "cereals": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EB",
+    "canned": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EG",
+    "carbs": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EH",
+    "sauce": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EF",
+    "spread_jam": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EJ",
+
+    #drinks
+    "soft_drink": "https://groceries.aldi.co.uk/en-GB/drinks/soft-drinks-juices?origin=dropdown&c1=groceries&c2=drinks&c3=soft-drinks-juices&clickedon=soft-drinks-juices",
+    "water": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FG",
+    "milk": "https://groceries.aldi.co.uk/en-GB/chilled-food/milk-dairy-eggs?&fn1=CategoryLevel3_Facet&fv1=L3DAF",
+    "tea": "https://groceries.aldi.co.uk/en-GB/drinks/tea?origin=dropdown&c1=groceries&c2=drinks&c3=tea&clickedon=tea",
+    "coffee": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FB",
+    "beer_cider": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FA",
+    "spirit": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FE",
+    "wine": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FF"
 }
 
 product_box_CSS = '#vueSearchResults > div > div'
