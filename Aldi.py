@@ -35,7 +35,7 @@ product_name_CSS = 'div[class*="product-tile-text"][class*="text-center"][class*
 product_price_CSS = 'div[class*="d-flex"][class*="flex-column"][class*="flex-grow-1"][class*="justify-content-end"][class*="px-3"] div[class*="product-tile-price"][class*="text-center"] > div > span > span'
 product_price_per_unit_CSS = 'div[class*="d-flex"][class*="flex-column"][class*="flex-grow-1"][class*="justify-content-end"][class*="px-3"] div[class*="product-tile-price"][class*="text-center"] > div > div > p > small > span'
 next_button_CSS = 'ul > li.page-item.next.ml-2'
-total_pages_CSS = '#vueSearchResults > ul > li:nth-last-child(2) > span'
+accept_cookies_button_CSS = '#onetrust-accept-btn-handler'
 
 # List to hold all product data
 all_products = []
@@ -45,6 +45,17 @@ current_date = datetime.now().strftime("%Y-%m-%d")
 for category, url in category_urls.items():
     driver.get(url)
     time.sleep(5)  # Initial wait for page load
+
+    # Wait for and accept the cookies pop-up (if it appears)
+    try:
+        accept_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, accept_cookies_button_CSS))
+        )
+        accept_button.click()
+        print("Cookies accepted.")
+        time.sleep(2)  # Wait a bit after accepting cookies
+    except Exception as e:
+        print("No cookies pop-up or issue accepting it:", e)
 
     while True:
         # Extract product elements on the current page
