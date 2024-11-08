@@ -26,6 +26,7 @@ def create_undetected_headless_driver():
 driver = create_undetected_headless_driver()
 
 category_urls = {
+    # Fresh food
     "fruits": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/fresh-fruit",
     "vegetables": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/fresh-vegetables-and-fresh-flowers",
     "fresh_food_vegan": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/chilled-vegetarian-and-vegan",

@@ -20,12 +20,27 @@ def create_undetected_headless_driver():
     options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=options)
     driver.maximize_window()
+
+    driver.get("https://groceries.aldi.co.uk/en-GB/fresh-food")
+    # Wait for and accept the cookies pop-up (if it appears)
+    try:
+        accept_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, accept_cookies_button_CSS))
+        )
+        accept_button.click()
+        print("Cookies accepted.")
+        time.sleep(2)  # Wait a bit after accepting cookies
+    except Exception as e:
+        print("No cookies on this page :) ")
+
+
     return driver
 
 # Initialize driver
 driver = create_undetected_headless_driver()
 
 category_urls = {
+    # Fresh food
     "fruits" : "https://groceries.aldi.co.uk/en-GB/fresh-food/fruit?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-fruit&clickedon=fresh-fruit",
     "vegetables": "https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-vegetables?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-vegetables&clickedon=fresh-vegetables",
     "fresh_food_vegan": "https://groceries.aldi.co.uk/en-GB/fresh-food?&fn1=Lifestyle&fv1=Vegetarian%7CVegan",
@@ -89,17 +104,6 @@ for category, url in category_urls.items():
     driver.get(url)
     time.sleep(5)  # Initial wait for page load
 
-    # Wait for and accept the cookies pop-up (if it appears)
-    try:
-        accept_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, accept_cookies_button_CSS))
-        )
-        accept_button.click()
-        print("Cookies accepted.")
-        time.sleep(2)  # Wait a bit after accepting cookies
-    except Exception as e:
-        print("No cookies pop-up or issue accepting it:", e)
-
     while True:
         # Extract product elements on the current page
         product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
@@ -143,7 +147,8 @@ for category, url in category_urls.items():
 
         except Exception as e:
             print(f"Error while checking or clicking next button: {e}")
-            print(f"Current page source: {driver.page_source}")
+            print(f"Error at page URL: {driver.current_url}")
+            print(f"Error Details: {str(e)}")
             break  # Exit the loop on any exception
 
 # Create DataFrame from the list
