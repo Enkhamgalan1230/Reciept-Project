@@ -133,11 +133,13 @@ for category, url in category_urls.items():
 
             # If the "Next" button is disabled, exit the loop
             if aria_disabled == "true":
+                print("Last page reached for category:", category)
                 break
 
             # Otherwise, click the "Next" button to continue to the next page
             next_button.click()
             time.sleep(5)  # Wait for the next page to load
+            print("Clicked next button.")
 
         except Exception as e:
             print(f"Error while checking next button: {e}")

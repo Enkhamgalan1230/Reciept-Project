@@ -20,6 +20,7 @@ def create_undetected_headless_driver():
     options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=options)
     driver.maximize_window()
+    accept_cookies_button_CSS = '#onetrust-accept-btn-handler'
 
     driver.get("https://groceries.aldi.co.uk/en-GB/fresh-food")
     # Wait for and accept the cookies pop-up (if it appears)
@@ -93,7 +94,6 @@ product_name_CSS = 'div[class*="product-tile-text"][class*="text-center"][class*
 product_price_CSS = 'div[class*="d-flex"][class*="flex-column"][class*="flex-grow-1"][class*="justify-content-end"][class*="px-3"] div[class*="product-tile-price"][class*="text-center"] > div > span > span'
 product_price_per_unit_CSS = 'div[class*="d-flex"][class*="flex-column"][class*="flex-grow-1"][class*="justify-content-end"][class*="px-3"] div[class*="product-tile-price"][class*="text-center"] > div > div > p > small > span'
 next_button_CSS = 'ul > li.page-item.next.ml-2'
-accept_cookies_button_CSS = '#onetrust-accept-btn-handler'
 
 # List to hold all product data
 all_products = []
