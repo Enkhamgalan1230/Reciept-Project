@@ -143,7 +143,8 @@ for category, url in category_urls.items():
 
             # If not disabled, click the "Next" button to go to the next page
             next_button.click()
-            time.sleep(5)  # Wait for the next page to load
+            time.sleep(5)
+            print("Clicked next button.")  # Wait for the next page to load
 
         except Exception as e:
             print(f"Error while checking or clicking next button: {e}")

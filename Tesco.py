@@ -39,7 +39,6 @@ category_urls = {
     "cooked_meat_antipasti_dips": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/cooked-meats-antipasti-and-dips",
     "chilled_desserts": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/chilled-desserts",
     "pizza_pasta_gbread": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/fresh-pizza-pasta-and-garlic-bread",
-    "chilled_desserts": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/chilled-desserts",
 
     # Bakery:
     "bakery": "https://www.tesco.com/groceries/en-GB/shop/bakery",
