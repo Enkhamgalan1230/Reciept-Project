@@ -163,7 +163,7 @@ product_name_CSS = 'article div.pt__content div.pt__wrapper-inner div.pt__wrappe
 product_price_CSS = 'article div.pt__content div.pt__wrapper-inner div.pt__wrapper__bottom div.pt__cost span.pt__cost__retail-price'
 product_price_per_unit_CSS = 'article div.pt__content div.pt__wrapper-inner div.pt__wrapper__bottom div.pt__cost span.pt__cost__unit-price-per-measure'
 next_button_CSS = '#main > section > div > div > nav > ul > li[class*="ln-c-pagination__item"][class*="next"] > a'
-nectar_CSS = 'article div.pt__content div.pt__wrapper-inner div.pt__wrapper__bottom div.pt__cost span.pt__cost__contextual--with-nectar-not-associated span.pt__cost__contextual'
+nectar_CSS = '#main ul li article .pt__cost__contextual--wrapper > .pt__cost__contextual.pt__cost__contextual--with-nectar-not-associated > span'
 # List to hold all product data
 all_products = []
 current_date = datetime.now().strftime("%Y-%m-%d")
