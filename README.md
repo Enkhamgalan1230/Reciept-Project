@@ -4,7 +4,7 @@
 **Introduction**
 
 In light of the ongoing cost of living crisis, many university students in the UK are facing
-increasing financial pressures. The need for eƯective budgeting tools has never been more
+increasing financial pressures. The need for effective budgeting tools has never been more
 critical. To address this issue, I propose developing a Smart Budgeting and Price Prediction
 App tailored specifically for university students. This app will assist users in managing their
 expenses, comparing grocery prices, and anticipating future price changes, empowering them
@@ -61,4 +61,12 @@ The primary target audience for this app is university students in the UK who ar
 eƯective tools to manage their finances in a challenging economic environment. The app aims
 to empower students by providing them with valuable financial insights and cost-saving
 strategies. 
+
+
+**Current progress:**
+
+Data gathering scraper : ✔️
+
+Next step is : Pre processing(building algorithms for generalising, cleaning, etc.)
+
 
