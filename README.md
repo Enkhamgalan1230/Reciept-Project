@@ -69,4 +69,3 @@ Data gathering scraper : ✔️
 
 Next step is : Pre processing(building algorithms for generalising, cleaning, etc.)
 
-**Inspired by this project:** https://uksupermarketscraping.streamlit.app/ , by https://www.linkedin.com/in/declanmcalindenuk/ 

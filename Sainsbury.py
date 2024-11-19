@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 import os
 from datetime import datetime
@@ -40,7 +41,7 @@ def create_undetected_headless_driver():
 driver = create_undetected_headless_driver()
 
 category_urls = {
-    # Fresh food
+    "fresh_food": {
     "fruits": ["https://www.sainsburys.co.uk/gol-ui/groceries/fruit-and-vegetables/fresh-fruit/c:1020020"],
     "vegetables": ["https://www.sainsburys.co.uk/gol-ui/groceries/fruit-and-vegetables/fresh-vegetables/c:1020057"],
     "fresh_food_vegan": ["https://www.sainsburys.co.uk/gol-ui/groceries/dairy-eggs-and-chilled/vegetarian-vegan-and-dairy-free/vegan/c:1019174"],
@@ -66,8 +67,8 @@ category_urls = {
     ],
     "chilled_desserts": ["https://www.sainsburys.co.uk/gol-ui/groceries/dairy-eggs-and-chilled/desserts/all-desserts-and-cream/c:1019076"],
     "pizza_pasta_gbread": ["https://www.sainsburys.co.uk/gol-ui/groceries/dairy-eggs-and-chilled/pizza-pasta-and-garlic-bread/c:1019123"],
-
-    # Bakery:
+    },
+    "bakery":{
     "bakery": [
         'https://www.sainsburys.co.uk/gol-ui/groceries/bakery/birthday-and-party-cakes/c:1018773',
         'https://www.sainsburys.co.uk/gol-ui/groceries/bakery/bread/c:1018785',
@@ -81,8 +82,9 @@ category_urls = {
         'https://www.sainsburys.co.uk/gol-ui/groceries/bakery/scones-fruited-and-buns/c:1018850',
         'https://www.sainsburys.co.uk/gol-ui/groceries/bakery/wraps-thins-and-pittas/c:1018858'
     ],
+    },
 
-    # Frozen food: 
+    "Frozen food": {
     "frozen_vegan": ["https://www.sainsburys.co.uk/gol-ui/groceries/frozen/vegan/c:1019988"],
     "frozen_vegetarian": ["https://www.sainsburys.co.uk/gol-ui/groceries/frozen/vegetarian-and-meat-free/c:1019999"],
     "frozen_vegtables": [
@@ -93,7 +95,7 @@ category_urls = {
         'https://www.sainsburys.co.uk/gol-ui/groceries/frozen/fruit-vegetables-and-herbs/roast-potatoes-and-parsnips/c:1019932'
     ],
     "chips_related": [
-        "https://www.sainsburys.co.uk/gol-ui/groceries/frozen/chips-potatoes-and-rice/chips-and-wedges/all-chips-and-wedges/c:1019884"
+        "https://www.sainsburys.co.uk/gol-ui/groceries/frozen/chips-potatoes-and-rice/chips-and-wedges/all-chips-and-wedges/c:1019884",
         'https://www.sainsburys.co.uk/gol-ui/groceries/frozen/chips-potatoes-and-rice/onion-rings/c:1019890',
         'https://www.sainsburys.co.uk/gol-ui/groceries/frozen/chips-potatoes-and-rice/roast-potatoes/c:1019892',
         'https://www.sainsburys.co.uk/gol-ui/groceries/frozen/chips-potatoes-and-rice/sweet-potatoes/c:1019893',
@@ -117,8 +119,8 @@ category_urls = {
         'https://www.sainsburys.co.uk/gol-ui/groceries/frozen/desserts-and-pastry/pies-and-pastry/c:1019899',
     ],
     "icecreams": ['https://www.sainsburys.co.uk/gol-ui/groceries/frozen/ice-cream-and-ice/all-ice-creams/c:1019935'],
-
-    # Treats & cupboard
+    },
+    "cupboard": {
     "treats_snacks": [
         'https://www.sainsburys.co.uk/gol-ui/groceries/frozen/ice-cream-and-ice/all-ice-creams/c:1019935',
         'https://www.sainsburys.co.uk/gol-ui/groceries/food-cupboard/biscuits-and-crackers/c:1019495',
@@ -143,8 +145,8 @@ category_urls = {
     "carbs": ['https://www.sainsburys.co.uk/gol-ui/groceries/food-cupboard/rice-pasta-and-noodles/c:1019794'],
     "sauce": ["https://www.sainsburys.co.uk/gol-ui/groceries/food-cupboard/cooking-ingredients-and-oils/c:1019630"],
     "spread_jam": ["https://www.sainsburys.co.uk/gol-ui/groceries/food-cupboard/jams-honey-and-spreads/c:1019754"],
-
-    #drinks
+    },
+    "drinks": {
     "soft_drink": ["https://www.sainsburys.co.uk/gol-ui/groceries/drinks/fizzy-drinks/c:1019310"],
     "water": ['https://www.sainsburys.co.uk/gol-ui/groceries/drinks/water/c:1019437'],
     "squash": ["https://www.sainsburys.co.uk/gol-ui/groceries/drinks/squash-and-cordials/c:1019393"],
@@ -155,6 +157,7 @@ category_urls = {
     "alc_free": ['https://www.sainsburys.co.uk/gol-ui/groceries/drinks/low-and-no-alcohol/c:1019340'],
     "spirit": ['https://www.sainsburys.co.uk/gol-ui/groceries/drinks/spirits-and-liqueurs/c:1019377'],
     "wine": ['https://www.sainsburys.co.uk/gol-ui/groceries/drinks/wine/c:1019462']
+    }
 }
 
 
@@ -169,63 +172,71 @@ all_products = []
 current_date = datetime.now().strftime("%Y-%m-%d")
 
 # Loop through each category and URL in the category URLs dictionary
-for category, urls in category_urls.items():
-    for url in urls:
-        driver.get(url)
-        time.sleep(5)  # Initial wait for page load
+for main_category, subcategories in category_urls.items():
+    for subcategory, urls in subcategories.items():
+        for url in urls:
+            driver.get(url)
+            time.sleep(5)  # Allow the page to load initially
 
-        while True:
-            # Extract product elements on the current page
-            product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
+            while True:
+                # Extract product elements on the current page
+                product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
 
-            for product in product_boxes:
-                product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
-                if not product_name:
-                    print("No products found with the selector!")
+                for product in product_boxes:
+                    try:
+                        # Extract product name
+                        product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
 
-                # Check for product price and assign 'null' if price elements are missing
-                price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
-                price = price_elements[0].text if price_elements else 'null'
+                        # Extract product price or assign 'null' if not found
+                        price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
+                        price = price_elements[0].text if price_elements else 'null'
 
-                # Check for price per unit and assign 'null' if price per unit elements are missing
-                price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
-                price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
+                        # Extract price per unit or assign 'null' if not found
+                        price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
+                        price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
 
-                # Check for Clubcard discount and assign 'null' if Clubcard discount elements are missing
-                nectar_discount_elements = product.find_elements(By.CSS_SELECTOR, nectar_CSS)
-                nectar_discount = nectar_discount_elements[0].text if nectar_discount_elements else 'null'
+                        # Check for Clubcard discount and assign 'null' if Clubcard discount elements are missing
+                        nectar_discount_elements = product.find_elements(By.CSS_SELECTOR, nectar_CSS)
+                        nectar_discount = nectar_discount_elements[0].text if nectar_discount_elements else 'null'
 
-                # Append the product data to the all_products list
-                all_products.append({
-                    "Name": product_name, 
-                    "Price": price, 
-                    "Price per Unit": price_per_unit,
-                    "Nectar Discount": nectar_discount,
-                    "Category": category, 
-                    "Date": current_date
-                })
+                        # Append the product data to the list
+                        all_products.append({
+                            "Name": product_name,
+                            "Price": price,
+                            "Price per Unit": price_per_unit,
+                            "Nectar price": nectar_discount,
+                            "Category": main_category,  # Broad category
+                            "Subcategory": subcategory,  # Subcategory
+                            "Date": current_date
+                        })
 
-            # Check if there is a "Next" button available and whether it is enabled
-            try:
-                # Locate the next button using the generalized CSS selector
-                next_button = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
-                )
-                
-                # Check if the next button has the "disabled" class
-                if "is-disabled" in next_button.get_attribute("class") or next_button.get_attribute("aria-disabled") == "true":
-                    print("Last page reached for category:", category)
-                    break 
-                # If not disabled, click the "Next" button to go to the next page
-                next_button.click()
-                time.sleep(5)
-                print("Clicked next button.")  # Wait for the next page to load
+                    except NoSuchElementException as e:
+                        print(f"Element missing while extracting product data: {e}")
+                    except Exception as e:
+                        print(f"Error extracting product data: {e}")
 
-            except Exception as e:
-                print(f"Error while checking or clicking next button: {e}")
-                print(f"Error at page URL: {driver.current_url}")
-                print(f"Error Details: {str(e)}")
-                break  # Exit the loop on any exception
+                # Handle pagination: check for the "Next" button and navigate if enabled
+                try:
+                    next_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
+                    )
+
+                    # Check if the button is disabled or not clickable
+                    if "disabled" in next_button.get_attribute("class") or next_button.get_attribute("aria-disabled") == "true":
+                        print(f"Last page reached for category: {main_category} - {subcategory}")
+                        break  # Exit the loop if on the last page
+
+                    # Click the "Next" button to navigate
+                    next_button.click()
+                    time.sleep(5)  # Allow time for the next page to load
+                    print(f"Navigating to the next page for {main_category} - {subcategory}.")
+
+                except TimeoutException:
+                    print(f"Next button not found. Stopping pagination for: {main_category} - {subcategory}.")
+                    break
+                except Exception as e:
+                    print(f"Error while handling the next button: {e}")
+                    break
 
 # Create DataFrame from the list
 df_products = pd.DataFrame(all_products)

@@ -39,7 +39,7 @@ def create_undetected_headless_driver():
 driver = create_undetected_headless_driver()
 
 category_urls = {
-
+    "fresh_food": {
     'fruit': ['https://www.waitrose.com/ecom/shop/browse/groceries/fresh_and_chilled/fresh_fruit'],
     "vegetables": ["https://www.waitrose.com/ecom/shop/browse/groceries/fresh_and_chilled/fresh_vegetables"],
     "fresh_food_vegan": ["https://www.waitrose.com/ecom/shop/browse/groceries/fresh_and_chilled/vegan"],
@@ -51,11 +51,12 @@ category_urls = {
     "cooked_meat_antipasti_dips": ["https://www.waitrose.com/ecom/shop/browse/groceries/fresh_and_chilled/cooked_meats_deli_and_dips"],
     "chilled_desserts": ["https://www.waitrose.com/ecom/shop/browse/groceries/fresh_and_chilled/desserts"],
     "pizza_pasta_gbread": ["https://www.waitrose.com/ecom/shop/browse/groceries/fresh_and_chilled/fresh_pizza_and_garlic_bread"],
-
-    # Bakery:
+    },
+    "bakery": {
     "bakery": ["https://www.waitrose.com/ecom/shop/browse/groceries/bakery"],
+    },
 
-    # Frozen food: 
+    "frozen":{ 
     "frozen_vegan": ["https://www.waitrose.com/ecom/shop/browse/groceries/frozen/frozen_vegan"],
     "frozen_vegetarian":["https://www.waitrose.com/ecom/shop/browse/groceries/frozen/frozen_vegetarian_food"],
     "frozen_vegtables": ["https://www.waitrose.com/ecom/shop/browse/groceries/frozen/frozen_vegetables_herbs_and_rice"],
@@ -66,8 +67,8 @@ category_urls = {
     "frozen_desserts": ["https://www.waitrose.com/ecom/shop/browse/groceries/frozen/frozen_desserts"],
     "frozen_fruit_pastries": ["https://www.waitrose.com/ecom/shop/browse/groceries/frozen/frozen_fruits_and_smoothie_mixes"],
     "icecreams": ["https://www.waitrose.com/ecom/shop/browse/groceries/frozen/ice_cream_frozen_yogurt_and_sorbets"],
-
-    # Treats & cupboard
+    },
+    "cupboard": {
     "treats_snacks": [
         "https://www.waitrose.com/ecom/shop/browse/groceries/food_cupboard/crisps_snacks_and_nuts",
         'https://www.waitrose.com/ecom/shop/browse/groceries/food_cupboard/chocolate_and_sweets'
@@ -81,8 +82,8 @@ category_urls = {
         'https://www.waitrose.com/ecom/shop/browse/groceries/food_cupboard/condiments_dressings_and_marinades',
         ],
     "spread_jam": ["https://www.waitrose.com/ecom/shop/browse/groceries/food_cupboard/jam_honey_and_spreads"],
-
-    #drinks
+    },
+    "drinks": {
     "soft_drink": ["https://www.waitrose.com/ecom/shop/browse/groceries/tea_coffee_and_soft_drinks/fizzy_drinks"],
     "water": ["https://www.waitrose.com/ecom/shop/browse/groceries/tea_coffee_and_soft_drinks/water"],
     "squash": ["https://www.waitrose.com/ecom/shop/browse/groceries/tea_coffee_and_soft_drinks/squash_and_cordials"],
@@ -96,6 +97,7 @@ category_urls = {
     "alc_free": ["https://www.waitrose.com/ecom/shop/browse/groceries/beer_wine_and_spirits/alcohol_free_and_low_alcohol_drinks"],
     "spirit": ["https://www.waitrose.com/ecom/shop/browse/groceries/beer_wine_and_spirits/spirits_and_liqueurs"],
     "wine": ["https://www.waitrose.com/ecom/shop/browse/groceries/beer_wine_and_spirits/wine"]
+    }
 }
 
 product_box_CSS = 'div.content___yamWw'
@@ -108,48 +110,50 @@ all_products = []
 current_date = datetime.now().strftime("%Y-%m-%d")
 
 # Loop through each category and URL in the category URLs dictionary
-for category, urls in category_urls.items():
-    for url in urls:
-        driver.get(url)
-        time.sleep(5)  # Initial wait for page load
+for main_category, subcategories in category_urls.items():
+    for subcategory, urls in subcategories.items():
+        for url in urls:
+            driver.get(url)
+            time.sleep(5)  # Initial wait for page load
 
-        # Wait until all products are loaded
-        while True:
-            try:
-                # Check if the "Load More" button is clickable
-                next_button = WebDriverWait(driver, 5).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, next_button_CSS))
-                )
-                next_button.click()  # Click "Load More"
-                time.sleep(5)  # Wait for new products to load
-            except:
-                print("No more products to load or the 'Load More' button is disabled.")
-                break  # Break the loop if the button is no longer clickable or doesn't exist
+            # Wait until all products are loaded
+            while True:
+                try:
+                    # Check if the "Load More" button is clickable
+                    next_button = WebDriverWait(driver, 5).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, next_button_CSS))
+                    )
+                    next_button.click()  # Click "Load More"
+                    time.sleep(5)  # Wait for new products to load
+                except:
+                    print("No more products to load or the 'Load More' button is disabled.")
+                    break  # Break the loop if the button is no longer clickable or doesn't exist
 
-        # Now scrape all products after all pages have been loaded
-        product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
+            # Now scrape all products after all pages have been loaded
+            product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
 
-        for product in product_boxes:
-            product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
-            if not product_name:
-                print("No products found with the selector!")
+            for product in product_boxes:
+                product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
+                if not product_name:
+                    print("No products found with the selector!")
 
-            # Check for product price and assign 'null' if price elements are missing
-            price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
-            price = price_elements[0].text if price_elements else 'null'
+                # Check for product price and assign 'null' if price elements are missing
+                price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
+                price = price_elements[0].text if price_elements else 'null'
 
-            # Check for price per unit and assign 'null' if price per unit elements are missing
-            price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
-            price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
+                # Check for price per unit and assign 'null' if price per unit elements are missing
+                price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
+                price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
 
-            # Append the product data to the all_products list
-            all_products.append({
-                "Name": product_name, 
-                "Price": price, 
-                "Price per Unit": price_per_unit,
-                "Category": category, 
-                "Date": current_date
-            })
+                # Append the product data to the all_products list
+                all_products.append({
+                    "Name": product_name, 
+                    "Price": price, 
+                    "Price per Unit": price_per_unit,
+                    "Category": main_category,  # Broad category
+                    "Subcategory": subcategory,  # Subcategory 
+                    "Date": current_date
+                })
 
 # Create DataFrame from the list
 df_products = pd.DataFrame(all_products)

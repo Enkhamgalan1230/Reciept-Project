@@ -41,7 +41,8 @@ def create_undetected_headless_driver():
 driver = create_undetected_headless_driver()
 
 category_urls = {
-    # Fresh food
+    
+    "fresh_food": {
     "fruits" : "https://groceries.aldi.co.uk/en-GB/fresh-food/fruit?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-fruit&clickedon=fresh-fruit",
     "vegetables": "https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-vegetables?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-vegetables&clickedon=fresh-vegetables",
     "fresh_food_vegan": "https://groceries.aldi.co.uk/en-GB/fresh-food?&fn1=Lifestyle&fv1=Vegetarian%7CVegan",
@@ -54,11 +55,13 @@ category_urls = {
     "chilled_desserts": "https://groceries.aldi.co.uk/en-GB/chilled-food?&fn1=CategoryLevel2_Facet&fv1=L2DD",
     "pizza_pasta_gbread": "https://groceries.aldi.co.uk/en-GB/chilled-food/pizza-pasta-garlic-bread?origin=dropdown&c1=groceries&c2=chilled-food&c3=pizza-pasta-garlic-bread&clickedon=pizza-pasta-garlic-bread",
     "chilled_meats": "https://groceries.aldi.co.uk/en-GB/chilled-food/chilled-meats?origin=dropdown&c1=groceries&c2=chilled-food&c3=chilled-meats&clickedon=chilled-meats",
-    
-    # Bakery:
-    "bakery": "https://groceries.aldi.co.uk/en-GB/bakery?origin=dropdown&c1=groceries&c2=bakery&clickedon=bakery",
+    },
 
-    # Frozen food: 
+    "bakery": {
+    "bakery" : "https://groceries.aldi.co.uk/en-GB/bakery?origin=dropdown&c1=groceries&c2=bakery&clickedon=bakery",
+    },
+
+    "frozen":{ 
     "frozen_vegetarian": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GF",
     "frozen_vegtables": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GE",
     "chips_related": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GA",
@@ -67,8 +70,9 @@ category_urls = {
     "frozen_pizza": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GI",
     "frozen_desserts_icecream": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GG",
     "frozen_fruit": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GH",
+    },
 
-    # Treats & cupboard
+    "cupboard": {
     "treats": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EC",
     "snacks": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2ED",
     "seed_nuts": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EE",
@@ -77,8 +81,8 @@ category_urls = {
     "carbs": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EH",
     "sauce": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EF",
     "spread_jam": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EJ",
-
-    #drinks
+    },
+    "drinks": {
     "soft_drink": "https://groceries.aldi.co.uk/en-GB/drinks/soft-drinks-juices?origin=dropdown&c1=groceries&c2=drinks&c3=soft-drinks-juices&clickedon=soft-drinks-juices",
     "water": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FG",
     "milk": "https://groceries.aldi.co.uk/en-GB/chilled-food/milk-dairy-eggs?&fn1=CategoryLevel3_Facet&fv1=L3DAF",
@@ -87,6 +91,7 @@ category_urls = {
     "beer_cider": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FA",
     "spirit": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FE",
     "wine": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FF"
+    }
 }
 
 product_box_CSS = '#vueSearchResults > div > div'
@@ -100,57 +105,59 @@ all_products = []
 current_date = datetime.now().strftime("%Y-%m-%d")
 
 # Loop through each category and URL in the category URLs dictionary
-for category, url in category_urls.items():
-    driver.get(url)
-    time.sleep(5)  # Initial wait for page load
+for main_category, subcategories in category_urls.items():
+    for subcategory, url in subcategories.items():
+        driver.get(url)
+        time.sleep(5)  # Initial wait for page load
 
-    while True:
-        # Extract product elements on the current page
-        product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
+        while True:
+            # Extract product elements on the current page
+            product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
 
-        for product in product_boxes:
-            # Extract product name
-            product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
+            for product in product_boxes:
+                # Extract product name
+                product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
 
-            # Check for product price and assign 'null' if price elements are missing
-            price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
-            price = price_elements[0].text if price_elements else 'null'
+                # Check for product price and assign 'null' if price elements are missing
+                price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
+                price = price_elements[0].text if price_elements else 'null'
 
-            # Check for price per unit and assign 'null' if price per unit elements are missing
-            price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
-            price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
+                # Check for price per unit and assign 'null' if price per unit elements are missing
+                price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
+                price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
 
-            # Append the product data to the all_products list
-            all_products.append({
-                "Name": product_name, 
-                "Price": price, 
-                "Price per Unit": price_per_unit,
-                "Category": category, 
-                "Date": current_date
-            })
+                # Append the product data to the all_products list
+                all_products.append({
+                    "Name": product_name, 
+                    "Price": price, 
+                    "Price per Unit": price_per_unit,
+                    "Category": main_category,  # Broad category
+                    "Subcategory": subcategory,  # Subcategory
+                    "Date": current_date
+                })
 
-        # Check if there is a "Next" button available and whether it is enabled
-        try:
-            # Locate the next button using the generalized CSS selector
-            next_button = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
-            )
-            
-            # Check if the next button has the "disabled" class
-            if "disabled" in next_button.get_attribute("class"):
-                print("Last page reached for category:", category)
-                break  # Exit the loop if the button is disabled
+            # Check if there is a "Next" button available and whether it is enabled
+            try:
+                # Locate the next button using the generalized CSS selector
+                next_button = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
+                )
+                
+                # Check if the next button has the "disabled" class
+                if "disabled" in next_button.get_attribute("class"):
+                    print(f"Last page reached for category: {main_category} - {subcategory}")
+                    break  # Exit the loop if the button is disabled
 
-            # If not disabled, click the "Next" button to go to the next page
-            next_button.click()
-            time.sleep(5)
-            print("Clicked next button.")  # Wait for the next page to load
+                # If not disabled, click the "Next" button to go to the next page
+                next_button.click()
+                time.sleep(5)
+                print("Clicked next button.")  # Wait for the next page to load
 
-        except Exception as e:
-            print(f"Error while checking or clicking next button: {e}")
-            print(f"Error at page URL: {driver.current_url}")
-            print(f"Error Details: {str(e)}")
-            break  # Exit the loop on any exception
+            except Exception as e:
+                print(f"Error while checking or clicking next button: {e}")
+                #print(f"Error at page URL: {driver.current_url}")
+                print(f"Error Details: {str(e)}")
+                break  # Exit the loop on any exception
 
 # Create DataFrame from the list
 df_products = pd.DataFrame(all_products)

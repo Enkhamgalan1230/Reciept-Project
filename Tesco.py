@@ -26,7 +26,7 @@ def create_undetected_headless_driver():
 driver = create_undetected_headless_driver()
 
 category_urls = {
-    # Fresh food
+    "fresh_food": {
     "fruits": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/fresh-fruit",
     "vegetables": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/fresh-vegetables-and-fresh-flowers",
     "fresh_food_vegan": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/chilled-vegetarian-and-vegan",
@@ -38,33 +38,33 @@ category_urls = {
     "seafood": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/chilled-fish-and-seafood",
     "cooked_meat_antipasti_dips": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/cooked-meats-antipasti-and-dips",
     "chilled_desserts": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/chilled-desserts",
-    "pizza_pasta_gbread": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/fresh-pizza-pasta-and-garlic-bread",
-
-    # Bakery:
-    "bakery": "https://www.tesco.com/groceries/en-GB/shop/bakery",
-
-    # Frozen food: 
+    "pizza_pasta_gbread": "https://www.tesco.com/groceries/en-GB/shop/fresh-food/fresh-pizza-pasta-and-garlic-bread"
+  },
+  "bakery": {
+    "bakery": "https://www.tesco.com/groceries/en-GB/shop/bakery"
+  },
+  "frozen": {
     "frozen_vegan": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/vegan",
-    "frozen_vegetarian":"https://www.tesco.com/groceries/en-GB/shop/frozen-food/vegetarian",
-    "frozen_vegtables": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/vegetables",
+    "frozen_vegetarian": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/vegetarian",
+    "frozen_vegetables": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/vegetables",
     "chips_related": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/chips-potatoes-and-sides",
     "frozen_meat_poultry": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/meat-and-poultry",
     "frozen_seafood": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/fish-and-seafood",
     "frozen_pizza": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/pizza",
     "frozen_desserts": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/desserts",
     "frozen_fruit_pastries": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/fruit-and-pastry",
-    "icecreams": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/ice-cream-and-lollies",
-
-    # Treats & cupboard
+    "icecreams": "https://www.tesco.com/groceries/en-GB/shop/frozen-food/ice-cream-and-lollies"
+  },
+  "cupboard": {
     "treats_snacks": "https://www.tesco.com/groceries/en-GB/shop/treats-and-snacks",
     "seed_nuts": "https://www.tesco.com/groceries/en-GB/shop/food-cupboard/dried-fruit-nuts-nutrient-powders-and-seeds",
     "cereals": "https://www.tesco.com/groceries/en-GB/shop/food-cupboard/cereals",
     "canned": "https://www.tesco.com/groceries/en-GB/shop/food-cupboard/tins-cans-and-packets",
     "carbs": "https://www.tesco.com/groceries/en-GB/shop/food-cupboard/dried-pasta-rice-noodles-and-cous-cous",
     "sauce": "https://www.tesco.com/groceries/en-GB/shop/food-cupboard/table-sauces-olives-pickles-and-chutney",
-    "spread_jam": "https://www.tesco.com/groceries/en-GB/shop/food-cupboard/jams-sweet-and-savoury-spreads",
-
-    #drinks
+    "spread_jam": "https://www.tesco.com/groceries/en-GB/shop/food-cupboard/jams-sweet-and-savoury-spreads"
+  },
+  "drinks": {
     "soft_drink": "https://www.tesco.com/groceries/en-GB/shop/drinks/fizzy-and-soft-drinks",
     "water": "https://www.tesco.com/groceries/en-GB/shop/drinks/water",
     "squash": "https://www.tesco.com/groceries/en-GB/shop/drinks/squash-and-cordial",
@@ -75,6 +75,7 @@ category_urls = {
     "alc_free": "https://www.tesco.com/groceries/en-GB/shop/drinks/alcohol-free-and-low-alcohol-drinks",
     "spirit": "https://www.tesco.com/groceries/en-GB/shop/drinks/spirits",
     "wine": "https://www.tesco.com/groceries/en-GB/shop/drinks/wine"
+  }
 }
 
 # Generalized CSS selectors for product data
@@ -89,60 +90,65 @@ next_button_CSS = 'nav[class*="PaginationBarWrapper"] div[class*="PaginationCont
 all_products = []
 current_date = datetime.now().strftime("%Y-%m-%d")
 
-for category, url in category_urls.items():
-    driver.get(url)
-    time.sleep(5)  # Initial wait for page load
+for main_category, subcategories in category_urls.items():
+    for subcategory, url in subcategories.items():
+        driver.get(url)
+        time.sleep(5)  # Initial wait for page load
 
-    while True:
-        # Extract product elements on the current page
-        product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
+        print(f"Scraping category: {main_category} - {subcategory}")
 
-        for product in product_boxes:
-            # Extract product name
-            product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
+        while True:
+            # Extract product elements on the current page
+            product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
 
-            # Check for product price and assign 'null' if price elements are missing
-            price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
-            price = price_elements[0].text if price_elements else 'null'
+            for product in product_boxes:
+                # Extract product name
+                product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
 
-            # Check for price per unit and assign 'null' if price per unit elements are missing
-            price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
-            price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
+                # Check for product price and assign 'null' if price elements are missing
+                price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
+                price = price_elements[0].text if price_elements else 'null'
 
-            # Check for Clubcard discount and assign 'null' if Clubcard discount elements are missing
-            clubcard_discount_elements = product.find_elements(By.CSS_SELECTOR, product_clubcard_discount_CSS)
-            clubcard_discount = clubcard_discount_elements[0].text if clubcard_discount_elements else 'null'
+                # Check for price per unit and assign 'null' if price per unit elements are missing
+                price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
+                price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
 
-            # Append the product data to the all_products list
-            all_products.append({
-                "Name": product_name, 
-                "Price": price, 
-                "Price per Unit": price_per_unit, 
-                "Clubcard Discount": clubcard_discount, 
-                "Category": category, 
-                "Date": current_date
-            })
+                # Check for Clubcard discount and assign 'null' if Clubcard discount elements are missing
+                clubcard_discount_elements = product.find_elements(By.CSS_SELECTOR, product_clubcard_discount_CSS)
+                clubcard_discount = clubcard_discount_elements[0].text if clubcard_discount_elements else 'null'
 
-        # Check if there is a "Next" button available to go to the next page
-        try:
-            next_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, next_button_CSS))
-            )
-            aria_disabled = next_button.get_attribute("aria-disabled")
+                # Append the product data to the all_products list
+                all_products.append({
+                    "Name": product_name, 
+                    "Price": price, 
+                    "Price per Unit": price_per_unit, 
+                    "Clubcard Discount": clubcard_discount, 
+                    "Category": main_category,  # Broad category
+                    "Subcategory": subcategory,  # Subcategory
+                    "Date": current_date
+                })
 
-            # If the "Next" button is disabled, exit the loop
-            if aria_disabled == "true":
-                print("Last page reached for category:", category)
-                break
+            # Check if there is a "Next" button available to go to the next page
+            try:
+                next_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, next_button_CSS))
+                )
+                aria_disabled = next_button.get_attribute("aria-disabled")
 
-            # Otherwise, click the "Next" button to continue to the next page
-            next_button.click()
-            time.sleep(5)  # Wait for the next page to load
-            print("Clicked next button.")
+                # If the "Next" button is disabled, exit the loop
+                if aria_disabled == "true":
+                    print(f"Last page reached for category: {main_category} - {subcategory}")
+                    break
 
-        except Exception as e:
-            print(f"Error while checking next button: {e}")
-            break  # Exit the loop on any exception
+                # Otherwise, click the "Next" button to continue to the next page
+                next_button.click()
+                time.sleep(5)  # Wait for the next page to load
+                print("Clicked next button.")
+
+            except Exception as e:
+                print(f"Error while checking next button for {main_category} - {subcategory}: {e}")
+                break  # Exit the loop on any exception
+
 
 # Create DataFrame from the list
 df_products = pd.DataFrame(all_products)

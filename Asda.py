@@ -39,7 +39,7 @@ def create_undetected_headless_driver():
 driver = create_undetected_headless_driver()
 
 category_urls = {
-    # Fresh food
+    "fresh_food": {
     "fruits": ["https://groceries.asda.com/aisle/fruit-veg-flowers/fruit/view-all-fruit/1215686352935-910000975210-1215666947025"],
     "vegetables": ["https://groceries.asda.com/aisle/fruit-veg-flowers/vegetables-potatoes/view-all-vegetables-potatoes/1215686352935-1215665891579-1215686354635"],
     "fresh_food_vegan": ["https://groceries.asda.com/aisle/meat-poultry-fish/vegan-vegetarian/vegan-chilled-meat-alternatives/1215135760597-1215686355777-1215685771335"],
@@ -70,8 +70,8 @@ category_urls = {
     "chilled_desserts": ["https://groceries.asda.com/aisle/chilled-food/yogurts-desserts/desserts/1215660378320-1215341888021-910000975612"],
     "pizza_pasta_gbread": ["https://groceries.asda.com/aisle/chilled-food/pizza-pasta-garlic-bread/fresh-pizza/1215660378320-1215661254820-910000975409",
                            "https://groceries.asda.com/aisle/chilled-food/pizza-pasta-garlic-bread/pasta-sauce-garlic-bread/1215660378320-1215661254820-910000975441"],
-
-    # Bakery:
+    },
+    "bakery": {
     "bakery": ["https://groceries.asda.com/dept/bakery/exceptional-bakery/1215686354843-1215686354845",
                 "https://groceries.asda.com/dept/bakery/in-store-bakery/1215686354843-1215686354846",
                 "https://groceries.asda.com/dept/bakery/bread-rolls/1215686354843-1215686354847",
@@ -83,7 +83,8 @@ category_urls = {
                 "https://groceries.asda.com/dept/bakery/croissants-brioche-on-the-go/1215686354843-1215686354850",
                 "https://groceries.asda.com/dept/bakery/cake-bars-slices-tarts/1215686354843-1215686354852",
                 "https://groceries.asda.com/dept/bakery/desserts-cream-cakes/1215686354843-1215686354853"],
-    # Frozen food: 
+    },
+    "frozen": {
     "frozen_vegetarian": ["https://groceries.asda.com/aisle/frozen-food/vegetarian-vegan/vegetarian-frozen-food/1215338621416-1215338748833-1215339097600"],
     "frozen_vegan": ["https://groceries.asda.com/aisle/frozen-food/vegetarian-vegan/vegan-frozen-food/1215338621416-1215338748833-1215685961783"],
     "frozen_vegtables": ["https://groceries.asda.com/dept/frozen-food/vegetables/1215338621416-1215338747117"],
@@ -107,7 +108,8 @@ category_urls = {
     "frozen_fruit_pastries": ["https://groceries.asda.com/aisle/frozen-food/desserts-pastry/frozen-fruit-smoothie-mixes/1215338621416-1215338621511-1215686356414",
                               "https://groceries.asda.com/aisle/frozen-food/desserts-pastry/frozen-pastry-breakfast/1215338621416-1215338621511-1215339071265"],
     "icecreams": ["https://groceries.asda.com/aisle/frozen-food/ice-cream-parlour/view-all-ice-cream-parlour/1215338621416-1215338747181-1215685901765"],
-    # Treats & cupboard
+    },
+    "cupboard" : {
     "treats_snacks": ["https://groceries.asda.com/aisle/sweets-treats-snacks/chocolates-sweets/multipack-chocolate/1215686355680-1215279696813-910000975533",
                     "https://groceries.asda.com/aisle/sweets-treats-snacks/chocolates-sweets/sharing-chocolate-bars/1215686355680-1215279696813-1215686353225",
                     "https://groceries.asda.com/aisle/sweets-treats-snacks/chocolates-sweets/chocolate-bags-cartons/1215686355680-1215279696813-1215686353226",
@@ -157,7 +159,8 @@ category_urls = {
                     "https://groceries.asda.com/aisle/food-cupboard/jams-spreads-desserts/chocolate-sweet-spreads/1215337189632-1215685491665-1215685491668",
                     "https://groceries.asda.com/aisle/food-cupboard/jams-spreads-desserts/honey/1215337189632-1215685491665-1215685491670",
                     "https://groceries.asda.com/aisle/food-cupboard/jams-spreads-desserts/marmite-yeast-extracts/1215337189632-1215685491665-1215685491672"],
-    # Drinks
+    },
+    "drinks" : {
     "soft_drink": ["https://groceries.asda.com/aisle/drinks/fizzy-drinks/sugar-free-diet-fizzy-drinks/1215135760614-1215166790692-1215504932514",
                     "https://groceries.asda.com/aisle/drinks/fizzy-drinks/cola/1215135760614-1215166790692-1215685911600",
                     "https://groceries.asda.com/aisle/drinks/fizzy-drinks/lemonade/1215135760614-1215166790692-1215685911603",
@@ -182,7 +185,7 @@ category_urls = {
                 "https://groceries.asda.com/aisle/beer-wine-spirits/spirits/tequila/1215685911554-1215685911575-1215685911584",
                 "https://groceries.asda.com/aisle/beer-wine-spirits/spirits/port-sherry-vermouth/1215685911554-1215685911575-910000975511"],
     "wine": ["https://groceries.asda.com/aisle/beer-wine-spirits/wine/all-wine/1215685911554-1215345814806-1215685911557"]
-
+    }
 }
 
 # Generalized CSS selectors for product data
@@ -210,79 +213,81 @@ current_date = datetime.now().strftime("%Y-%m-%d")
 
 
 # Loop through each category and URL in the category URLs dictionary
-for category, urls in category_urls.items():
-    for url in urls:  # Loop through each URL for the current category
-        driver.get(url)
-        time.sleep(5)  # Initial wait for page load
-        
-        while True:
-            # Extract product elements on the current page
-            product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
+for main_category, subcategories in category_urls.items():
+    for subcategory, urls in subcategories.items():
+        for url in urls:  # Loop through each URL for the current category
+            driver.get(url)
+            time.sleep(5)  # Initial wait for page load
+            
+            while True:
+                # Extract product elements on the current page
+                product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
 
-            for product in product_boxes:
-                # Extract product name
-                product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
+                for product in product_boxes:
+                    # Extract product name
+                    product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
 
-                # Check for product price and assign 'null' if price elements are missing
-                price_element = product.find_element(By.CSS_SELECTOR, product_price_CSS)
-                price = price_element.text.strip().replace('now', '').strip() if price_element else 'null'     
-                # Check for price per unit and assign 'null' if price per unit elements are missing
-                price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
-                price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
+                    # Check for product price and assign 'null' if price elements are missing
+                    price_element = product.find_element(By.CSS_SELECTOR, product_price_CSS)
+                    price = price_element.text.strip().replace('now', '').strip() if price_element else 'null'     
+                    # Check for price per unit and assign 'null' if price per unit elements are missing
+                    price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
+                    price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
 
-                # Append the product data to the all_products list
-                all_products.append({
-                    "Name": product_name, 
-                    "Price": price, 
-                    "Price per Unit": price_per_unit,
-                    "Category": category, 
-                    "Date": current_date
-                })
+                    # Append the product data to the all_products list
+                    all_products.append({
+                        "Name": product_name, 
+                        "Price": price, 
+                        "Price per Unit": price_per_unit,
+                        "Category": main_category,  # Broad category
+                        "Subcategory": subcategory,  # Subcategory 
+                        "Date": current_date
+                    })
 
-            # Check if there is a "Next" button available and whether it is enabled
-            try:
-                # Wait for the "Next" button to be present in the DOM
-                next_button = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
-                )
+                # Check if there is a "Next" button available and whether it is enabled
+                try:
+                    # Wait for the "Next" button to be present in the DOM
+                    next_button = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
+                    )
 
-                # Scroll the "Next" button into view to ensure it is visible
-                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
-                time.sleep(1)
-                
-                # Wait for the button to be clickable (after scrolling into view)
-                next_button = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, next_button_CSS))
-                )
+                    # Scroll the "Next" button into view to ensure it is visible
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
+                    time.sleep(1)
+                    
+                    # Wait for the button to be clickable (after scrolling into view)
+                    next_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, next_button_CSS))
+                    )
 
-                # Check if the "Next" button is disabled by looking for the disabled class
-                if "disabled" in next_button.get_attribute("class") or "co-pagination__arrow--disabled" in next_button.get_attribute("class"):
-                    print("Last page reached for category:", category)
-                    break  # Exit the loop if the button is disabled
-                
-                # Try clicking the button with a retry mechanism
-                click_attempts = 0
-                while click_attempts < 3:
-                    try:
-                        next_button.click()
-                        time.sleep(5)  # Wait for the next page to load
-                        print("Clicked next button.")
+                    # Check if the "Next" button is disabled by looking for the disabled class
+                    if "disabled" in next_button.get_attribute("class") or "co-pagination__arrow--disabled" in next_button.get_attribute("class"):
+                        print(f"Last page reached for category: {main_category} - {subcategory}")
+                        break  # Exit the loop if the button is disabled
+                    
+                    # Try clicking the button with a retry mechanism
+                    click_attempts = 0
+                    while click_attempts < 3:
+                        try:
+                            next_button.click()
+                            time.sleep(5)  # Wait for the next page to load
+                            print("Clicked next button.")
+                            break
+                        except Exception as click_error:
+                            print(f"Attempt {click_attempts + 1}: Click intercepted, retrying...")
+                            time.sleep(1)
+                            click_attempts += 1
+
+                    else:
+                        print("Failed to click the next button after multiple attempts.")
                         break
-                    except Exception as click_error:
-                        print(f"Attempt {click_attempts + 1}: Click intercepted, retrying...")
-                        time.sleep(1)
-                        click_attempts += 1
 
-                else:
-                    print("Failed to click the next button after multiple attempts.")
-                    break
-
-            except Exception as e:
-                print(f"Error while checking or clicking next button: {e}")
-                # Log a portion of the page source or the error message itself
-                print(f"Error at page URL: {driver.current_url}")
-                print(f"Error Details: {str(e)}")  # Show only error message
-                break  # Exit the loop on any exception
+                except Exception as e:
+                    print(f"Error while checking or clicking next button: {e}")
+                    # Log a portion of the page source or the error message itself
+                    #print(f"Error at page URL: {driver.current_url}")
+                    print(f"Error Details: {str(e)}")  # Show only error message
+                    break  # Exit the loop on any exception
 
 # Create DataFrame from the list
 df_products = pd.DataFrame(all_products)
