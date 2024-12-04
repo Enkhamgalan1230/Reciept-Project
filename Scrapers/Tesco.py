@@ -85,7 +85,7 @@ product_price_CSS = 'div[class*="StyledBuyBoxContainer"] div[class*="StyledPrice
 product_price_per_unit_CSS = 'div[class*="StyledBuyBoxContainer"] div[class*="StyledPriceContainer"] p[class*="ddsweb-price__subtext"]'
 product_clubcard_discount_CSS = 'div[class*="StyledPromotionsContainer"] div[class*="ContentContainer"] p[class*="ddsweb-value-bar__content-text"]'
 next_button_CSS = 'nav[class*="PaginationBarWrapper"] div[class*="PaginationControls"] ul li:last-child a'
-
+#next_button_CSS = "nav.styled__PaginationBarWrapper-sc-1yves1k-0 li:nth-child(9) > a"
 # List to hold all product data
 all_products = []
 current_date = datetime.now().strftime("%Y-%m-%d")
@@ -134,7 +134,7 @@ for main_category, subcategories in category_urls.items():
                     EC.element_to_be_clickable((By.CSS_SELECTOR, next_button_CSS))
                 )
                 aria_disabled = next_button.get_attribute("aria-disabled")
-
+                class_name = next_button.get_attribute
                 # If the "Next" button is disabled, exit the loop
                 if aria_disabled == "true":
                     print(f"Last page reached for category: {main_category} - {subcategory}")
