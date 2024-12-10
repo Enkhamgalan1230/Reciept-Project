@@ -1,4 +1,4 @@
-#Approved Working
+#Approved working.
 
 import pandas as pd
 import re
@@ -50,41 +50,41 @@ def standardize_price_per_unit(price_per_unit):
         price_per_unit = price_per_unit.strip()  # Remove leading/trailing spaces
         
         if 'per' in price_per_unit:  # Handle 'per' formats
-            try:
-                # Split the string into price and unit
-                price_value, unit = price_per_unit.split(' per ')
-                price_value = price_value.strip()  # Clean whitespace
-                unit = unit.strip()  # Clean whitespace
-                
-                if 'p' in price_value:
-                    price_value = float(price_value.replace('p', '').strip()) / 100  # Convert pence to pound
-                elif '£' in price_value:
-                    price_value = float(price_value.replace('£', '').strip())  # Convert price to float and remove '£'
             
-                # Handle specific unit conversions
-                if '100g' in unit:  # Convert 100g to kg
-                    price_value *= 10  # 100g is 0.1kg
-                    unit = 'kg'
-                elif '10g' in unit:
-                    price_value *= 100
-                    unit = 'kg'
-                elif 'kg' in unit:  # No conversion needed
-                    unit = 'kg'
-                elif '100ml' in unit:  # Convert 100ml to litre
-                    price_value *= 10  # 100ml is 0.1 litre
-                    unit = 'litre'
-                elif '75cl' in unit:
-                    price_value *= (4 / 3) 
-                    unit = 'litre'
-                elif 'litre' in unit:  # No conversion needed
-                    unit = 'litre'
-                elif 'each' in unit:  # Handle 'each'
-                    unit = 'each'
+            # Split the string into price and unit
+            price_value, unit = price_per_unit.split(' per ')
+            price_value = price_value.strip()  # Clean whitespace
+            unit = unit.strip()  # Clean whitespace
+                
+            if 'p' in price_value:
+                price_value = float(price_value.replace('p', '').strip()) / 100  # Convert pence to pound
+            elif '£' in price_value:
+                price_value = float(price_value.replace('£', '').strip())  # Convert price to float and remove '£'
+            
+            # Handle specific unit conversions
+            if '100g' in unit:  # Convert 100g to kg
+                price_value *= 10  # 100g is 0.1kg
+                unit = 'kg'
+            elif '10g' in unit:
+                price_value *= 100
+                unit = 'kg'
+            elif 'kg' in unit:  # No conversion needed
+                unit = 'kg'
+            elif '100ml' in unit:  # Convert 100ml to litre
+                price_value *= 10  # 100ml is 0.1 litre
+                unit = 'litre'
+            elif '75cl' in unit:
+                price_value *= (4 / 3) 
+                unit = 'litre'
+            elif 'litre' in unit:  # No conversion needed
+                unit = 'litre'
+            elif 'each' in unit:  # Handle 'each'
+                unit = 'each'
+            else:
+                unit ='other'
                     
-                return price_value, unit
-            except ValueError:
-                # Handle splitting errors
-                return np.nan, 'other'
+            return price_value, unit
+            
         elif 'each' in price_per_unit:  # Handle '£5 each' format
             try:
                 price_value = float(price_per_unit.replace('£', '').replace('each', '').strip())
@@ -93,7 +93,6 @@ def standardize_price_per_unit(price_per_unit):
                 return np.nan, 'other'
     
     return np.nan, np.nan  # Return NaN for invalid or missing values
-
 # Apply the function to 'Price per Unit' column
 df[['Standardised Price per Unit', 'Unit']] = df['Price per Unit'].apply(
     lambda x: pd.Series(standardize_price_per_unit(x))

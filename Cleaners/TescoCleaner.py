@@ -57,6 +57,7 @@ df['Price'] = df['Price'].replace('£', '', regex=True).astype(float)
     Cleaning the Price per unit and standardising the units into three(each,litre,kg).
         Function to clean and standardize the price per unit
 '''
+# Function to clean and standardize the price per unit
 def standardize_price_per_unit(price_per_unit):
     if isinstance(price_per_unit, str):  # Check if the value is a string
         price_per_unit = price_per_unit.lstrip('£')  # Remove '£' symbol
@@ -70,15 +71,24 @@ def standardize_price_per_unit(price_per_unit):
         elif 'cl' in unit and '75cl' in unit:  # Convert 75cl to litre (75cl = 0.75l, multiply by 4/3)
             price_value = price_value * (4 / 3)  # Multiply by 4/3 to get price per litre
             unit = 'litre'
+        elif '100ml' in unit:
+            price_value *= 10
+            unit = 'litre'
+        elif '10g' in unit:
+            price_value *= 100
+            unit = 'kg'
         elif 'kg' in unit:  # No conversion needed for kg
             unit = 'kg'
         elif 'litre' in unit:  # No conversion needed for litre
             unit = 'litre'
         elif 'each' in unit:  # No conversion needed for 'each'
             unit = 'each'
+        else:
+            unit ='other'
         return price_value, unit
     else:
         return np.nan, np.nan  # If the value is not a string, return NaN for both price and unit
+
 
 # Apply the function to the dataframe
 df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(lambda x: pd.Series(standardize_price_per_unit(x)))

@@ -65,58 +65,64 @@ df['Price'] = df['Price'].apply(clean_price)
 '''
 def standardize_price_per_unit(price_per_unit):
     if isinstance(price_per_unit, str):  # Ensure the value is a string
-        
-        # Split into price and unit if 'per' is in the string
         if '/' in price_per_unit:
             try:
                 price_value, unit = price_per_unit.split(' / ')  # Split into price and unit
-                
-                # If there's no decimal point, we assume it's in whole pence (e.g., '15.7p' -> '0.157')
+
+                # Handle price values with 'p' and '£'
                 if 'p' in price_value:
                     if '.' not in price_value:
                         price_value = f"{float(price_value.replace('p', '').strip()) / 100:.3f}"  # Convert pence to pound
                     else:
-                        price_value = price_value.replace('p', '')  # Just remove 'p' (since we are handling it as pence already)
-                
+                        price_value = price_value.replace('p', '')  # Remove 'p' if already in decimal form
                 price_value = float(price_value.replace('£', '').strip())  # Convert price to float and remove '£'
-                
-                # Unit conversions based on the specific units
+
+                # Unit conversions and categorization
                 if '100g' in unit:  # Convert 100g to kg
-                    price_value = price_value * 10  # 100g is 0.1kg, so we multiply price by 10
+                    price_value = price_value * 10  # 100g is 0.1kg, so multiply price by 10
                     unit = 'kg'
                 elif '10g' in unit:
-                    price_value = price_value * 100
+                    price_value = price_value * 100  # 10g is 0.01kg, so multiply price by 100
                     unit = 'kg'
                 elif 'kg' in unit:  # No conversion needed
                     unit = 'kg'
                 elif '100ml' in unit:  # Convert 100ml to litre
-                    price_value = price_value * 10  # 100ml is 0.1l, so we multiply price by 10
+                    price_value = price_value * 10  # 100ml is 0.1l, so multiply price by 10
                     unit = 'litre'
                 elif 'ltr' in unit:  # No conversion needed
                     unit = 'litre'
-                elif '75cl' in unit:  # Convert cl to litre (e.g., 75cl to 0.75l)
-                    price_value = price_value * (4 / 3)  # 75cl = 0.75l,
+                elif '75cl' in unit:  # Convert cl to litre
+                    price_value = price_value * (4/3)  # 75cl = 0.75l
                     unit = 'litre'
-                elif 'ea' in unit:  # Handle 'each' (e.g., '5.20 each')
+                elif 'ea' in unit:  # Handle 'each'
                     unit = 'each'
-                
-                return price_value, unit  # Return the price and unit as a tuple
+                elif 'bisc' in unit:
+                    unit = 'bisc'
+                elif '1000ml' in unit:
+                    unit = 'litre'
+                elif '100cl' in unit:
+                    unit = 'litre'
+                else:
+                    # If the unit is not recognized, classify it as 'other'
+                    unit = 'other'
+
+                return price_value, unit  # Return the price and standardized unit as a tuple
 
             except Exception as e:
-                # In case of any error (e.g., splitting or parsing), return NaN values
+                # Handle any error during processing
                 return np.nan, np.nan
         else:
             return np.nan, np.nan  # Return NaN values if the format doesn't match 'per'
     else:
         return np.nan, np.nan  # Return NaN if the value is not a string
-
+    
 # Apply the function to the dataframe
 df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(
     lambda x: pd.Series(standardize_price_per_unit(x))
 )
 
 # Filter out invalid unit values (only keep valid units)
-df = df[df['Unit'].isin(['kg', 'litre', 'each'])]
+df = df[df['Unit'].isin(['kg', 'litre', 'each', 'bisc'])]
 
 # One-hot encode the 'Unit' column
 encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')  # Avoid errors for unknown units
