@@ -65,7 +65,8 @@ strategies.
 
 **Current progress:**
 
-Data gathering scraper : ✔️
+Data gathering scraper: ✔️
+Pre-processing, cleaning, generalising: ✔️
 
-Next step is : Pre processing(building algorithms for generalising, cleaning, etc.)
+Next step: Comparison logic 
 
