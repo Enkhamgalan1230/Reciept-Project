@@ -1,3 +1,5 @@
+#Double check missing values and unit
+
 import pandas as pd
 import re
 import numpy as np
@@ -79,7 +81,7 @@ def standardize_price_per_unit(price_per_unit):
             elif 'lt' in unit:  # No conversion needed
                 unit = 'litre'
             elif '75c3' or '75cl' in unit:  # Convert cl to litre (e.g., 75cl to 0.75l)
-                price_value = price_value / 10  # 75cl = 0.75l, so divide by 10
+                price_value = price_value * (4 / 3)  # 75cl = 0.75l,
                 unit = 'litre'
             elif 'each' in unit:  # Handle 'each' (e.g., '5.20 each')
                 unit = 'each'
@@ -114,9 +116,6 @@ df[unit_columns] = unit_encoded
 
 # Drop the original 'Unit' and 'Price per Unit' columns
 df.drop(columns=['Unit', 'Price per Unit'], inplace=True)
-
-# Display the cleaned dataframe
-print(df.head())
 
 '''
     Saving the clean data.
