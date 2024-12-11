@@ -55,49 +55,53 @@ def standardize_price_per_unit(price_per_unit):
 
         # Split into price and unit if '/' is in the string
         if '/' in price_per_unit:
-            price_value, unit = price_per_unit.split('/')  # Split into price and unit
-            
-            # Remove any commas in the price (to handle values like '12,000.00')
-            price_value = price_value.replace(',', '')  # Remove commas for thousands
-            
-            # If the price has a 'p' (e.g., '15.7p'), remove it and convert to pounds (e.g., '15.7p' -> '0.0157')
-            if 'p' in price_value:
-                price_value = float(price_value.replace('p', '').strip()) / 100  # Convert pence to pound
-            elif '£' in price_value:
-                price_value = float(price_value.replace('£', '').strip())  # Convert price to float and remove '£'
-            
-            # Unit conversions based on the specific units
-            if '100g' in unit:  # Convert 100g to kg
-                price_value = price_value * 10  # 100g is 0.1kg, so we multiply price by 10
-                unit = 'kg'
-            elif '10g' in unit:
-                price_value = price_value * 100  # 10g to kg
-                unit = 'kg'
-            elif 'kg' in unit:  # No conversion needed
-                unit = 'kg'
-            elif '100ml' in unit:  # Convert 100ml to litre
-                price_value = price_value * 10  # 100ml is 0.1l, so we multiply price by 10
-                unit = 'litre'
-            elif 'lt' in unit:  # No conversion needed
-                unit = 'litre'
-            elif '75c3' or '75cl' in unit:  # Convert cl to litre (e.g., 75cl to 0.75l)
-                price_value = price_value * (4 / 3)  # 75cl = 0.75l,
-                unit = 'litre'
-            elif 'each' in unit:  # Handle 'each' (e.g., '5.20 each')
-                unit = 'each'
+            try:
+                price_value, unit = price_per_unit.split('/')  # Split into price and unit
+                
+                # Remove any commas in the price (to handle values like '12,000.00')
+                price_value = price_value.replace(',', '')  # Remove commas for thousands
+                
+                # If the price has a 'p' (e.g., '15.7p'), remove it and convert to pounds (e.g., '15.7p' -> '0.0157')
+                if 'p' in price_value:
+                    price_value = float(price_value.replace('p', '').strip()) / 100  # Convert pence to pound
+                elif '£' in price_value:
+                    price_value = float(price_value.replace('£', '').strip())  # Convert price to float and remove '£'
+                
+                # Unit conversions based on the specific units
+                if '100g' in unit:  # Convert 100g to kg
+                    price_value = price_value * 10  # 100g is 0.1kg, so we multiply price by 10
+                    unit = 'kg'
+                elif '10g' in unit:
+                    price_value = price_value * 100  # 10g to kg
+                    unit = 'kg'
+                elif 'kg' in unit:  # No conversion needed
+                    unit = 'kg'
+                elif '100ml' in unit:  # Convert 100ml to litre
+                    price_value = price_value * 10  # 100ml is 0.1l, so we multiply price by 10
+                    unit = 'litre'
+                elif 'lt' in unit:  # No conversion needed
+                    unit = 'litre'
+                elif '75c3' in unit:  # Convert cl to litre (e.g., 75cl to 0.75l)
+                    price_value = price_value / 10  # 75cl = 0.75l, so divide by 10
+                    unit = 'litre'
+                elif 'each' in unit:  # Handle 'each' (e.g., '5.20 each')
+                    unit = 'each'
 
-            # Handle edge case for prices like '12,000.00' (typo, should be '12.00')
-            if price_value > 1000:
-                price_value = price_value / 1000  # Fix the typo, converting to correct value (e.g., 12000 becomes 12.00)
+                # Handle edge case for prices like '12,000.00' (typo, should be '12.00')
+                if price_value > 1000:
+                    price_value = price_value / 1000  # Fix the typo, converting to correct value (e.g., 12000 becomes 12.00)
 
-            return price_value, unit
+                return price_value, unit
+            except ValueError:
+                    # Handle splitting errors
+                    return np.nan, 'other'
 
         else:
             return np.nan, np.nan  # Handle rows without valid format
     
     else:
         return np.nan, np.nan  # If the value is not a string, return NaN for both price and unit
-
+    
 # Apply the function to the dataframe
 df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(
     lambda x: pd.Series(standardize_price_per_unit(x))
