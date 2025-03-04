@@ -111,53 +111,48 @@ for main_category, subcategories in category_urls.items():
         time.sleep(5)  # Initial wait for page load
 
         while True:
-            # Extract product elements on the current page
+            # Re-fetch product boxes each iteration to avoid stale elements
             product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
 
             for product in product_boxes:
-                # Extract product name
-                product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
+                try:
+                    # Re-locate elements inside the loop to ensure they are fresh
+                    product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
 
-                # Check for product price and assign 'null' if price elements are missing
-                price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
-                price = price_elements[0].text if price_elements else 'null'
+                    price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
+                    price = price_elements[0].text if price_elements else 'null'
 
-                # Check for price per unit and assign 'null' if price per unit elements are missing
-                price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
-                price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
+                    price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
+                    price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
 
-                # Append the product data to the all_products list
-                all_products.append({
-                    "Name": product_name, 
-                    "Price": price, 
-                    "Price per Unit": price_per_unit,
-                    "Category": main_category,  # Broad category
-                    "Subcategory": subcategory,  # Subcategory
-                    "Date": current_date
-                })
+                    all_products.append({
+                        "Name": product_name, 
+                        "Price": price, 
+                        "Price per Unit": price_per_unit,
+                        "Category": main_category,
+                        "Subcategory": subcategory,
+                        "Date": current_date
+                    })
+                
+                except Exception as e:
+                    print(f"Skipping product due to error: {e}")
+                    continue  # Move to next product safely
 
-            # Check if there is a "Next" button available and whether it is enabled
+            # Handle pagination safely
             try:
-                # Locate the next button using the generalized CSS selector
                 next_button = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
                 )
-                
-                # Check if the next button has the "disabled" class
                 if "disabled" in next_button.get_attribute("class"):
                     print(f"Last page reached for category: {main_category} - {subcategory}")
-                    break  # Exit the loop if the button is disabled
+                    break
 
-                # If not disabled, click the "Next" button to go to the next page
                 next_button.click()
-                time.sleep(5)
-                print("Clicked next button.")  # Wait for the next page to load
+                time.sleep(5)  # Allow time for new products to load
 
             except Exception as e:
-                print(f"Error while checking or clicking next button: {e}")
-                #print(f"Error at page URL: {driver.current_url}")
-                print(f"Error Details: {str(e)}")
-                break  # Exit the loop on any exception
+                print(f"Error while clicking next button: {e}")
+                break
 
 # Create DataFrame from the list
 df_products = pd.DataFrame(all_products)

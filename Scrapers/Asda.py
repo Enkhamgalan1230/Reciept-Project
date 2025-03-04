@@ -217,55 +217,78 @@ for main_category, subcategories in category_urls.items():
     for subcategory, urls in subcategories.items():
         for url in urls:  # Loop through each URL for the current category
             driver.get(url)
-            time.sleep(5)  # Initial wait for page load
             
+            try:
+                # Scroll to trigger lazy-loaded content
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(3)
+
+                # Wait for at least one product name to appear
+                WebDriverWait(driver, 15).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, product_name_CSS))
+                )
+
+            except Exception as e:
+                print(f"Skipping {subcategory} due to timeout: {e}")
+                continue  # Skip this subcategory and move to the next
+
             while True:
-                # Extract product elements on the current page
+                time.sleep(3)  # Allow JavaScript-rendered products to load
                 product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
+                print(f"Found {len(product_boxes)} products for {subcategory}")
+
+                if not product_boxes:
+                    print(f"No products found for {subcategory}, skipping...")
+                    break  # Skip if no products are detected
 
                 for product in product_boxes:
-                    # Extract product name
-                    product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text
+                    try:
+                        # Extract product name safely
+                        product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text if product.find_elements(By.CSS_SELECTOR, product_name_CSS) else 'null'
 
-                    # Check for product price and assign 'null' if price elements are missing
-                    price_element = product.find_element(By.CSS_SELECTOR, product_price_CSS)
-                    price = price_element.text.strip().replace('now', '').strip() if price_element else 'null'     
-                    # Check for price per unit and assign 'null' if price per unit elements are missing
-                    price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
-                    price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
+                        # Extract price safely
+                        price_elements = product.find_elements(By.CSS_SELECTOR, product_price_CSS)
+                        price = price_elements[0].text.strip().replace('now', '').strip() if price_elements else 'null'
 
-                    # Append the product data to the all_products list
-                    all_products.append({
-                        "Name": product_name, 
-                        "Price": price, 
-                        "Price per Unit": price_per_unit,
-                        "Category": main_category,  # Broad category
-                        "Subcategory": subcategory,  # Subcategory 
-                        "Date": current_date
-                    })
+                        # Extract price per unit safely
+                        price_per_unit_elements = product.find_elements(By.CSS_SELECTOR, product_price_per_unit_CSS)
+                        price_per_unit = price_per_unit_elements[0].text.strip() if price_per_unit_elements else 'null'
 
-                # Check if there is a "Next" button available and whether it is enabled
+                        # Append product data
+                        all_products.append({
+                            "Name": product_name,
+                            "Price": price,
+                            "Price per Unit": price_per_unit,
+                            "Category": main_category,
+                            "Subcategory": subcategory,
+                            "Date": current_date
+                        })
+
+                    except Exception as e:
+                        print(f"Skipping product due to error: {e}")
+                        continue  # Move to the next product safely
+
+                # Check if there is a "Next" button available and enabled
                 try:
-                    # Wait for the "Next" button to be present in the DOM
                     next_button = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
                     )
 
-                    # Scroll the "Next" button into view to ensure it is visible
+                    # Scroll "Next" button into view
                     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
                     time.sleep(1)
-                    
-                    # Wait for the button to be clickable (after scrolling into view)
-                    next_button = WebDriverWait(driver, 10).until(
+
+                    # Wait for the button to be clickable
+                    WebDriverWait(driver, 10).until(
                         EC.element_to_be_clickable((By.CSS_SELECTOR, next_button_CSS))
                     )
 
-                    # Check if the "Next" button is disabled by looking for the disabled class
+                    # Check if the "Next" button is disabled
                     if "disabled" in next_button.get_attribute("class") or "co-pagination__arrow--disabled" in next_button.get_attribute("class"):
                         print(f"Last page reached for category: {main_category} - {subcategory}")
-                        break  # Exit the loop if the button is disabled
-                    
-                    # Try clicking the button with a retry mechanism
+                        break  # Exit the loop
+
+                    # Click the "Next" button with retries
                     click_attempts = 0
                     while click_attempts < 3:
                         try:
@@ -273,7 +296,7 @@ for main_category, subcategories in category_urls.items():
                             time.sleep(5)  # Wait for the next page to load
                             print("Clicked next button.")
                             break
-                        except Exception as click_error:
+                        except Exception:
                             print(f"Attempt {click_attempts + 1}: Click intercepted, retrying...")
                             time.sleep(1)
                             click_attempts += 1
@@ -283,10 +306,7 @@ for main_category, subcategories in category_urls.items():
                         break
 
                 except Exception as e:
-                    print(f"Error while checking or clicking next button: {e}")
-                    # Log a portion of the page source or the error message itself
-                    #print(f"Error at page URL: {driver.current_url}")
-                    print(f"Error Details: {str(e)}")  # Show only error message
+                    print(f"Error while clicking next button: {e}")
                     break  # Exit the loop on any exception
 
 # Create DataFrame from the list
