@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 class Category(models.Model):
     name = models.CharField(max_length=250)
@@ -15,7 +16,7 @@ class Product(models.Model):
     name = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250) 
     description = models.TextField(blank=True)
-    price = models.DicimalField(max_digits=10, decimal_places = 2)
+    price = models.DecimalField(max_digits=10, decimal_places = 2)
     available = models.BooleanField(defualt=True)
     created = models.DateTimeField(auto_now_add= True)
     updated = models.DateTimeField(auto_now = True)
@@ -25,4 +26,4 @@ class Product(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("model_detail", kwargs ={"pk":self.pk})
+        return reverse('products: product_detail', kwargs={'id':self.id, 'slug':self.slug})
