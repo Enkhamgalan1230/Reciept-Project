@@ -15,6 +15,8 @@ print("Please select a csv file to load")
 file = askopenfilename()
 df = pd.read_csv(file)
 
+df['Store_Name'] = "Aldi"
+
 ''' 
     Splitting the date into three columns.
         Convert 'Date' column to datetime format (this automatically handles the conversion to day, month, and year)
@@ -26,6 +28,7 @@ df['Year'] = df['Date'].dt.year
 df['Month'] = df['Date'].dt.month
 df['Day'] = df['Date'].dt.day
 df = df.drop(columns=['Date'])
+
 
 '''
     Cleaning the Price.

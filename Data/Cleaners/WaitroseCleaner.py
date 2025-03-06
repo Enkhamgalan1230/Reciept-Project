@@ -13,6 +13,7 @@ print("Please select a csv file to load")
 file = askopenfilename()
 df = pd.read_csv(file)
 
+df['Store_Name'] = "Waitrose"
 ''' 
     Splitting the date into three columns.
         Convert 'Date' column to datetime format (this automatically handles the conversion to day, month, and year)
