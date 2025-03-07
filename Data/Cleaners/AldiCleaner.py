@@ -14,6 +14,8 @@ Tk().withdraw()
 print("Please select a csv file to load") 
 file = askopenfilename()
 df = pd.read_csv(file)
+# Ensure 'Discount price' is after 'Price'
+df.insert(df.columns.get_loc('Price') + 1, 'Discount price', None)
 
 df['Store_Name'] = "Aldi"
 
@@ -35,6 +37,9 @@ df = df.drop(columns=['Date'])
         Remove the '£' sign and convert to float
 
 '''
+# Apply the cleaning function to the 'Nectar price' column
+df['Discount price'] = None
+
 df['Price'] = df['Price'].replace('£', '', regex=True).astype(float)
 
 
@@ -97,7 +102,7 @@ def standardize_price_per_unit(price_per_unit):
     
     return np.nan, np.nan  # Return NaN for invalid or missing values
 # Apply the function to 'Price per Unit' column
-df[['Standardised Price per Unit', 'Unit']] = df['Price per Unit'].apply(
+df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(
     lambda x: pd.Series(standardize_price_per_unit(x))
 )
 

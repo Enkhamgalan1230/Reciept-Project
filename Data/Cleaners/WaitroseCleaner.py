@@ -13,6 +13,9 @@ print("Please select a csv file to load")
 file = askopenfilename()
 df = pd.read_csv(file)
 
+df.insert(df.columns.get_loc('Price') + 1, 'Discount price', None)
+df['Discount price'] = None
+
 df['Store_Name'] = "Waitrose"
 ''' 
     Splitting the date into three columns.
@@ -110,7 +113,7 @@ def standardize_price_per_unit(price_per_unit):
     return np.nan, np.nan  # Return defaults for non-string inputs
 
 #Apply the function to 'Price per Unit' column
-df[['Standardised Price per Unit', 'Unit']] = df['Price per Unit'].apply(
+df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(
     lambda x: pd.Series(standardize_price_per_unit(x))
 )
 

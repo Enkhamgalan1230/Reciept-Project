@@ -15,7 +15,10 @@ Tk().withdraw()
 print("Please select a csv file to load") 
 file = askopenfilename()
 df = pd.read_csv(file)
+df.insert(df.columns.get_loc('Price') + 1, 'Discount price', None)
 
+
+df['Store_Name'] = "Tesco"
 ''' 
     This part One hot Encodes the Categorical Columns.
 
@@ -53,6 +56,12 @@ df = df.drop(columns=['Date'])
 '''
 df['Price'] = df['Price'].replace('£', '', regex=True).astype(float)
 
+
+# Apply the cleaning function to the 'Nectar price' column
+df['Discount price'] = df['Clubcard Discount']
+
+# Drop the original 'Nectar price' column after extraction
+df.drop(columns=['Clubcard Discount'], inplace=True)
 '''
     Cleaning the Price per unit and standardising the units into three(each,litre,kg).
         Function to clean and standardize the price per unit

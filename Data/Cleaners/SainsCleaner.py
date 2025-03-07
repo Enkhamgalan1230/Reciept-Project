@@ -14,6 +14,8 @@ Tk().withdraw()
 print("Please select a csv file to load") 
 file = askopenfilename()
 df = pd.read_csv(file)
+df.insert(df.columns.get_loc('Price') + 1, 'Discount price', None)
+
 
 df['Store_Name'] = "Sainsburys"
 ''' 
@@ -50,7 +52,10 @@ def clean_price(value):
     return np.nan  # Return NaN for invalid or missing values
 
 # Apply the cleaning function to the 'Nectar price' column
-df['Nectar price'] = df['Nectar price'].apply(clean_price)
+df['Discount price'] = df['Nectar price'].apply(clean_price)
+
+# Drop the original 'Nectar price' column after extraction
+df.drop(columns=['Nectar price'], inplace=True)
 
 # Apply the cleaning function to the 'Nectar price' column
 df['Price'] = df['Price'].apply(clean_price)
@@ -98,7 +103,7 @@ def standardize_price_per_unit(price_per_unit):
                 elif 'ea' in unit:  # Handle 'each'
                     unit = 'each'
                 elif 'bisc' in unit:
-                    unit = 'bisc'
+                    unit = 'each'
                 elif '1000ml' in unit:
                     unit = 'litre'
                 elif '100cl' in unit:
@@ -123,7 +128,7 @@ df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(
 )
 
 # Filter out invalid unit values (only keep valid units)
-df = df[df['Unit'].isin(['kg', 'litre', 'each', 'bisc'])]
+df = df[df['Unit'].isin(['kg', 'litre', 'each',])]
 
 # One-hot encode the 'Unit' column
 encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')  # Avoid errors for unknown units
