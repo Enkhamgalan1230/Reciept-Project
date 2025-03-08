@@ -8,5 +8,3 @@ tensorflow
 streamlit-option-menu
 pandas-datareader
 mysql-connector
-sqlalchemy
-psycopg2
