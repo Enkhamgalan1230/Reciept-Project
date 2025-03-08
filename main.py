@@ -12,8 +12,7 @@ DB_HOST = "db.rgfhrhvdspwlexlymdga.supabase.co"
 DB_NAME = "postgres"
 SUPAVISOR_PORT = "6543"  # Supavisor uses port 6543 instead of 5432
 
-# SQLAlchemy connection string (Supavisor)
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{SUPAVISOR_PORT}/{DB_NAME}"
+DATABASE_URL = f"postgresql+pg8000://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
 
 try:
     # Create database engine
