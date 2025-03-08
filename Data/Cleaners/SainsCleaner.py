@@ -145,6 +145,10 @@ df.drop(columns=['Unit', 'Price per Unit'], inplace=True)
     Saving the clean data.
 '''
 
+# Replace empty strings with NaN (NULL equivalent in PostgreSQL)
+df.replace("", pd.NA, inplace=True)
+
+
 desktop_path = os.path.expanduser(r"C:\Users\Entwan\Desktop")
 current_date = datetime.now().strftime("%Y-%m-%d")
 csv_file_path = os.path.join(desktop_path, f"Sainsburys_Clean_{current_date}.csv")

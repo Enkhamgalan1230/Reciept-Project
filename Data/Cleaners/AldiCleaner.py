@@ -120,6 +120,10 @@ df[unit_columns] = unit_encoded
 # Drop the original 'Unit' and 'Price per Unit' columns, as they're no longer needed
 df.drop(columns=['Unit', 'Price per Unit'], inplace=True)
 
+# Replace empty strings with NaN (NULL equivalent in PostgreSQL)
+df.replace("", pd.NA, inplace=True)
+
+
 '''
     Saving the clean data.
 '''

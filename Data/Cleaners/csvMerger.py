@@ -19,6 +19,9 @@ else:
     # Read and merge all selected CSV files
     df_list = [pd.read_csv(file) for file in files]
     merged_df = pd.concat(df_list, ignore_index=True)
+    # Replace empty strings with NaN (NULL equivalent in PostgreSQL)
+    merged_df.replace("", pd.NA, inplace=True)
+
 
     # Define save path to Desktop
     desktop_path = os.path.expanduser(r"C:\Users\Entwan\Desktop")

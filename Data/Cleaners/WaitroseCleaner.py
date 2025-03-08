@@ -1,142 +1,161 @@
 import pandas as pd
-import re
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
-import time
 import os
 from datetime import datetime
-from tkinter import *
-from tkinter.filedialog import askopenfilename
+from tkinter import Tk, filedialog
 
+# Hide the root window
 Tk().withdraw()
-print("Please select a csv file to load") 
-file = askopenfilename()
+
+print("Please select a CSV file to load") 
+file = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+
+# Load CSV
 df = pd.read_csv(file)
 
-df.insert(df.columns.get_loc('Price') + 1, 'Discount price', None)
-df['Discount price'] = None
+# Add 'Discount price' column after 'Price', ensuring it's properly initialized
+df.insert(df.columns.get_loc('Price') + 1, 'Discount price', np.nan)
 
 df['Store_Name'] = "Waitrose"
+
 ''' 
-    Splitting the date into three columns.
-        Convert 'Date' column to datetime format (this automatically handles the conversion to day, month, and year)
-        Split the 'Date' column into individual components: Year, Month, Day
-        Drop the original 'Date' column if it's no longer needed
+    Splitting the Date column into Year, Month, and Day.
 '''
-df['Date'] = pd.to_datetime(df['Date'])
+df['Date'] = pd.to_datetime(df['Date'], errors='coerce')  # Convert date safely
 df['Year'] = df['Date'].dt.year
 df['Month'] = df['Date'].dt.month
 df['Day'] = df['Date'].dt.day
-df = df.drop(columns=['Date'])
+df.drop(columns=['Date'], inplace=True)  # Drop original Date column
 
+''' 
+    Cleaning the Price column.
+    - Convert '£' values to float.
+    - Convert '90p' to 0.90 format.
+'''
 def clean_price(value):
-    """
-    Cleans the Price column by:
-    - Handling pence (e.g., '90p / kg' or '90p') by removing 'p' and dividing by 100.
-    - Handling pounds (e.g., '£2.50') by removing '£' and converting to float.
-    """
-    if isinstance(value, str):  # Ensure the value is a string
-        value = value.strip()  # Remove any extra whitespace
+    if isinstance(value, str):
+        value = value.strip()
         try:
-            if 'p' in value:  # Case for pence
-                return float(value.replace('p', '')) / 100
-            elif '£' in value:  # Case for pounds
-                return float(value.replace('£', ''))
+            if 'p' in value:  
+                return float(value.replace('p', '').strip()) / 100  # Convert pence to pounds
+            elif '£' in value:  
+                return float(value.replace('£', '').strip())  # Remove currency symbol and convert
         except ValueError:
-            pass  # Ignore values that don't match expected formats
-    return np.nan  # Return NaN for invalid or missing values
+            pass
+    return np.nan  # Convert missing/invalid values to NaN
 
-# Apply the cleaning function to the 'price' column
 df['Price'] = df['Price'].apply(clean_price)
 
-def standardize_price_per_unit(price_per_unit):
-    """
-    Standardizes the 'Price per unit' column:
-    - Removes the prefix 'Price per unit\n'.
-    - Splits price and unit where applicable.
-    - Converts prices to floats, handling 'p' and '£' cases.
-    - Converts units like 'each' and recognizes 'other' units explicitly.
-    """
-    if isinstance(price_per_unit, str):  # Ensure the input is a string
-        # Remove the prefix
-        price_per_unit = price_per_unit.replace('Price per unit\n', '').strip()
+'''
+    Cleaning and Standardizing 'Price per unit'
+    - Convert 100g to kg
+    - Convert 100ml to litre
+    - Normalize units
+'''
+def standardize_price_per_unit(value):
+    if isinstance(value, str):
+        value = value.replace('Price per unit\n', '').strip()  # Remove unwanted prefix
 
         try:
-            if '/' in price_per_unit:  # Split into price and unit
-                price_value, unit = price_per_unit.split('/')
-                price_value = price_value.replace(',', '').strip()  # Remove commas and whitespace
+            if '/' in value:  # Format: "£5.00 / kg"
+                price_value, unit = value.split('/')
+                price_value = price_value.replace(',', '').strip()
 
-                # Handle price values with 'p' or '£'
+                # Convert price value
                 if 'p' in price_value:
-                    price_value = float(price_value.replace('p', '')) / 100  # Pence to pounds
+                    price_value = float(price_value.replace('p', '').strip()) / 100
                 elif '£' in price_value:
-                    price_value = float(price_value.replace('£', ''))  # Pounds to float
+                    price_value = float(price_value.replace('£', '').strip())
 
-                # Standardize units
+                # Standardize unit
                 unit = unit.strip().lower()
-                if 'each' in unit:
-                    unit = 'each'
-                elif '100g' in unit:
-                    price_value *= 10  # 100g to kg 
+                if '100g' in unit:
+                    price_value *= 10  # Convert 100g to kg
                     unit = 'kg'
                 elif '10g' in unit:
-                    price_value *= 100  # 10g to kg
+                    price_value *= 100  # Convert 10g to kg
                     unit = 'kg'
                 elif 'kg' in unit:
                     unit = 'kg'
                 elif '100ml' in unit:
-                    price_value *= 10  # 100ml to litre
+                    price_value *= 10  # Convert 100ml to litre
                     unit = 'litre'
                 elif 'litre' in unit:
                     unit = 'litre'
                 elif 'cl' in unit:
                     price_value *= (4/3)  # Convert cl to litre
                     unit = 'litre'
+                elif 'each' in unit:
+                    unit = 'each'
                 else:
-                    unit = 'other'  # Unhandled units
+                    unit = 'other'  
 
                 return price_value, unit
 
-            elif 'each' in price_per_unit:  # Handle cases like '63.8p each' or '£5 each'
-                price_value = price_per_unit.replace('each', '').strip()
+            elif 'each' in value:  
+                price_value = value.replace('each', '').strip()
                 if 'p' in price_value:
-                    price_value = float(price_value.replace('p', '')) / 100
+                    price_value = float(price_value.replace('p', '').strip()) / 100
                 elif '£' in price_value:
-                    price_value = float(price_value.replace('£', ''))
+                    price_value = float(price_value.replace('£', '').strip())
                 return price_value, 'each'
 
-            else:  # Handle unexpected formats
-                return np.nan, 'other'
         except (ValueError, IndexError):
-            return np.nan, 'other'  # Return defaults for malformed entries
+            return np.nan, 'other'
 
-    return np.nan, np.nan  # Return defaults for non-string inputs
+    return np.nan, np.nan
 
-#Apply the function to 'Price per Unit' column
+# Apply function to standardize 'Price per Unit'
 df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(
     lambda x: pd.Series(standardize_price_per_unit(x))
 )
 
-# Filter out invalid unit values (anything not 'kg', 'litre', or 'each')
+# Keep only valid units
 df = df[df['Unit'].isin(['kg', 'litre', 'each'])]
 
-# One-hot encode the 'Unit' column
-encoder = OneHotEncoder(sparse=False, drop='if_binary')  # Drop 'unit_nan' column if it exists
-unit_encoded = encoder.fit_transform(df[['Unit']])
+'''
+    Handling NaN values in numeric columns
+    - Fill missing values with NULL equivalent (NaN)
+    - Ensure data types are correct for PostgreSQL
+'''
+numeric_columns = ['Price', 'Standardised price per unit']
 
-# Create new columns based on one-hot encoding
-unit_columns = encoder.get_feature_names_out(['Unit'])
-df[unit_columns] = unit_encoded
+for col in numeric_columns:
+    if col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors='coerce')  # Force numeric type
 
-# Drop the original 'Unit' and 'Price per Unit' columns, as they're no longer needed
-df.drop(columns=['Unit', 'Price per Unit'], inplace=True)
+# Drop 'Discount price' if it's completely empty
+if df['Discount price'].isna().all():
+    df.drop(columns=['Discount price'], inplace=True)
 
 '''
-    Saving the clean data.
+    One-Hot Encoding for 'Unit' Column
+'''
+encoder = OneHotEncoder(sparse=False, drop='if_binary')
+unit_encoded = encoder.fit_transform(df[['Unit']])
+unit_columns = encoder.get_feature_names_out(['Unit'])
+df[unit_columns] = unit_encoded
+df.drop(columns=['Unit', 'Price per Unit'], inplace=True)  # Remove original Unit columns
+
+# Ensure 'Discount price' exists and is explicitly kept
+if 'Discount price' not in df.columns:
+    df['Discount price'] = np.nan  # Recreate the column if missing
+
+# Drop only rows where 'Price' or 'Standardised price per unit' is NULL
+df.dropna(subset=['Price', 'Standardised price per unit'], inplace=True)
+
+# Ensure 'Discount price' remains, even if it's all NaN
+df['Discount price'] = df['Discount price'].astype(float)  # Keep as numeric column
+
+
+'''
+    Saving the Cleaned Data
 '''
 desktop_path = os.path.expanduser(r"C:\Users\Entwan\Desktop")
 current_date = datetime.now().strftime("%Y-%m-%d")
 csv_file_path = os.path.join(desktop_path, f"Waitrose_Clean_{current_date}.csv")
+
 df.to_csv(csv_file_path, index=False, encoding='utf-8')
 
 print(f"Data saved to {csv_file_path}")
