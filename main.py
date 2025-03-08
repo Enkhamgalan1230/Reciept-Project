@@ -6,8 +6,7 @@ from supabase import create_client, Client
 
 st.title("Hello World 👋")
 
-# Initialize connection.
-# Uses st.cache_resource to only run once.
+# Initialize connection
 @st.cache_resource
 def init_connection():
     url = st.secrets["connections"]["supabase"]["SUPABASE_URL"]
@@ -16,13 +15,20 @@ def init_connection():
 
 supabase = init_connection()
 
-# Perform query.
+# Perform query
 @st.cache_data(ttl=600)
 def run_query():
     response = supabase.table("Product").select("*").execute()
     
-    # Convert to Pandas DataFrame
-    df = pd.DataFrame(response.data) if response.data else pd.DataFrame()
+    # Debugging: Print raw response
+    st.write("Raw Response:", response)
+
+    # Convert to DataFrame
+    if response.data:
+        df = pd.DataFrame(response.data)
+    else:
+        df = pd.DataFrame(columns=["No data found"])  # Show empty DataFrame message
+
     return df
 
 # Fetch and display data
