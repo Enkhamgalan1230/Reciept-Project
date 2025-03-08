@@ -10,28 +10,21 @@ st.title("Hello World 👋")
 # Uses st.cache_resource to only run once.
 @st.cache_resource
 def init_connection():
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
+    url = st.secrets["connections"]["supabase"]["SUPABASE_URL"]
+    key = st.secrets["connections"]["supabase"]["SUPABASE_KEY"]
     return create_client(url, key)
 
 supabase = init_connection()
 
 # Perform query.
-# Uses st.cache_data to only rerun when the query changes or after 10 min.
 @st.cache_data(ttl=600)
 def run_query():
     response = supabase.table("Product").select("*").execute()
     
-    # Convert response to DataFrame
-    if response.data:  # Ensure data is not empty
-        df = pd.DataFrame(response.data)
-    else:
-        df = pd.DataFrame()  # Return empty DataFrame if no data
-
+    # Convert to Pandas DataFrame
+    df = pd.DataFrame(response.data) if response.data else pd.DataFrame()
     return df
 
-# Get the DataFrame
+# Fetch and display data
 df = run_query()
-
-# Display DataFrame in Streamlit
 st.dataframe(df)
