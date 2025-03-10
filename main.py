@@ -16,5 +16,5 @@ rows = conn.table("Product").select("*").execute()
 
 # Print results.
 for row in rows.data:
-    st.write(f"{row['Name']} has a :{row['price']}:")
+    st.write(f"{row['Name']} has a :{row['Price']}:")
 
