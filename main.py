@@ -32,6 +32,10 @@ while True:
     # Increment offset for next batch
     offset += batch_size
 
+     # Debugging: Print progress
+    st.write(f"Fetched {len(rows.data)} rows, Total: {len(all_rows)}")
+
+
 # Convert list to DataFrame
 df = pd.DataFrame(all_rows)
 
