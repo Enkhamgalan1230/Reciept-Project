@@ -7,9 +7,10 @@ import supabase
 import time
 
 st.title("Hello World 👋")
- 
+
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
+
 
 # Step 1: Get total row count dynamically
 try:
@@ -20,14 +21,18 @@ except Exception as e:
     st.write(f"Error fetching row count: {e}")
     max_rows = None
 
-# Step 2: Fetch data with pagination
+# Step 2: Fetch data with pagination and time estimation
 if max_rows:
     batch_size = 1000  # Supabase limits max 1000 per request
     offset = 0
     all_rows = []
+    
+    start_time = time.time()  # Record start time
 
-    while len(all_rows) < max_rows:  # Dynamically stop at `max_rows`
+    while len(all_rows) < max_rows:
         try:
+            batch_start_time = time.time()  # Start time for this batch
+
             # Fetch batch of data
             rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
 
@@ -42,8 +47,15 @@ if max_rows:
             # Move to next batch
             offset += batch_size
 
-            # Debugging: Print progress
+            # Calculate elapsed time and estimated remaining time
+            elapsed_time = time.time() - start_time
+            avg_time_per_batch = elapsed_time / (offset / batch_size)  # Average time per batch
+            remaining_batches = (max_rows - len(all_rows)) / batch_size
+            estimated_time_remaining = avg_time_per_batch * remaining_batches
+
+            # Debugging: Print progress and estimated time remaining
             st.write(f"Fetched {len(rows.data)} rows, Total: {len(all_rows)}")
+            st.write(f"Estimated time remaining: {estimated_time_remaining:.2f} seconds")
 
             # **Rate limit: Add delay to avoid request overload**
             time.sleep(0.5)
@@ -56,4 +68,6 @@ if max_rows:
     df = pd.DataFrame(all_rows)
 
     # Display total number of rows
+    total_time_taken = time.time() - start_time
     st.write(f"Total number of rows fetched: {df.shape[0]}")
+    st.write(f"Total time taken: {total_time_taken:.2f} seconds")
