@@ -9,14 +9,9 @@ st.title("Hello World 👋")
  
 # Fetch Data from Supabase Table
 def fetch_data():
-    response = supabase.table("your_table_name").select("*").execute()
+    response = supabase.table("Product").select("*").execute()
     return response.data
 
-# Insert Data into Supabase
-def insert_data(name, age):
-    response = supabase.table("your_table_name").insert({"name": name, "age": age}).execute()
-    return response
-    
 # Display Data
 if st.button("Fetch Data"):
     data = fetch_data()
