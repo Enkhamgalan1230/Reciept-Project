@@ -6,8 +6,8 @@ from supabase import create_client, Client
 import supabase
 
 
-# Define batch size
-batch_size = 10000  # Fetch 10,000 rows per request
+# Define batch size (e.g., 10,000 rows at a time)
+batch_size = 10000
 offset = 0
 all_rows = []
 
@@ -22,18 +22,18 @@ while True:
     # Fetch batch of data
     rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
 
-    # Break loop if no more data
+    # If no more data, stop loop
     if not rows.data:
         break
 
-    # Append to list
+    # Append batch to list
     all_rows.extend(rows.data)
 
-    # Increment offset
+    # Increment offset to fetch next batch
     offset += batch_size
 
-# Convert to DataFrame
+# Convert list to DataFrame
 df = pd.DataFrame(all_rows)
 
 # Display total rows
-st.write(f"Total number of rows: {df.shape[0]}")
+st.write(f"Total number of rows fetched: {df.shape[0]}")
