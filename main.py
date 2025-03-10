@@ -5,23 +5,35 @@ from st_supabase_connection import SupabaseConnection
 from supabase import create_client, Client
 import supabase
 
+
+# Define batch size
+batch_size = 10000  # Fetch 10,000 rows per request
+offset = 0
+all_rows = []
+
+
 st.title("Hello World 👋")
  
 # Fetch Data from Supabase Table
 # Initialize connection.
 conn = st.connection("supabase",type=SupabaseConnection)
 
-# Perform query.
-rows = conn.table("Product").select("*").execute()
+while True:
+    # Fetch batch of data
+    rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
+
+    # Break loop if no more data
+    if not rows.data:
+        break
+
+    # Append to list
+    all_rows.extend(rows.data)
+
+    # Increment offset
+    offset += batch_size
 
 # Convert to DataFrame
-df = pd.DataFrame(rows.data)
+df = pd.DataFrame(all_rows)
 
-# Display the DataFrame
-st.write(df)
-
-# Get the number of rows
-num_rows = df.shape[0]
-
-# Display the row count in Streamlit
-st.write(f"Total number of rows: {num_rows}")
+# Display total rows
+st.write(f"Total number of rows: {df.shape[0]}")
