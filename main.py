@@ -69,3 +69,8 @@ if max_rows:
     total_time_taken = time.time() - start_time
     st.write(f"Total number of rows fetched: {df.shape[0]}")
     st.write(f"Total time taken: {total_time_taken:.2f} seconds")
+
+    st.write(df.head())
+    st.write(df.tail())
+
+    
