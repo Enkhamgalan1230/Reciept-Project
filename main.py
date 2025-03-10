@@ -14,7 +14,8 @@ conn = st.connection("supabase",type=SupabaseConnection)
 # Perform query.
 rows = conn.table("Product").select("*").execute()
 
-# Print results.
-for row in rows.data:
-    st.write(f"{row['Name']} has a :{row['Price']}:")
+# Convert to DataFrame
+df = pd.DataFrame(rows.data)
 
+# Display the DataFrame
+st.write(df)
