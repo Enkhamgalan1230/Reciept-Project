@@ -7,7 +7,7 @@ import supabase
 
 
 # Define batch size (e.g., 10,000 rows at a time)
-batch_size = 10000
+batch_size = 5000
 offset = 0
 all_rows = []
 
@@ -29,7 +29,7 @@ while True:
     # Append batch to list
     all_rows.extend(rows.data)
 
-    # Increment offset to fetch next batch
+    # Increment offset for next batch
     offset += batch_size
 
 # Convert list to DataFrame
