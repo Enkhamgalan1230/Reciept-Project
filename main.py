@@ -35,5 +35,9 @@ while True:
 # Convert list to DataFrame
 df = pd.DataFrame(all_rows)
 
+
 # Display total rows
 st.write(f"Total number of rows fetched: {df.shape[0]}")
+
+st.write(df.head(10))
+st.write(df.tail(10))
