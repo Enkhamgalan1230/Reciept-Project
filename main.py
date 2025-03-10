@@ -5,42 +5,54 @@ from st_supabase_connection import SupabaseConnection
 from supabase import create_client, Client
 import supabase
 
+st.title("Hello World 👋")
+ 
+# Initialize Supabase connection
+conn = st.connection("supabase", type=SupabaseConnection)
 
-# Define batch size (e.g., 10,000 rows at a time)
-batch_size = 5000
+# Step 1: Get total row count dynamically
+row_count_result = conn.table("Product").select("id", count="exact").execute()
+max_rows = row_count_result.count  # Total rows in the database
+
+st.write(f"Total rows in database: {max_rows}")  # Debugging
+
+# Step 2: Fetch data with pagination
+batch_size = 1000  # Supabase limits max 1000 per request
 offset = 0
 all_rows = []
 
+while len(all_rows) < max_rows:  # Dynamically stop at `max_rows`
+    try:
+        # Fetch batch of data
+        rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
 
-st.title("Hello World 👋")
- 
-# Fetch Data from Supabase Table
-# Initialize connection.
-conn = st.connection("supabase",type=SupabaseConnection)
+        # If no more data, stop fetching
+        if not rows.data:
+            st.write(f"Stopped fetching at offset {offset}")
+            break
 
-while True:
-    # Fetch batch of data
-    rows = conn.table("Product").select("*").limit(5000).execute()
-    # If no more data, stop loop
-    if not rows.data:
-        break
+        # Append batch while ensuring we don’t exceed max_rows
+        for row in rows.data:
+            if len(all_rows) < max_rows:  # Avoid exceeding row count
+                all_rows.append(row)
+            else:
+                break  # Stop once max_rows is reached
 
-    # Append batch to list
-    all_rows.extend(rows.data)
+        # Move to next batch
+        offset += batch_size
 
-    # Increment offset for next batch
-    offset += batch_size
+        # Debugging: Print progress
+        st.write(f"Fetched {len(rows.data)} rows, Total: {len(all_rows)}")
 
-     # Debugging: Print progress
-    st.write(f"Fetched {len(rows.data)} rows, Total: {len(all_rows)}")
+        # **Rate limit: Add delay to avoid request overload**
+        time.sleep(0.5)
 
+    except Exception as e:
+        st.write(f"Error at offset {offset}: {e}")
+        break  # Stop fetching on error to prevent excessive requests
 
 # Convert list to DataFrame
 df = pd.DataFrame(all_rows)
 
-
-# Display total rows
+# Display total number of rows
 st.write(f"Total number of rows fetched: {df.shape[0]}")
-
-st.write(df.head(10))
-st.write(df.tail(100))
