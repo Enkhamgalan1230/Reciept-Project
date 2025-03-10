@@ -19,3 +19,9 @@ df = pd.DataFrame(rows.data)
 
 # Display the DataFrame
 st.write(df)
+
+# Get the number of rows
+num_rows = df.shape[0]
+
+# Display the row count in Streamlit
+st.write(f"Total number of rows: {num_rows}")
