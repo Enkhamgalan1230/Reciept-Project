@@ -8,11 +8,13 @@ import supabase
 st.title("Hello World 👋")
  
 # Fetch Data from Supabase Table
-def fetch_data():
-    response = supabase.table("Product").select("*").execute()
-    return response.data
+# Initialize connection.
+conn = st.connection("supabase",type=SupabaseConnection)
 
-# Display Data
-if st.button("Fetch Data"):
-    data = fetch_data()
-    st.write(data)
+# Perform query.
+rows = conn.table("Product").select("*").execute()
+
+# Print results.
+for row in rows.data:
+    st.write(f"{row['Name']} has a :{row['price']}:")
+
