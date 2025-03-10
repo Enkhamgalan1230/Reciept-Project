@@ -16,7 +16,8 @@ conn = st.connection("supabase", type=SupabaseConnection)
 try:
     row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
     max_rows = row_count_result.count  # Extract total row count
-    st.write(f"Total rows in database: {max_rows}")  # Debugging
+    st.write(f"There are {max_rows} rows currentcly in database.")  # Debugging
+    st.write(f"There is a 1000 rows limit to fetch the data from the database and it takes approximately 0.85seconds. So please bare with us 😊")
 except Exception as e:
     st.write(f"Error fetching row count: {e}")
     max_rows = None
@@ -38,7 +39,7 @@ if max_rows:
 
             # If no more data, stop fetching
             if not rows.data:
-                st.write(f"Stopped fetching at offset {offset}")
+                #st.write(f"Stopped fetching at offset {offset}")
                 break
 
             # Append batch while ensuring we don’t exceed max_rows
@@ -54,9 +55,6 @@ if max_rows:
             estimated_time_remaining = avg_time_per_batch * remaining_batches
 
             # Debugging: Print progress and estimated time remaining
-            st.write(f"Fetched {len(rows.data)} rows, Total: {len(all_rows)}")
-            st.write(f"Estimated time remaining: {estimated_time_remaining:.2f} seconds")
-
             # **Rate limit: Add delay to avoid request overload**
             time.sleep(0.5)
 
