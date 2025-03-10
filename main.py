@@ -20,8 +20,7 @@ conn = st.connection("supabase",type=SupabaseConnection)
 
 while True:
     # Fetch batch of data
-    rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
-
+    rows = conn.table("Product").select("*").limit(5000).execute()
     # If no more data, stop loop
     if not rows.data:
         break
