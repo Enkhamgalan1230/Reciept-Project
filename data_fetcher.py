@@ -7,17 +7,16 @@ from streamlit.connections import SupabaseConnection
 conn = st.connection("supabase", type=SupabaseConnection)
 
 @st.cache_data
-def fetch_data():
+def fetch_data_with_progress():
+    """Fetch data from Supabase with a progress bar if needed."""
     try:
         # Step 1: Get total row count dynamically
         row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
         max_rows = row_count_result.count
-        st.write(f"There are {max_rows} rows currently in the database.")
-
-        # Step 2: Fetch data with pagination
         batch_size = 1000
-        total_batches = (max_rows + batch_size - 1) // batch_size
+        total_batches = (max_rows + batch_size - 1) // batch_size  # Round up
 
+        # Progress bar (only shows if used in `2_second.py`)
         progress_bar = st.progress(0)
         progress_text = st.empty()
 
@@ -26,6 +25,7 @@ def fetch_data():
 
         for batch in range(1, total_batches + 1):
             try:
+                # Fetch batch of data
                 rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
 
                 if not rows.data:
@@ -40,15 +40,13 @@ def fetch_data():
 
                 progress_text.write(f"Fetching batch {batch}/{total_batches}...")
 
-                time.sleep(0.5)
+                time.sleep(0.5)  # Avoid request overload
 
             except Exception as e:
                 st.write(f"Error at batch {batch}, offset {offset}: {e}")
                 break
 
         df = pd.DataFrame(all_rows)
-        st.write("✅ Data fetching completed!")
-
         return df
 
     except Exception as e:

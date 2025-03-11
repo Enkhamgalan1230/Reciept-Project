@@ -6,7 +6,7 @@ from supabase import create_client, Client
 import supabase
 import time
 
-st.title("Welcome to Reciept👋")
+st.title("Welcome to Reciept 👋")
 
 
     

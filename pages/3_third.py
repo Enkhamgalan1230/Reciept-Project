@@ -1,11 +1,13 @@
 import streamlit as st
-import mysql.connector
-import pandas as pd
-from st_supabase_connection import SupabaseConnection
-from supabase import create_client, Client
-import supabase
-import time
-from data_fetcher import fetch_data
+import streamlit as st
+
+st.title("3 👋")
 
 
-st.dataframe(df.head())  # Show first few rows
+# Check if df is stored in session state
+if "df" in st.session_state:
+    df = st.session_state.df  # Retrieve cached data
+    st.write("📈 Product Statistics:")
+    st.write(df.describe())  # Show statistics
+else:
+    st.write("⚠️ No data available. Please visit the Data Analysis page first.")
