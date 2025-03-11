@@ -9,28 +9,17 @@ import time
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
 
-# Use session state to store data
-if "fetched_data" not in st.session_state:
-    st.session_state.fetched_data = None  # Data storage
-    st.session_state.fetching_done = False  # Fetching status
-
-# Display status
-if st.session_state.fetching_done:
-    st.write("✅ Data fetching already completed. Using stored data.")
-    df = st.session_state.fetched_data
-else:
-    # Step 1: Get total row count dynamically
+# Function to fetch data (runs only once)
+@st.cache_data  # Caches the result, preventing re-fetching across pages
+def fetch_data():
     try:
+        # Step 1: Get total row count dynamically
         row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
         max_rows = row_count_result.count  # Extract total row count
         st.write(f"There are {max_rows} rows currently in the database.")
         st.write("There is a 1000-row limit per request, so fetching will take some time. 😊")
-    except Exception as e:
-        st.write(f"Error fetching row count: {e}")
-        max_rows = None
-
-    # Step 2: Fetch data with pagination and progress bar
-    if max_rows:
+        
+        # Step 2: Fetch data with pagination
         batch_size = 1000  # Supabase allows max 1000 per request
         total_batches = (max_rows + batch_size - 1) // batch_size  # Ensures we round up
 
@@ -70,15 +59,25 @@ else:
                 st.write(f"Error at batch {batch}, offset {offset}: {e}")
                 break  # Stop fetching on error
 
-        # Store data in session state
-        st.session_state.fetched_data = pd.DataFrame(all_rows)
-        st.session_state.fetching_done = True  # Mark as completed
-
-        # Final message
+        # Convert list to DataFrame
+        df = pd.DataFrame(all_rows)
         st.write("✅ Data fetching completed!")
 
-        # Use stored data
-        df = st.session_state.fetched_data
+        return df  # Cache the DataFrame
+
+    except Exception as e:
+        st.write(f"Error fetching data: {e}")
+        return None
+
+# Load data (runs only once per session)
+df = fetch_data()
+
+# Display fetched data
+if df is not None:
+    st.write("✅ Data loaded successfully!")
+    st.dataframe(df.head())  # Show first few rows
+else:
+    st.write("⚠️ No data available.")
 
     st.write(df.head())
     st.write(df.tail())
