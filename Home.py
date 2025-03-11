@@ -22,7 +22,7 @@ home_page = st.Page(
 )
 
 data = st.Page(
-    page = "pages/2_data_overview.py",
+    page = "pages/2_data.py",
     title= "Data",
     icon = "📈"
 )
@@ -45,13 +45,21 @@ page_5 = st.Page(
     icon = "❤️"
 )
 
+data_collection = st.Page(
+    page = "pages/data_collection.py",
+    title= "Data Collection",
+    icon = "💾"
+)
+
 pg = st.navigation(
     {
         "Info": [home_page],
-        "Project":[data, page_3,page_4,page_5]
+        "Project":{
+            "Data":[data,data_collection],
+            "Main Logics": [page_3,page_4,page_5]
+        }
     }
 )
 st.logo("assets/logo_longer.png",icon_image="assets/logo.png", size= "large")
-st.sidebar.text("Made by Entwan Enkhbayar")
 
 pg.run()

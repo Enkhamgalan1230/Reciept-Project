@@ -81,7 +81,7 @@ if df is not None:
 
     # Show first few rows
     st.subheader("📊 Sample Data")
-    st.dataframe(df.head())
+    st.dataframe(df.head(10))
 
     # Show key statistics
     st.subheader("📈 Dataset Overview")
