@@ -76,9 +76,9 @@ if "df" not in st.session_state:
 else:
     df = st.session_state.df  # Load cached data
 
-# Display fetched data
 if df is not None:
-    st.write("✅ Data loaded successfully!")
+    st.write("✅ **Data loaded successfully!**")
+
     # Show first few rows
     st.subheader("📊 Sample Data")
     st.dataframe(df.head())
@@ -98,37 +98,42 @@ if df is not None:
     top_expensive = df.nlargest(5, "Price")[["Name", "Price", "Store_Name"]]
     st.table(top_expensive)
 
-    # Price Distribution Plot
-    st.subheader("📊 Price Distribution")
-    fig, ax = plt.subplots()
-    df["Price"].hist(bins=30, edgecolor="black", alpha=0.7, ax=ax)
-    ax.set_xlabel("Price (£)")
-    ax.set_ylabel("Frequency")
-    ax.set_title("Distribution of Product Prices")
-    st.pyplot(fig)
+    # Function to create styled, minimal plots
+    def create_styled_plot(fig, ax, title, xlabel, ylabel):
+        fig.set_size_inches(6, 3)  # Smaller size for minimal look
+        ax.set_title(title, fontsize=12, fontweight="bold", color="#333333")
+        ax.set_xlabel(xlabel, fontsize=10, color="#555555")
+        ax.set_ylabel(ylabel, fontsize=10, color="#555555")
+        ax.grid(axis="y", linestyle="--", alpha=0.6)
+        plt.xticks(fontsize=9, color="#444444")
+        plt.yticks(fontsize=9, color="#444444")
+        plt.tight_layout()
 
-    # Price Trends Over Time
+    # 📊 Price Distribution Plot
+    st.subheader("📊 Price Distribution")
+    fig1, ax1 = plt.subplots()
+    df["Price"].hist(bins=30, edgecolor="black", alpha=0.7, ax=ax1, color="#3498db")  # Blue bars
+    create_styled_plot(fig1, ax1, "Distribution of Product Prices", "Price (£)", "Frequency")
+    st.pyplot(fig1)
+
+    # 📈 Price Trends Over Time
     st.subheader("📅 Price Trends Over Time")
     df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])  # Create Date column
     avg_price_trend = df.groupby("Date")["Price"].mean()
 
-    fig, ax = plt.subplots()
-    avg_price_trend.plot(ax=ax)
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Average Price (£)")
-    ax.set_title("Average Price Over Time")
-    st.pyplot(fig)
+    fig2, ax2 = plt.subplots()
+    avg_price_trend.plot(ax=ax2, color="#2ecc71", linewidth=2)  # Green line
+    create_styled_plot(fig2, ax2, "Average Price Over Time", "Date", "Average Price (£)")
+    st.pyplot(fig2)
 
-    # Price Comparison Across Stores
+    # 🏪 Price Comparison Across Stores
     st.subheader("🏪 Price Comparison Across Stores")
     avg_price_per_store = df.groupby("Store_Name")["Price"].mean().sort_values()
 
-    fig, ax = plt.subplots()
-    avg_price_per_store.plot(kind="barh", ax=ax, color="skyblue")
-    ax.set_xlabel("Average Price (£)")
-    ax.set_ylabel("Store Name")
-    ax.set_title("Average Price Per Store")
-    st.pyplot(fig)
+    fig3, ax3 = plt.subplots()
+    avg_price_per_store.plot(kind="barh", ax=ax3, color="#f39c12")  # Orange bars
+    create_styled_plot(fig3, ax3, "Average Price Per Store", "Average Price (£)", "Store Name")
+    st.pyplot(fig3)
 else:
     st.write("⚠️ No data available.")
 
