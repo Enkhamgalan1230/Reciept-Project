@@ -12,7 +12,12 @@ st.title("📊 Data")
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
 
-# Initialize game session state (if not already set)
+# Ensure data is only fetched once
+if "df" not in st.session_state:
+    st.session_state.df = None
+    st.session_state.data_fetched = False  # Flag to track if data was already fetched
+
+# Initialize game session state (only if not set)
 if "target_number" not in st.session_state:
     st.session_state.target_number = random.randint(1, 100)
     st.session_state.attempts_left = 5
@@ -56,10 +61,8 @@ def play_number_guessing_game():
             st.session_state.game_over = False
             st.rerun()  # Only restart the game, not fetch data
 
-# Only fetch data if it's not already stored in session state
-if "df" not in st.session_state:
-    st.session_state.show_game = True  # Show game while loading
-
+# Fetch data only once
+if not st.session_state.data_fetched:
     @st.cache_data  # Cache the fetched data
     def fetch_data():
         try:
@@ -109,19 +112,17 @@ if "df" not in st.session_state:
             return None
 
     # Show game while loading
-    if st.session_state.show_game:
+    if not st.session_state.data_fetched:
         play_number_guessing_game()
 
     # Fetch and store in session state
     df = fetch_data()
     st.session_state.df = df  
-    st.session_state.show_game = False  # Hide game after fetching
-else:
-    df = st.session_state.df  
+    st.session_state.data_fetched = True  # Mark as fetched to prevent re-fetching
 
 # Display fetched data
-if df is not None:
+if st.session_state.df is not None:
     st.write("✅ Data loaded successfully!")
-    st.dataframe(df.head())  
+    st.dataframe(st.session_state.df.head())  
 else:
     st.write("⚠️ No data available.")
