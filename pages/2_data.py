@@ -6,6 +6,7 @@ from supabase import create_client, Client
 import supabase
 import time
 import matplotlib.pyplot as plt
+import plotly.express as px
 
 
 st.title("📊 Data")
@@ -121,42 +122,32 @@ if df is not None:
     # Display as table
     st.table(top_expensive)
 
-    # Function to create styled, minimal, and smaller plots
-    def create_styled_plot(fig, ax, title, xlabel, ylabel):
-        fig.set_size_inches(5, 2.5)  # Smaller size for a minimal look
-        ax.set_title(title, fontsize=11, fontweight="bold", color="#333333", pad=10)
-        ax.set_xlabel(xlabel, fontsize=9, color="#555555", labelpad=5)
-        ax.set_ylabel(ylabel, fontsize=9, color="#555555", labelpad=5)
-        ax.grid(axis="y", linestyle="--", alpha=0.6)
-        plt.xticks(fontsize=8, color="#444444", rotation=20)  # Rotate x-axis labels slightly
-        plt.yticks(fontsize=8, color="#444444")
-        plt.tight_layout(pad=1)  # Reduce padding for compact display
-
-    # 📊 Price Distribution Plot (Smaller)
+    # 📊 Price Distribution Plot
     st.subheader("📊 Price Distribution")
-    fig1, ax1 = plt.subplots()
-    df["Price"].hist(bins=30, edgecolor="black", alpha=0.7, ax=ax1, color="#3498db")  # Blue bars
-    create_styled_plot(fig1, ax1, "Distribution of Product Prices", "Price (£)", "Frequency")
-    st.pyplot(fig1)
+    fig1 = px.histogram(df, x="Price", nbins=30, title="Distribution of Product Prices", 
+                        color_discrete_sequence=["#3498db"], template="plotly_white")
+    st.plotly_chart(fig1, use_container_width=True)
 
-    # 📈 Price Trends Over Time (Compact)
-    st.subheader("📅 Price Trends Over Time")
-    df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])  # Create Date column
-    avg_price_trend = df.groupby("Date")["Price"].mean()
+    # 📈 Price Trends Over Time
+    st.subheader("📉 Price Trends Over Time")
+    avg_price_trend = df.groupby("Date")["Price"].mean().reset_index()
+    fig2 = px.line(avg_price_trend, x="Date", y="Price", title="Average Price Over Time", 
+                line_shape="spline", color_discrete_sequence=["#2ecc71"], template="plotly_white")
+    st.plotly_chart(fig2, use_container_width=True)
 
-    fig2, ax2 = plt.subplots()
-    avg_price_trend.plot(ax=ax2, color="#2ecc71", linewidth=2)  # Green line
-    create_styled_plot(fig2, ax2, "Average Price Over Time", "Date", "Average Price (£)")
-    st.pyplot(fig2)
+    # 🛍️ Average Price by Category
+    st.subheader("🛍️ Average Price by Category")
+    avg_price_category = df.groupby("Category")["Price"].mean().reset_index()
+    fig3 = px.bar(avg_price_category, x="Category", y="Price", title="Average Price by Category", 
+                color="Category", color_discrete_sequence=px.colors.qualitative.Vivid, template="plotly_white")
+    st.plotly_chart(fig3, use_container_width=True)
 
-    # 🏪 Price Comparison Across Stores (Smaller)
+    # 🏪 Price Comparison Across Stores
     st.subheader("🏪 Price Comparison Across Stores")
-    avg_price_per_store = df.groupby("Store_Name")["Price"].mean().sort_values()
-
-    fig3, ax3 = plt.subplots()
-    avg_price_per_store.plot(kind="barh", ax=ax3, color="#f39c12")  # Orange bars
-    create_styled_plot(fig3, ax3, "Average Price Per Store", "Average Price (£)", "Store Name")
-    st.pyplot(fig3)
+    avg_price_per_store = df.groupby("Store_Name")["Price"].mean().reset_index()
+    fig4 = px.bar(avg_price_per_store, x="Store_Name", y="Price", title="Average Price Per Store", 
+                color="Store_Name", color_discrete_sequence=px.colors.qualitative.Set2, template="plotly_white")
+    st.plotly_chart(fig4, use_container_width=True)
 else:
     st.write("⚠️ No data available.")
 
