@@ -121,25 +121,25 @@ if df is not None:
     # Display as table
     st.table(top_expensive)
 
-    # Function to create styled, minimal plots
+    # Function to create styled, minimal, and smaller plots
     def create_styled_plot(fig, ax, title, xlabel, ylabel):
-        fig.set_size_inches(6, 3)  # Smaller size for minimal look
-        ax.set_title(title, fontsize=12, fontweight="bold", color="#333333")
-        ax.set_xlabel(xlabel, fontsize=10, color="#555555")
-        ax.set_ylabel(ylabel, fontsize=10, color="#555555")
+        fig.set_size_inches(5, 2.5)  # Smaller size for a minimal look
+        ax.set_title(title, fontsize=11, fontweight="bold", color="#333333", pad=10)
+        ax.set_xlabel(xlabel, fontsize=9, color="#555555", labelpad=5)
+        ax.set_ylabel(ylabel, fontsize=9, color="#555555", labelpad=5)
         ax.grid(axis="y", linestyle="--", alpha=0.6)
-        plt.xticks(fontsize=9, color="#444444")
-        plt.yticks(fontsize=9, color="#444444")
-        plt.tight_layout()
+        plt.xticks(fontsize=8, color="#444444", rotation=20)  # Rotate x-axis labels slightly
+        plt.yticks(fontsize=8, color="#444444")
+        plt.tight_layout(pad=1)  # Reduce padding for compact display
 
-    # 📊 Price Distribution Plot
+    # 📊 Price Distribution Plot (Smaller)
     st.subheader("📊 Price Distribution")
     fig1, ax1 = plt.subplots()
     df["Price"].hist(bins=30, edgecolor="black", alpha=0.7, ax=ax1, color="#3498db")  # Blue bars
     create_styled_plot(fig1, ax1, "Distribution of Product Prices", "Price (£)", "Frequency")
     st.pyplot(fig1)
 
-    # 📈 Price Trends Over Time
+    # 📈 Price Trends Over Time (Compact)
     st.subheader("📅 Price Trends Over Time")
     df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])  # Create Date column
     avg_price_trend = df.groupby("Date")["Price"].mean()
@@ -149,7 +149,7 @@ if df is not None:
     create_styled_plot(fig2, ax2, "Average Price Over Time", "Date", "Average Price (£)")
     st.pyplot(fig2)
 
-    # 🏪 Price Comparison Across Stores
+    # 🏪 Price Comparison Across Stores (Smaller)
     st.subheader("🏪 Price Comparison Across Stores")
     avg_price_per_store = df.groupby("Store_Name")["Price"].mean().sort_values()
 
