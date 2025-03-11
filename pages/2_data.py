@@ -79,6 +79,7 @@ else:
 
 if df is not None:
     st.write("✅ **Data loaded successfully!**")
+    st.markdown("---")
 
     # 🔹 Create "Date" Column
     if {"Year", "Month", "Day"}.issubset(df.columns):
