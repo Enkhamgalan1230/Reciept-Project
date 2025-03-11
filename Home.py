@@ -13,30 +13,43 @@ st.set_page_config(
     layout="wide"  # Optionally, set layout to 'wide' or 'centered'
 )
 
-st.title("Welcome to Reciept 👋")
+# Page Setup
 
-st.markdown("---")
+home_page = st.Page(
+    page = "pages/1_home.py",
+    title= "Home Page",
+    icon = "🏠"
+)
 
-# Create two columns
-col1, col2 = st.columns([1, 2], vertical_alignment="center", gap= "small")  # Adjust column ratio (1:2 for better alignment)
+data = st.Page(
+    page = "pages/2_data_overview.py",
+    title= "Data",
+    icon = "📈"
+)
 
-# Left Column: Image
-with col1:
-    st.image("logo.png") 
-    
-# Right Column: Text
-with col2:
-    st.markdown(
-        """
-        #### What is Reciept 🤔?
+page_3 = st.Page(
+    page = "pages/3_third.py",
+    title= "Third",
+    icon = "❤️"
+)
 
-        On tight budget this week?
-        
-        By analysing grocery prices across five different supermarkets, predicting and alerting users to potential price changes, 
-        providing weekly price inflation status updates, and generating a personalised shopping list, 
-        this app will help users manage their spending and make well-informed decisions 🚀.
-        """
-    )
+page_4 = st.Page(
+    page = "pages/4_fourth.py",
+    title= "Fourth",
+    icon = "❤️"
+)
 
-# Divider
-st.markdown("---")
+page_5 = st.Page(
+    page = "pages/5_fifth.py",
+    title= "Home Page",
+    icon = "❤️"
+)
+
+pg = st.navigation(
+    {
+        "Info": [home_page],
+        "Project":[data, page_3,page_4,page_5]
+    }
+)
+
+pg.run()
