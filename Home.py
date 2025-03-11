@@ -8,8 +8,8 @@ import time
 
 # Set page title and icon
 st.set_page_config(
-    page_title="Home",  # Set the title in the navigation bar
-    page_icon="🏠",  # Set a custom icon (optional)
+    page_title="Reciept",  # Set the title in the navigation bar
+    page_icon="📃",  # Set a custom icon (optional)
     layout="wide"  # Optionally, set layout to 'wide' or 'centered'
 )
 
