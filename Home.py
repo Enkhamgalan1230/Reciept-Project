@@ -15,9 +15,10 @@ st.set_page_config(
 
 st.title("Welcome to Reciept 👋")
 
-st.write(" ")
+st.markdown("---")
+
 # Create two columns
-col1, col2 = st.columns([1, 2], vertical_alignment="center")  # Adjust column ratio (1:2 for better alignment)
+col1, col2 = st.columns([1, 2], vertical_alignment="center", gap= "small")  # Adjust column ratio (1:2 for better alignment)
 
 # Left Column: Image
 with col1:
