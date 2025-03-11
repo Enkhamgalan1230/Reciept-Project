@@ -6,6 +6,9 @@ from supabase import create_client, Client
 import supabase
 import time
 
+st.set_page_config(
+        page_title="Home Page 🏠",
+)
 st.title("Welcome to Reciept 👋")
 
 
