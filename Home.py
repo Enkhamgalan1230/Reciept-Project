@@ -21,9 +21,7 @@ col1, col2 = st.columns([1, 2])  # Adjust column ratio (1:2 for better alignment
 
 # Left Column: Image
 with col1:
-    gif_url = "https://tenor.com/en-GB/view/hmm-gif-9355968"  # Replace with your GIF file path or URL
-    st.markdown(f'<img src="{gif_url}" width="150" style="border-radius:50%;">', unsafe_allow_html=True)
-
+    st.image("page.png", width=150) 
 # Right Column: Text
 with col2:
     st.markdown(
