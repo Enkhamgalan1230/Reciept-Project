@@ -97,7 +97,7 @@ if df is not None:
     # Top 5 Most Expensive Products
     st.subheader("💰 Top 5 Most Expensive Products")
 
-    # Determine unit type (each, kg, litre)
+    # Function to determine the unit type (Each, Per kg, Per litre)
     def get_unit(row):
         if row["Unit_each"] == 1:
             return "Each"
@@ -109,8 +109,14 @@ if df is not None:
 
     df["Unit Type"] = df.apply(get_unit, axis=1)
 
-    # Select top 5 expensive products and include the unit type
-    top_expensive = df.nlargest(5, "Price")[["Name", "Price", "Store_Name", "Unit Type"]]
+    # Drop exact duplicates (same product, price, store, and unit type)
+    df_unique = df.drop_duplicates(subset=["Name", "Price", "Store_Name", "Unit Type"])
+
+    # Get the Top 5 Most Expensive Products (without duplicate product names)
+    top_expensive = df_unique.sort_values(by="Price", ascending=False).drop_duplicates(subset=["Name"]).head(5)
+
+    # Select relevant columns
+    top_expensive = top_expensive[["Name", "Price", "Store_Name", "Unit Type"]]
 
     # Display as table
     st.table(top_expensive)
