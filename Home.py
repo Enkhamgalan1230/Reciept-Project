@@ -54,10 +54,9 @@ data_collection = st.Page(
 pg = st.navigation(
     {
         "Info": [home_page],
-        "Project":{
-            "Data":[data,data_collection],
-            "Main Logics": [page_3,page_4,page_5]
-        }
+        "Data":[data,data_collection],
+        "Main Logics": [page_3,page_4,page_5]
+        
     }
 )
 st.logo("assets/logo_longer.png",icon_image="assets/logo.png", size= "large")
