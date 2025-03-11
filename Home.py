@@ -27,7 +27,7 @@ with col1:
 with col2:
     st.markdown(
         """
-        # What is Reciept 🤔?
+        #### What is Reciept 🤔?
 
         On tight budget this week?
         
