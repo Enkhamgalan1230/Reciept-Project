@@ -9,62 +9,76 @@ import time
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
 
-# Step 1: Get total row count dynamically
-try:
-    row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
-    max_rows = row_count_result.count  # Extract total row count
-    st.write(f"There are {max_rows} rows currently in the database.")
-    st.write("There is a 1000-row limit per request, so fetching will take some time. 😊")
-except Exception as e:
-    st.write(f"Error fetching row count: {e}")
-    max_rows = None
+# Use session state to store data
+if "fetched_data" not in st.session_state:
+    st.session_state.fetched_data = None  # Data storage
+    st.session_state.fetching_done = False  # Fetching status
 
-# Step 2: Fetch data with pagination and progress bar
-if max_rows:
-    batch_size = 1000  # Supabase allows max 1000 per request
-    total_batches = (max_rows + batch_size - 1) // batch_size  # Ensures we round up
+# Display status
+if st.session_state.fetching_done:
+    st.write("✅ Data fetching already completed. Using stored data.")
+    df = st.session_state.fetched_data
+else:
+    # Step 1: Get total row count dynamically
+    try:
+        row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
+        max_rows = row_count_result.count  # Extract total row count
+        st.write(f"There are {max_rows} rows currently in the database.")
+        st.write("There is a 1000-row limit per request, so fetching will take some time. 😊")
+    except Exception as e:
+        st.write(f"Error fetching row count: {e}")
+        max_rows = None
 
-    # Create progress bar
-    progress_bar = st.progress(0)  # Initial progress
-    progress_text = st.empty()  # Placeholder for progress text
+    # Step 2: Fetch data with pagination and progress bar
+    if max_rows:
+        batch_size = 1000  # Supabase allows max 1000 per request
+        total_batches = (max_rows + batch_size - 1) // batch_size  # Ensures we round up
 
-    all_rows = []
-    offset = 0
+        # Create progress bar
+        progress_bar = st.progress(0)  # Initial progress
+        progress_text = st.empty()  # Placeholder for progress text
 
-    for batch in range(1, total_batches + 1):
-        try:
-            # Fetch batch of data
-            rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
+        all_rows = []
+        offset = 0
 
-            # If no more data, stop fetching
-            if not rows.data:
-                break
+        for batch in range(1, total_batches + 1):
+            try:
+                # Fetch batch of data
+                rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
 
-            # Append batch while ensuring we don’t exceed max_rows
-            all_rows.extend(rows.data)
+                # If no more data, stop fetching
+                if not rows.data:
+                    break
 
-            # Move to next batch
-            offset += batch_size
+                # Append batch while ensuring we don’t exceed max_rows
+                all_rows.extend(rows.data)
 
-            # Update progress bar (each fetch = 1 step)
-            progress_percentage = batch / total_batches
-            progress_bar.progress(min(progress_percentage, 1.0))  # Ensure max value is 100%
+                # Move to next batch
+                offset += batch_size
 
-            # Update progress text
-            progress_text.write(f"Fetching batch {batch}/{total_batches}...")
+                # Update progress bar (each fetch = 1 step)
+                progress_percentage = batch / total_batches
+                progress_bar.progress(min(progress_percentage, 1.0))  # Ensure max value is 100%
 
-            # **Rate limit: Add delay to avoid request overload**
-            time.sleep(0.5)
+                # Update progress text
+                progress_text.write(f"Fetching batch {batch}/{total_batches}...")
 
-        except Exception as e:
-            st.write(f"Error at batch {batch}, offset {offset}: {e}")
-            break  # Stop fetching on error
+                # **Rate limit: Add delay to avoid request overload**
+                time.sleep(0.5)
 
-    # Final message
-    st.write("✅ Data fetching completed!")
+            except Exception as e:
+                st.write(f"Error at batch {batch}, offset {offset}: {e}")
+                break  # Stop fetching on error
 
-    # Convert list to DataFrame
-    df = pd.DataFrame(all_rows)
+        # Store data in session state
+        st.session_state.fetched_data = pd.DataFrame(all_rows)
+        st.session_state.fetching_done = True  # Mark as completed
+
+        # Final message
+        st.write("✅ Data fetching completed!")
+
+        # Use stored data
+        df = st.session_state.fetched_data
 
     st.write(df.head())
     st.write(df.tail())
