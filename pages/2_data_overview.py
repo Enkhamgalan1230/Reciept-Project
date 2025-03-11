@@ -9,6 +9,8 @@ import time
 
 st.title("📊 Data")
 
+st.markdown("---")
+
 
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
@@ -22,7 +24,8 @@ if "df" not in st.session_state:
             row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
             max_rows = row_count_result.count
             st.write(f"There are {max_rows} rows currently in the database.")
-            st.write("There is a 1000-row limit per request, so fetching will take some time. 😊")
+            st.write("#### We are using Supabase and there is a 1000-row limit per request, so fetching will take some time. "
+            " Please bare with us 😊")
 
             # Step 2: Fetch data with pagination
             batch_size = 1000
