@@ -80,25 +80,25 @@ else:
 if df is not None:
     st.write("✅ **Data loaded successfully!**")
 
-    # Show first few rows
-    st.subheader("📊 Sample Data")
+    # 🔹 Create "Date" Column
+    if {"Year", "Month", "Day"}.issubset(df.columns):
+        df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]], errors="coerce")
+
+    # 🔹 Display Key Metrics
+    st.subheader("📈 Dataset Overview")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Products", f"{df.shape[0]:,}")
+    col2.metric("Unique Stores", df["Store_Name"].nunique())
+    col3.metric("Price Range", f"£{df['Price'].min():.2f} - £{df['Price'].max():.2f}")
+
+    # 🔹 Show Sample Data
+    st.subheader("📋 Sample Data")
     st.dataframe(df.head(10))
 
-    # Show key statistics
-    st.subheader("📈 Dataset Overview")
-    num_products = df.shape[0]
-    num_stores = df["Store_Name"].nunique()
-    price_range = (df["Price"].min(), df["Price"].max())
-
-    st.write(f"- **Total Products:** {num_products}")
-    st.write(f"- **Number of Stores:** {num_stores}")
-    st.write(f"- **Price Range:** £{price_range[0]:.2f} - £{price_range[1]:.2f}")
-
-
-    # Top 5 Most Expensive Products
+    # 🔹 Top 5 Most Expensive Products
     st.subheader("💰 Top 5 Most Expensive Products")
 
-    # Function to determine the unit type (Each, Per kg, Per litre)
+    # Determine Unit Type
     def get_unit(row):
         if row["Unit_each"] == 1:
             return "Each"
@@ -110,16 +110,11 @@ if df is not None:
 
     df["Unit Type"] = df.apply(get_unit, axis=1)
 
-    # Drop exact duplicates (same product, price, store, and unit type)
+    # Remove duplicates & get top expensive products
     df_unique = df.drop_duplicates(subset=["Name", "Price", "Store_Name", "Unit Type"])
-
-    # Get the Top 5 Most Expensive Products (without duplicate product names)
     top_expensive = df_unique.sort_values(by="Price", ascending=False).drop_duplicates(subset=["Name"]).head(5)
-
-    # Select relevant columns
     top_expensive = top_expensive[["Name", "Price", "Store_Name", "Unit Type"]]
 
-    # Display as table
     st.table(top_expensive)
 
     # 📊 Price Distribution Plot
@@ -128,26 +123,32 @@ if df is not None:
                         color_discrete_sequence=["#3498db"], template="plotly_white")
     st.plotly_chart(fig1, use_container_width=True)
 
-    # 📈 Price Trends Over Time
+    # 📉 Price Trends Over Time (Fix KeyError)
     st.subheader("📉 Price Trends Over Time")
-    avg_price_trend = df.groupby("Date")["Price"].mean().reset_index()
-    fig2 = px.line(avg_price_trend, x="Date", y="Price", title="Average Price Over Time", 
-                line_shape="spline", color_discrete_sequence=["#2ecc71"], template="plotly_white")
-    st.plotly_chart(fig2, use_container_width=True)
+
+    if "Date" in df.columns and not df["Date"].isnull().all():
+        avg_price_trend = df.groupby("Date")["Price"].mean().reset_index()
+        fig2 = px.line(avg_price_trend, x="Date", y="Price", title="Average Price Over Time",
+                       line_shape="spline", color_discrete_sequence=["#2ecc71"], template="plotly_white")
+        st.plotly_chart(fig2, use_container_width=True)
+    else:
+        st.error("❌ No valid 'Date' column found. Ensure 'Year', 'Month', and 'Day' exist in the dataset.")
 
     # 🛍️ Average Price by Category
     st.subheader("🛍️ Average Price by Category")
     avg_price_category = df.groupby("Category")["Price"].mean().reset_index()
-    fig3 = px.bar(avg_price_category, x="Category", y="Price", title="Average Price by Category", 
-                color="Category", color_discrete_sequence=px.colors.qualitative.Vivid, template="plotly_white")
+    fig3 = px.bar(avg_price_category, x="Category", y="Price", title="Average Price by Category",
+                  color="Category", color_discrete_sequence=px.colors.qualitative.Vivid, template="plotly_white")
     st.plotly_chart(fig3, use_container_width=True)
 
     # 🏪 Price Comparison Across Stores
     st.subheader("🏪 Price Comparison Across Stores")
     avg_price_per_store = df.groupby("Store_Name")["Price"].mean().reset_index()
-    fig4 = px.bar(avg_price_per_store, x="Store_Name", y="Price", title="Average Price Per Store", 
-                color="Store_Name", color_discrete_sequence=px.colors.qualitative.Set2, template="plotly_white")
+    fig4 = px.bar(avg_price_per_store, x="Store_Name", y="Price", title="Average Price Per Store",
+                  color="Store_Name", color_discrete_sequence=px.colors.qualitative.Set2, template="plotly_white")
     st.plotly_chart(fig4, use_container_width=True)
+
 else:
     st.write("⚠️ No data available.")
+
 
