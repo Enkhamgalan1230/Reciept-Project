@@ -54,7 +54,7 @@ data_collection = st.Page(
 pg = st.navigation(
     {
         "Info": [home_page],
-        "Data":[data,data_collection],
+        "Data":[data_collection,data],
         "Main Logics": [page_3,page_4,page_5]
         
     }
