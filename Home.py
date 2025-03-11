@@ -16,4 +16,22 @@ st.set_page_config(
 st.title("Welcome to Reciept 👋")
 
 
-    
+# Create two columns
+col1, col2 = st.columns([1, 2])  # Adjust column ratio (1:2 for better alignment)
+
+# Left Column: Image
+with col1:
+    st.image("hmm.gif", width=150)  # Upload your image to the project folder
+
+# Right Column: Text
+with col2:
+    st.markdown(
+        """
+        ## What is Reciept 🤔?
+        Easily manage receipts, track your expenses, and compare prices across stores.  
+        Save money by making informed decisions. Start today! 🚀
+        """
+    )
+
+# Divider
+st.markdown("---")
