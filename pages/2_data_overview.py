@@ -93,9 +93,26 @@ if df is not None:
     st.write(f"- **Number of Stores:** {num_stores}")
     st.write(f"- **Price Range:** £{price_range[0]:.2f} - £{price_range[1]:.2f}")
 
+
     # Top 5 Most Expensive Products
     st.subheader("💰 Top 5 Most Expensive Products")
-    top_expensive = df.nlargest(5, "Price")[["Name", "Price", "Store_Name"]]
+
+    # Determine unit type (each, kg, litre)
+    def get_unit(row):
+        if row["Unit_each"] == 1:
+            return "Each"
+        elif row["Unit_kg"] == 1:
+            return "Per kg"
+        elif row["Unit_litre"] == 1:
+            return "Per litre"
+        return "Unknown"
+
+    df["Unit Type"] = df.apply(get_unit, axis=1)
+
+    # Select top 5 expensive products and include the unit type
+    top_expensive = df.nlargest(5, "Price")[["Name", "Price", "Store_Name", "Unit Type"]]
+
+    # Display as table
     st.table(top_expensive)
 
     # Function to create styled, minimal plots
