@@ -15,7 +15,7 @@ col1, col2 = st.columns([1, 2], vertical_alignment="center", gap= "small")  # Ad
 
 # Left Column: Image
 with col1:
-    st.image("logo.png") 
+    st.image("assets/logo.png") 
     
 # Right Column: Text
 with col2:
