@@ -6,7 +6,7 @@ st.title("3 👋")
 
 # Check if df is stored in session state
 if "df" in st.session_state:
-    df = st.session_state.df  # Retrieve cached data
+    df = st.session_state.df  # Retrieve stored data
     st.write("📈 Product Statistics:")
     st.write(df.describe())  # Show statistics
 else:
