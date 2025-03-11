@@ -5,7 +5,7 @@ from st_supabase_connection import SupabaseConnection
 from supabase import create_client, Client
 import supabase
 import time
-from data_fetcher import fetch_data_with_progress  # Import the function
+
 
 st.title("📊 Second Page - Data Analysis")
 
