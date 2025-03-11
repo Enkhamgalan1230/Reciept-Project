@@ -12,7 +12,7 @@ st.title("📊 Data")
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
 
-# Initialize game session state
+# Initialize game session state (if not already set)
 if "target_number" not in st.session_state:
     st.session_state.target_number = random.randint(1, 100)
     st.session_state.attempts_left = 5
@@ -22,12 +22,14 @@ if "target_number" not in st.session_state:
 # Function to play Number Guessing Game
 def play_number_guessing_game():
     st.subheader("🎮 Number Guessing Game")
-    st.write(st.session_state.game_message)
     st.write(f"🔢 Attempts Left: {st.session_state.attempts_left}")
 
-    user_guess = st.number_input("Enter your guess:", min_value=1, max_value=100, step=1)
+    # Preserve message color formatting using HTML
+    st.markdown(st.session_state.game_message, unsafe_allow_html=True)
 
-    if st.button("Submit Guess"):
+    user_guess = st.number_input("Enter your guess:", min_value=1, max_value=100, step=1, key="guess_input")
+
+    if st.button("Submit Guess", key="submit_guess"):
         if st.session_state.attempts_left > 0 and not st.session_state.game_over:
             if user_guess == st.session_state.target_number:
                 st.session_state.game_message = '<p style="background-color:#007BFF; color:white; padding:10px; border-radius:5px;">🎉 Correct! You guessed the number!</p>'
@@ -43,16 +45,16 @@ def play_number_guessing_game():
             st.session_state.game_message = f'<p style="background-color:#DC3545; color:white; padding:10px; border-radius:5px;">😢 Game Over! The number was {st.session_state.target_number}.</p>'
             st.session_state.game_over = True
 
-        st.markdown(st.session_state.game_message, unsafe_allow_html=True)
+        st.rerun()  # Rerun only for game updates
 
-    # Play Again Button
+    # Play Again Button (resets only the game)
     if st.session_state.game_over:
-        if st.button("🔄 Play Again"):
+        if st.button("🔄 Play Again", key="play_again"):
             st.session_state.target_number = random.randint(1, 100)
             st.session_state.attempts_left = 5
             st.session_state.game_message = "Guess a number between 1 and 100!"
             st.session_state.game_over = False
-            st.experimental_rerun()
+            st.rerun()  # Only restart the game, not fetch data
 
 # Only fetch data if it's not already stored in session state
 if "df" not in st.session_state:
