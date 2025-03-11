@@ -21,13 +21,14 @@ col1, col2 = st.columns([1, 2])  # Adjust column ratio (1:2 for better alignment
 
 # Left Column: Image
 with col1:
-    st.image("hmm.gif", width=150)  # Upload your image to the project folder
+    gif_url = "hmm.gif"  # Replace with your GIF file path or URL
+    st.markdown(f'<img src="{gif_url}" width="150" style="border-radius:50%;">', unsafe_allow_html=True)
 
 # Right Column: Text
 with col2:
     st.markdown(
         """
-        ## What is Reciept 🤔?
+        ### What is Reciept 🤔?
         Easily manage receipts, track your expenses, and compare prices across stores.  
         Save money by making informed decisions. Start today! 🚀
         """
