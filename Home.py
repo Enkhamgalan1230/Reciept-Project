@@ -21,7 +21,7 @@ col1, col2 = st.columns([1, 2])  # Adjust column ratio (1:2 for better alignment
 
 # Left Column: Image
 with col1:
-    st.image("page.png", width=200) 
+    st.image("page.png", width=150) 
 # Right Column: Text
 with col2:
     st.markdown(
