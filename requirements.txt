@@ -10,3 +10,4 @@ pandas-datareader
 mysql-connector
 st-supabase-connection
 supabase
+plotly.express
