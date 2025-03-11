@@ -28,8 +28,12 @@ with col2:
     st.markdown(
         """
         ### What is Reciept 🤔?
-        Easily manage receipts, track your expenses, and compare prices across stores.  
-        Save money by making informed decisions. Start today! 🚀
+
+        On tight budget this week?
+        
+        By analysing grocery prices across five different supermarkets, predicting and alerting users to potential price changes, 
+        providing weekly price inflation status updates, and generating a personalised shopping list, 
+        this app will help users manage their spending and make well-informed decisions 🚀.
         """
     )
 
