@@ -41,7 +41,7 @@ page_4 = st.Page(
 
 page_5 = st.Page(
     page = "pages/5_fifth.py",
-    title= "Home Page",
+    title= "Fifth",
     icon = "❤️"
 )
 
