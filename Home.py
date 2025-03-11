@@ -51,7 +51,7 @@ pg = st.navigation(
         "Project":[data, page_3,page_4,page_5]
     }
 )
-st.logo("assets/logo.png", size= "large")
+st.logo("assets/logo_longer.png",icon_image="assets/logo.png")
 st.sidebar.text("Made by Entwan Enkhbayar")
 
 pg.run()
