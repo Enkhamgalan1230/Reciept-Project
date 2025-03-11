@@ -87,7 +87,7 @@ if df is not None:
     # 🔹 Display Key Metrics
     st.subheader("📈 Dataset Overview")
     col1, col2, col3 = st.columns(3)
-    col1.metric("Total Products", f"{df.shape[0]:,}")
+    col1.metric("Total Products In Database Right Now:", f"{df.shape[0]:,}")
     col2.metric("Unique Stores", df["Store_Name"].nunique())
     col3.metric("Price Range", f"£{df['Price'].min():.2f} - £{df['Price'].max():.2f}")
 
