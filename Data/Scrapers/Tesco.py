@@ -7,10 +7,11 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import os
 from datetime import datetime
+from undetected_chromedriver import Chrome
 
 def create_undetected_headless_driver():
-    options = Options()
-    options.add_argument('--blink-settings=imagesEnabled=false')
+    options = webdriver.ChromeOptions()
+    options.add_argument("--blink-settings=imagesEnabled=false")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
     #options.add_argument("--headless")
@@ -18,8 +19,8 @@ def create_undetected_headless_driver():
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(options=options)
-    driver.maximize_window()
+
+    driver = Chrome(options=options)
     return driver
 
 # Initialize driver

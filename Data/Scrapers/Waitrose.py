@@ -97,6 +97,7 @@ category_urls = {
     "alc_free": ["https://www.waitrose.com/ecom/shop/browse/groceries/beer_wine_and_spirits/alcohol_free_and_low_alcohol_drinks"],
     "spirit": ["https://www.waitrose.com/ecom/shop/browse/groceries/beer_wine_and_spirits/spirits_and_liqueurs"],
     "wine": ["https://www.waitrose.com/ecom/shop/browse/groceries/beer_wine_and_spirits/wine"]
+
     }
 }
 

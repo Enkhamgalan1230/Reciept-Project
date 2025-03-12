@@ -68,10 +68,16 @@ df.drop(columns=['Clubcard Discount'], inplace=True)
 '''
 # Function to clean and standardize the price per unit
 def standardize_price_per_unit(price_per_unit):
-    if isinstance(price_per_unit, str):  # Check if the value is a string
-        price_per_unit = price_per_unit.lstrip('£')  # Remove '£' symbol
-        price_value, unit = price_per_unit.split('/')  # Split into price and unit
-        price_value = float(price_value)  # Convert price to float
+    if pd.isna(price_per_unit):  # Check for NaN values
+        return np.nan, np.nan
+
+    if isinstance(price_per_unit, str):  
+        price_per_unit = price_per_unit.lstrip('£')  
+        try:
+            price_value, unit = price_per_unit.split('/')  
+            price_value = float(price_value.replace(',', ''))  # Remove commas and convert to float
+        except ValueError:
+            return np.nan, np.nan  # Return NaN if conversion fails
 
         # Handle different units
         if '100g' in unit:  # Convert 100g to kg (100g = 0.1kg, multiply by 10)
