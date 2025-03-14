@@ -36,6 +36,7 @@ with col2:
 st.markdown("---")
 # Create three columns
 
+
 # Function to get base64 encoded image
 def get_base64_image(image_path):
     import base64
@@ -51,37 +52,50 @@ email_base64_black = get_base64_image('assets/email-black.png')
 github_base64_black = get_base64_image('assets/github-black.png')
 phone_base64_black = get_base64_image('assets/phone-black.png')
 
+# Function to detect theme color and return boolean
+def is_dark_mode():
+    st.markdown(
+        """
+        <p id="theme-detect" style="color: var(--text-color); display: none;">Theme</p>
+        <script>
+            let textColor = window.getComputedStyle(document.getElementById("theme-detect")).color;
+            let isDarkMode = textColor === "rgb(255, 255, 255)"; // White text means dark mode
+            sessionStorage.setItem("dark_mode", isDarkMode);
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+    
+    # JavaScript updates sessionStorage, but we can't get it directly in Python.
+    # Assume default to light mode (False), as Streamlit can't read JS variables directly.
+    return False  # This is a placeholder; JS updates sessionStorage dynamically
+
+# Detect theme mode
+dark_mode = is_dark_mode()
+
+# Select icons based on theme
+if dark_mode:
+    email_base64 = email_base64_white
+    github_base64 = github_base64_white
+    phone_base64 = phone_base64_white
+else:
+    email_base64 = email_base64_black
+    github_base64 = github_base64_black
+    phone_base64 = phone_base64_black
+
+
 # Create layout columns
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
     pass
 
-# Add this after your text markdown to check text color and update icons
-st.markdown(
-    """
-    <p id="theme-detect" style="color: var(--text-color); display: none;">Theme</p>
-    <script>
-        // Detect text color
-        let textColor = window.getComputedStyle(document.getElementById("theme-detect")).color;
-        let isDarkMode = textColor === "rgb(255, 255, 255)"; // White text means dark mode
-
-        // Change icons dynamically
-        document.documentElement.style.setProperty("--email-icon", isDarkMode ? "data:image/png;base64,{email_base64_white}" : "data:image/png;base64,{email_base64_black}");
-        document.documentElement.style.setProperty("--github-icon", isDarkMode ? "data:image/png;base64,{github_base64_white}" : "data:image/png;base64,{github_base64_black}");
-        document.documentElement.style.setProperty("--phone-icon", isDarkMode ? "data:image/png;base64,{phone_base64_white}" : "data:image/png;base64,{phone_base64_black}");
-    </script>
-    """,
-    unsafe_allow_html=True
-)
-
-# Update the icon display using the new CSS variables
 with col2:
     st.markdown(
-        """
+        f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
-                <img src="var(--email-icon)" 
+                <img src="data:image/png;base64,{email_base64}" 
                     alt="Email" 
                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
@@ -92,10 +106,10 @@ with col2:
 
 with col3:
     st.markdown(
-        """
+        f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="https://github.com/Enkhamgalan1230/Reciept-Project" target="_blank" style="text-decoration: none;">
-                <img src="var(--github-icon)" 
+                <img src="data:image/png;base64,{github_base64}" 
                     alt="GitHub" 
                     style="width: 45px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
@@ -106,10 +120,10 @@ with col3:
 
 with col4:
     st.markdown(
-        """
+        f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="tel:07310545410" style="text-decoration: none;">
-                <img src="var(--phone-icon)" 
+                <img src="data:image/png;base64,{phone_base64}" 
                     alt="Phone" 
                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
