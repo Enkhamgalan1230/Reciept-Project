@@ -51,31 +51,37 @@ email_base64_black = get_base64_image('assets/email-black.png')
 github_base64_black = get_base64_image('assets/github-black.png')
 phone_base64_black = get_base64_image('assets/phone-black.png')
 
-# Detect the current Streamlit theme (light or dark)
-theme = st.get_option("theme.base")  # Returns 'light' or 'dark'
-
-# Automatically select icons based on theme
-if theme == "dark":
-    email_base64 = email_base64_white
-    github_base64 = github_base64_white
-    phone_base64 = phone_base64_white
-else:
-    email_base64 = email_base64_black
-    github_base64 = github_base64_black
-    phone_base64 = phone_base64_black
-
 # Create layout columns
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
     pass
 
+# Add a hidden text element to detect the theme color
+st.markdown(
+    """
+    <p id="theme-detect" style="color: var(--text-color); display: none;">Theme</p>
+    <script>
+        // Detect text color
+        let textColor = window.getComputedStyle(document.getElementById("theme-detect")).color;
+        let isDarkMode = textColor === "rgb(255, 255, 255)"; // If text is white, it's dark mode
+        
+        // Change icons dynamically
+        document.documentElement.style.setProperty("--email-icon", isDarkMode ? "data:image/png;base64,{email_base64_white}" : "data:image/png;base64,{email_base64_black}");
+        document.documentElement.style.setProperty("--github-icon", isDarkMode ? "data:image/png;base64,{github_base64_white}" : "data:image/png;base64,{github_base64_black}");
+        document.documentElement.style.setProperty("--phone-icon", isDarkMode ? "data:image/png;base64,{phone_base64_white}" : "data:image/png;base64,{phone_base64_black}");
+    </script>
+    """,
+    unsafe_allow_html=True
+)
+
+# Apply the dynamic icon change in markdown
 with col2:
     st.markdown(
         f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
-                <img src="data:image/png;base64,{email_base64}" 
+                <img src="var(--email-icon)" 
                     alt="Email" 
                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
@@ -94,7 +100,7 @@ with col3:
         f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="https://github.com/Enkhamgalan1230/Reciept-Project" target="_blank" style="text-decoration: none;">
-                <img src="data:image/png;base64,{github_base64}" 
+                <img src="var(--github-icon)" 
                     alt="GitHub" 
                     style="width: 45px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
@@ -113,7 +119,7 @@ with col4:
         f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="tel:07310545410" style="text-decoration: none;">
-                <img src="data:image/png;base64,{phone_base64}" 
+                <img src="var(--phone-icon)" 
                     alt="Phone" 
                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
