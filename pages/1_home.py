@@ -51,12 +51,21 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown(
-        f'''
-            <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank">
-                <img src="data:image/png;base64,{email_base64}" alt="Email" style="width: 150px; cursor: pointer;">
+            f"""
+        <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
+            <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
+                <img src="data:image/png;base64,{email_base64}" 
+                    alt="Email" 
+                    style="width: 80px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
-        ''',
-        unsafe_allow_html=True  # Allows raw HTML rendering
+        </div>
+        <style>
+            img:hover {{
+                transform: scale(1.1);
+            }}
+        </style>
+        """,
+        unsafe_allow_html=True
     )
 
 with col2:
