@@ -33,14 +33,19 @@ with col2:
 
 # Divider
 st.markdown("---")
-
-col1, col2, col3 = st.columns(3, vertical_alignment= 'center')
+# Create three columns
+col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown(
         '<a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">'
-        '<button style="width:100%; padding: 10px; border-radius: 10px; border: none; background-color: #0073e6; color: white; font-size: 16px; cursor: pointer;">📧 Email')
+        '<button style="width:100%; padding: 10px; border-radius: 10px; border: none; background-color: #0073e6; color: white; font-size: 16px; cursor: pointer;">📧 Email</button>'
+        '</a>',
+        unsafe_allow_html=True  # Allows raw HTML rendering
+    )
+
 with col2:
     pass
+
 with col3:
     pass
