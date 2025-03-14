@@ -52,12 +52,15 @@ phone_base64 = get_base64_image(phone)
 
 
 
-col1, col2, col3 = st.columns(3)
+col1, col2, col3,col4,col5 = st.columns(5)
 
 with col1:
+    pass
+
+with col2:
     st.markdown(
             f"""
-        <div style="display: flex; justify-content: center; align-items: center; text-align: right; margin-top: 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
                 <img src="data:image/png;base64,{email_base64}" 
                     alt="Email" 
@@ -73,7 +76,7 @@ with col1:
         unsafe_allow_html=True
     )
 
-with col2:
+with col3:
     st.markdown(
             f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
@@ -92,10 +95,10 @@ with col2:
         unsafe_allow_html=True
     )
 
-with col3:
+with col4:
     st.markdown(
             f"""
-        <div style="display: flex; justify-content: center; align-items: center; text-align: left; margin-top: 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
                 <img src="data:image/png;base64,{phone_base64}" 
                     alt="github" 
@@ -110,3 +113,6 @@ with col3:
         """,
         unsafe_allow_html=True
     )
+
+with col5:
+    pass
