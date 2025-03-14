@@ -80,7 +80,7 @@ with col3:
     st.markdown(
             f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
-            <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
+            <a href="https://github.com/Enkhamgalan1230/Reciept-Project" target="_blank" style="text-decoration: none;">
                 <img src="data:image/png;base64,{github_base64}" 
                     alt="github" 
                     style="width: 45px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
