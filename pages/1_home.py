@@ -31,8 +31,6 @@ with col2:
         """
     )
 
-    st.sidebar.markdown('<a href="mailto:hello@streamlit.io">Contact us !</a>', unsafe_allow_html=True)
-
 # Divider
 st.markdown("---")
 
