@@ -51,16 +51,11 @@ email_base64_black = get_base64_image('assets/email-black.png')
 github_base64_black = get_base64_image('assets/github-black.png')
 phone_base64_black = get_base64_image('assets/phone-black.png')
 
-# Initialize session state for theme toggle
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = True  # Default to dark mode
+# Detect the current Streamlit theme (light or dark)
+theme = st.get_option("theme.base")  # Returns 'light' or 'dark'
 
-# Toggle button
-if st.button("Toggle Light/Dark Mode"):
-    st.session_state.dark_mode = not st.session_state.dark_mode
-
-# Select appropriate images based on mode
-if st.session_state.dark_mode:
+# Automatically select icons based on theme
+if theme == "dark":
     email_base64 = email_base64_white
     github_base64 = github_base64_white
     phone_base64 = phone_base64_white
