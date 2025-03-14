@@ -48,7 +48,7 @@ phone = "assets/phone-white.png"
 
 email_base64 = get_base64_image(email)
 github_base64 = get_base64_image(github)
-phone_base64 = get_base64_image([phone])
+phone_base64 = get_base64_image(phone)
 
 
 
