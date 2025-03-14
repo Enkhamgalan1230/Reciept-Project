@@ -99,7 +99,7 @@ with col4:
     st.markdown(
             f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
-            <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
+            <a href="tel:07310545410" style="text-decoration: none;">
                 <img src="data:image/png;base64,{phone_base64}" 
                     alt="github" 
                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
