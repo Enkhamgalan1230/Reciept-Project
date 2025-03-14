@@ -83,7 +83,7 @@ with col3:
             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
                 <img src="data:image/png;base64,{github_base64}" 
                     alt="github" 
-                    style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+                    style="width: 45px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
         <style>
