@@ -6,6 +6,8 @@ from supabase import create_client, Client
 import supabase
 import time
 
+#This is the main file, not rlly home page.
+
 # Set page title and icon
 st.set_page_config(
     page_title="Reciept",  # Set the title in the navigation bar
@@ -62,3 +64,4 @@ pg = st.navigation(
 st.logo("assets/logo_longer.png",icon_image="assets/logo.png", size= "large")
 
 pg.run()
+

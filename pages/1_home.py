@@ -31,5 +31,16 @@ with col2:
         """
     )
 
+    st.sidebar.markdown('<a href="mailto:hello@streamlit.io">Contact us !</a>', unsafe_allow_html=True)
+
 # Divider
 st.markdown("---")
+
+col1, col2, col3 = st.columns([1,2,3], vertical_alignment= 'center')
+
+with col1:
+    email = st.button('<a href="mailto:enkhamgalan.entwan@outlook.com">Contact us !</a>', unsafe_allow_html=True,icon = "📧")
+with col2:
+    pass
+with col3:
+    pass
