@@ -37,81 +37,82 @@ st.markdown("---")
 # Create three columns
 
 # Function to convert image to Base64
- def get_base64_image(image_path):
-     with open(image_path, "rb") as img_file:
-         return base64.b64encode(img_file.read()).decode()
- 
- # Convert image to Base64
- email = "assets/email-white.png"  # Adjust this based on your file location
- github = "assets/github-white.png"
- phone = "assets/phone-white.png"
- 
- email_base64 = get_base64_image(email)
- github_base64 = get_base64_image(github)
- phone_base64 = get_base64_image(phone)
- 
- 
- 
- col1, col2, col3,col4,col5 = st.columns(5)
- 
- with col1:
-     pass
- 
- with col2:
-     st.markdown(
-             f"""
-         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
-             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
-                 <img src="data:image/png;base64,{email_base64}" 
-                     alt="Email" 
-                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
-             </a>
-         </div>
-         <style>
-             img:hover {{
-                 transform: scale(1.1);
-             }}
-         </style>
-         """,
-         unsafe_allow_html=True
-     )
- 
- with col3:
-     st.markdown(
-             f"""
-         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
-             <a href="https://github.com/Enkhamgalan1230/Reciept-Project" target="_blank" style="text-decoration: none;">
-                 <img src="data:image/png;base64,{github_base64}" 
-                     alt="github" 
-                     style="width: 45px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
-             </a>
-         </div>
-         <style>
-             img:hover {{
-                 transform: scale(1.1);
-             }}
-         </style>
-         """,
-         unsafe_allow_html=True
-     )
- 
- with col4:
-     st.markdown(
-             f"""
-         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
-             <a href="tel:07310545410" style="text-decoration: none;">
-                 <img src="data:image/png;base64,{phone_base64}" 
-                     alt="github" 
-                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
-             </a>
-         </div>
-         <style>
-             img:hover {{
-                 transform: scale(1.1);
-             }}
-         </style>
-         """,
-         unsafe_allow_html=True
-     )
- 
- with col5:
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
+# Convert image to Base64
+email = "assets/email-white.png"  # Adjust this based on your file location
+github = "assets/github-white.png"
+phone = "assets/phone-white.png"
+
+email_base64 = get_base64_image(email)
+github_base64 = get_base64_image(github)
+phone_base64 = get_base64_image(phone)
+
+
+
+col1, col2, col3,col4,col5 = st.columns(5)
+
+with col1:
+    pass
+
+with col2:
+    st.markdown(
+            f"""
+        <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
+            <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
+                <img src="data:image/png;base64,{email_base64}" 
+                    alt="Email" 
+                    style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+            </a>
+        </div>
+        <style>
+            img:hover {{
+                transform: scale(1.1);
+            }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col3:
+    st.markdown(
+            f"""
+        <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
+            <a href="https://github.com/Enkhamgalan1230/Reciept-Project" target="_blank" style="text-decoration: none;">
+                <img src="data:image/png;base64,{github_base64}" 
+                    alt="github" 
+                    style="width: 45px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+            </a>
+        </div>
+        <style>
+            img:hover {{
+                transform: scale(1.1);
+            }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col4:
+    st.markdown(
+            f"""
+        <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
+            <a href="tel:07310545410" style="text-decoration: none;">
+                <img src="data:image/png;base64,{phone_base64}" 
+                    alt="github" 
+                    style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+            </a>
+        </div>
+        <style>
+            img:hover {{
+                transform: scale(1.1);
+            }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col5:
+    pass
