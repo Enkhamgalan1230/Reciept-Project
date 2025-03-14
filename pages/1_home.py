@@ -57,15 +57,15 @@ col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
     pass
 
-# Add a hidden text element to detect the theme color
+# Add this after your text markdown to check text color and update icons
 st.markdown(
     """
     <p id="theme-detect" style="color: var(--text-color); display: none;">Theme</p>
     <script>
         // Detect text color
         let textColor = window.getComputedStyle(document.getElementById("theme-detect")).color;
-        let isDarkMode = textColor === "rgb(255, 255, 255)"; // If text is white, it's dark mode
-        
+        let isDarkMode = textColor === "rgb(255, 255, 255)"; // White text means dark mode
+
         // Change icons dynamically
         document.documentElement.style.setProperty("--email-icon", isDarkMode ? "data:image/png;base64,{email_base64_white}" : "data:image/png;base64,{email_base64_black}");
         document.documentElement.style.setProperty("--github-icon", isDarkMode ? "data:image/png;base64,{github_base64_white}" : "data:image/png;base64,{github_base64_black}");
@@ -75,10 +75,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Apply the dynamic icon change in markdown
+# Update the icon display using the new CSS variables
 with col2:
     st.markdown(
-        f"""
+        """
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
                 <img src="var(--email-icon)" 
@@ -86,18 +86,13 @@ with col2:
                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
-        <style>
-            img:hover {{
-                transform: scale(1.1);
-            }}
-        </style>
         """,
         unsafe_allow_html=True
     )
 
 with col3:
     st.markdown(
-        f"""
+        """
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="https://github.com/Enkhamgalan1230/Reciept-Project" target="_blank" style="text-decoration: none;">
                 <img src="var(--github-icon)" 
@@ -105,18 +100,13 @@ with col3:
                     style="width: 45px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
-        <style>
-            img:hover {{
-                transform: scale(1.1);
-            }}
-        </style>
         """,
         unsafe_allow_html=True
     )
 
 with col4:
     st.markdown(
-        f"""
+        """
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
             <a href="tel:07310545410" style="text-decoration: none;">
                 <img src="var(--phone-icon)" 
@@ -124,11 +114,6 @@ with col4:
                     style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
-        <style>
-            img:hover {{
-                transform: scale(1.1);
-            }}
-        </style>
         """,
         unsafe_allow_html=True
     )
