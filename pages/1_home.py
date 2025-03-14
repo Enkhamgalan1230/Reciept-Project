@@ -5,6 +5,7 @@ from st_supabase_connection import SupabaseConnection
 from supabase import create_client, Client
 import supabase
 import time
+import base64
 
 st.title("Welcome to Reciept 👋")
 
@@ -34,13 +35,27 @@ with col2:
 # Divider
 st.markdown("---")
 # Create three columns
+
+# Function to convert image to Base64
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
+# Convert image to Base64
+email = "assets/email-white.png"  # Adjust this based on your file location
+email_base64 = get_base64_image(email)
+
+
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown(
-        '<a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">'
-        '<button style="width:100%; padding: 10px; border-radius: 10px; border: none; background-color: #0073e6; color: white; font-size: 16px; cursor: pointer;">📧 Email</button>'
-        '</a>',
+        f'''
+            <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank">
+                <img src="data:image/png;base64,{email_base64}" alt="Email" style="width: 150px; cursor: pointer;">
+            </a>
+        ''',
         unsafe_allow_html=True  # Allows raw HTML rendering
     )
 
