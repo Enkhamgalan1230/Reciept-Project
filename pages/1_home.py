@@ -43,7 +43,12 @@ def get_base64_image(image_path):
 
 # Convert image to Base64
 email = "assets/email-white.png"  # Adjust this based on your file location
+github = "assets/github-white.png"
+phone = "assets/phone-white.png"
+
 email_base64 = get_base64_image(email)
+github_base64 = get_base64_image(github)
+phone_base64 = get_base64_image([phone])
 
 
 
@@ -52,11 +57,11 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown(
             f"""
-        <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; text-align: right; margin-top: 20px;">
             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
                 <img src="data:image/png;base64,{email_base64}" 
                     alt="Email" 
-                    style="width: 80px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+                    style="width: 50px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
         <style>
@@ -69,7 +74,39 @@ with col1:
     )
 
 with col2:
-    pass
+    st.markdown(
+            f"""
+        <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
+            <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
+                <img src="data:image/png;base64,{github_base64}" 
+                    alt="github" 
+                    style="width: 50px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+            </a>
+        </div>
+        <style>
+            img:hover {{
+                transform: scale(1.1);
+            }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
 with col3:
-    pass
+    st.markdown(
+            f"""
+        <div style="display: flex; justify-content: center; align-items: center; text-align: left; margin-top: 20px;">
+            <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
+                <img src="data:image/png;base64,{phone_base64}" 
+                    alt="github" 
+                    style="width: 50px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+            </a>
+        </div>
+        <style>
+            img:hover {{
+                transform: scale(1.1);
+            }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
