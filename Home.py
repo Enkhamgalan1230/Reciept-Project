@@ -23,22 +23,23 @@ home_page = st.Page(
     icon = "🏠"
 )
 
+data_collection = st.Page(
+    page = "pages/2_data_collection.py",
+    title= "Data Collection",
+    icon = "💾"
+)
+
 data = st.Page(
     page = "pages/3_data.py",
     title= "Data",
     icon = "📋"
 )
 
-page_6 = st.Page(
-    page = "pages/6_sixth.py",
-    title= "Third",
-    icon = "❤️"
-)
 
-page_4 = st.Page(
-    page = "pages/4_fourth.py",
+price_comparison = st.Page(
+    page = "pages/4_price_comparison.py",
     title= "Fourth",
-    icon = "❤️"
+    icon = "🆚"
 )
 
 page_5 = st.Page(
@@ -47,17 +48,17 @@ page_5 = st.Page(
     icon = "❤️"
 )
 
-data_collection = st.Page(
-    page = "pages/2_data_collection.py",
-    title= "Data Collection",
-    icon = "💾"
+page_6 = st.Page(
+    page = "pages/6_sixth.py",
+    title= "Third",
+    icon = "❤️"
 )
 
 pg = st.navigation(
     {
         "Info": [home_page],
         "Data":[data_collection,data],
-        "Main Logics": [page_4,page_5,page_6]
+        "Main Logics": [price_comparison,page_5,page_6]
         
     }
 )
