@@ -170,7 +170,7 @@ for product, stores in product_mapping.items():
     fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=500)
 
     with cols[row_count % 3]:
-        with st.container(border=True, padding=10):
+        with st.container():
             st.write(f"### {product}")
             st.write(f"**Cheapest Store:** {cheapest_store}")
             st.write(f"**Product Name:** {cheapest_product}")
