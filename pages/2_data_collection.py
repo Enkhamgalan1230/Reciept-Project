@@ -300,7 +300,7 @@ with st.expander("Supabase Query Example"):
 
 # Visual Flowchart (optional)
 st.subheader("📊 Data Collection Flow")
-st.image("flowchart.png")  # Replace with your diagram
+st.image("assets/overall_flow.png")  # Replace with your diagram
 
 st.success("🎉 Data collection process is complete and automated!")
 
