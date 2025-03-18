@@ -181,7 +181,7 @@ for product, stores in product_mapping.items():
                 st.markdown(f"**Cheapest Store:** `{cheapest_store.capitalize()}`")
                 st.markdown(f"**Product Name:** `{cheapest_product}`")
                 st.metric(
-                    label=f"💰 **Price:**",
+                    label=f"✅ **Price:**",
                     value=f"£{cheapest_price:.2f}"
                 )
                 st.plotly_chart(fig, use_container_width=True)
