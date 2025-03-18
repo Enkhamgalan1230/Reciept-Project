@@ -28,6 +28,34 @@ with st.expander("Supermarkets"):
     ''')
     st.image("assets/stores.jpg")
 
+with st.expander("How Our Web Scraper Works"):
+    ("""
+    ### 📌 How Selenium Works in Web Scraping  
+    Selenium is a **powerful tool** that automates web browsers to interact with web pages just like a human user. We use it to extract supermarket product data by mimicking actions such as **clicking buttons, scrolling, and navigating pages**.
+
+    ### 🖥️ Headless Browsing for Efficiency  
+    To speed up the scraping process, we use a **headless browser**, which runs in the background **without opening a visible window**. This makes the scraper faster and reduces system resource usage.
+
+    ### 🔄 User-Agent Switching to Avoid Detection  
+    Websites often block scrapers if they detect automated access. To prevent this, we use a **User-Agent**, which tells the website what browser we are using.  
+    Instead of always using the default User-Agent, our scraper **randomly switches** between different browser types (e.g., Chrome, Firefox) to appear more like a real user.
+
+    ### 🔗 Extracting URLs and Navigating the Website  
+    Before scraping, we manually collect URLs for each **product category** (e.g., Fruits, Vegetables, Dairy). These serve as **starting points** for our scraper. Selenium loads each URL, finds the product listings, and extracts important details.
+
+    ### 🔍 Main Logic of the Web Scraper  
+    1️⃣ **Load the Category Page** → Open a category URL in Selenium.  
+    2️⃣ **Find Product Elements** → Locate product boxes using **CSS selectors**.  
+    3️⃣ **Extract Product Details** → Scrape the product **name, price, unit size, and discount**.  
+    4️⃣ **Handle Pagination** → If there’s a "Next Page" button, the scraper clicks it and continues until no more pages are left.  
+    5️⃣ **Scroll to Load More Products** → If the website loads products dynamically, Selenium scrolls down to **trigger more items**.  
+    6️⃣ **Store Data** → Save the extracted information before pushing it to **Supabase** for storage.
+
+    This method ensures we **efficiently** collect complete supermarket product data while avoiding detection. 🚀
+    """)
+    st.image("Flowchart.png")
+
+
 with st.expander("See Sample Code of Scraper"):
     st.code("""
     import pandas as pd
@@ -198,6 +226,7 @@ with st.expander("See Sample Code of Scraper"):
 
     """, language="python")
 
+
 st.markdown("---")
 
 st.subheader("2️⃣ Data Cleaning & Standardization")
@@ -255,11 +284,18 @@ with st.expander("Supabase Query Example"):
     st.code("""
     import supabase
 
-    url = "your-supabase-url"
-    key = "your-supabase-key"
-    client = supabase.create_client(url, key)
-    
-    data = client.table("products").select("*").execute()
+    SUPABASE_URL = "********"
+    SUPABASE_KEY = "********"
+            
+    # Initialize Supabase connection
+    conn = st.connection("supabase", type=SupabaseConnection)
+
+    # Only fetch data if it's not already stored in session state
+    if "df" not in st.session_state:
+        @st.cache_data
+        def fetch_data():
+            conn.table("Product").select("*", count="exact", head=True).execute()
+            
     """, language="python")
 
 # Visual Flowchart (optional)
