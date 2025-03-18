@@ -83,7 +83,7 @@ with col3:
             <a href="https://github.com/Enkhamgalan1230/Reciept-Project" target="_blank" style="text-decoration: none;">
                 <img src="data:image/png;base64,{github_base64}" 
                     alt="github" 
-                    style="width: 45px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+                    style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
         <style>
