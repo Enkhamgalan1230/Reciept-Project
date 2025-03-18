@@ -21,7 +21,7 @@ product_mapping = {
         "tesco" : "Stockwell & Co Tuna Chunks In Brine 145G",
         "asda" : "ASDA Skipjack Tuna Chunks in Brine",
         "aldi" : "Everyday Essentials Tuna Chunks In Brine 145g",
-        "waitrose" : "Essential MSC Tuna Chunks in Spring Water",
+        "waitrose" : "Essential MSC Tuna Chunks in Brine",
         "Sainsburys" : "Sainsbury's Tuna Chunks in Brine 145g"
     },
     "Long Grain Rice" : {
@@ -64,7 +64,7 @@ product_mapping = {
         "asda" : "ASDA British Milk Semi Skimmed 2 Pints",
         "aldi" : "Cowbelle British Semi-skimmed Milk 2 Pints",
         "waitrose" : "Essential British Free Range Semi-Skimmed Milk 2 Pints",
-        "Sainsburys" : "Sainsbury British Semi Skimmed Milk 1.13L (2 pint)"
+        "Sainsburys" : "Sainsbury British Semi Skimmed Milk 1.13L"
     },
     "Granola" : {
         "tesco" : "Tesco Honey & Almond Granola 1Kg",
@@ -110,7 +110,7 @@ product_mapping = {
     },
     "Ground Beef" : {
         "tesco" : "Tesco Lean Beef Steak Mince 5% Fat 500g",
-        "asda" : "ASDA Flavourful Lean Beef Steak Mince (Typically Less Than 5% Fat)",
+        "asda" : "ASDA Flavourful Lean Beef Steak Mince",
         "aldi" : "Nature's Glen Scotch Beef Lean Mince 5% Fat 500g",
         "waitrose" : "Waitrose British Native Breed Beef Mince 5% Fat",
         "Sainsburys" : "Sainsbury's British or Irish 5% Fat Beef Mince 500g"
