@@ -165,11 +165,10 @@ for product, stores in product_mapping.items():
     if not price_df.empty:
         fig = px.bar(
             price_df, x="Store", y="Price", text="Price",
-            title=f"{product} Price Comparison",
             color="Store"
         )
         fig.update_traces(texttemplate="£%{text:.2f}", textposition="outside")
-        fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=350)
+        fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=150)
 
         with cols[row_count % 4]:
             with st.container(border=True):
