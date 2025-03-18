@@ -53,7 +53,7 @@ with st.expander("How Our Web Scraper Works"):
 
     This method ensures we **efficiently** collect complete supermarket product data while avoiding detection. 🚀
     """)
-    st.image("Flowchart.png")
+    st.image("flowchart.png")
 
 
 with st.expander("See Sample Code of Scraper"):
@@ -295,7 +295,7 @@ with st.expander("Supabase Query Example"):
         @st.cache_data
         def fetch_data():
             conn.table("Product").select("*", count="exact", head=True).execute()
-            
+
     """, language="python")
 
 # Visual Flowchart (optional)
