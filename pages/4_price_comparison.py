@@ -123,7 +123,10 @@ if "df" in st.session_state:
 else:
     st.write("⚠️ No data available. Please visit the Data Analysis page first.")
 
-st.title("📊 Supermarket Price Comparison Dashboard")
+st.title("📊 Price Comparison")
+st.markdown("---")
+
+st.subheader("🏆 Dashboard with 15 Popular Items")
 
 # Filter dataset for selected products
 df_filtered = df[df["Name"].isin([name for products in product_mapping.values() for name in products.values()])]
@@ -189,3 +192,9 @@ for product, stores in product_mapping.items():
     row_count += 1
 
 st.caption("📌 Prices are based on the latest available scraped data.")
+
+st.markdown("---")
+
+st.subheader("🏆 Search Comparison")
+
+
