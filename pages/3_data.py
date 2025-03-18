@@ -7,17 +7,37 @@ import supabase
 import time
 import matplotlib.pyplot as plt
 import plotly.express as px
+import openai
+import random
 
 
 st.title("📊 Data")
 
 st.markdown("---")
 
+def get_fun_fact():
+    # List of supermarket names
+    supermarkets = ["Tesco", "Sainsbury's", "Morrisons", "Asda", "Aldi"]
+
+    # Randomly choose one supermarket
+    chosen_store = random.choice(supermarkets)
+
+    # ChatGPT prompt
+    prompt = f"Give me a short, fun, and interesting fact or statistic about {chosen_store} supermarket."
+
+    # OpenAI API Call
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return response["choices"][0]["message"]["content"]  # Extract ChatGPT's response
+
 
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
 
-# Only fetch data if it's not already stored in session state
+# Only fetch data if it's not already in session state
 if "df" not in st.session_state:
     @st.cache_data  # Cache the fetched data
     def fetch_data():
@@ -26,16 +46,15 @@ if "df" not in st.session_state:
             row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
             max_rows = row_count_result.count
             st.write(f"There are {max_rows} rows currently in the database.")
-            st.write("#### We are using Supabase and there is a 1000-row limit per request, so fetching will take tiny bit of time. "
-            " Please bare with us 😊")
 
-            # Step 2: Fetch data with pagination
+            # Step 2: Fetch data in batches (1000 rows per request)
             batch_size = 1000
             total_batches = (max_rows + batch_size - 1) // batch_size  # Round up
 
-            # Create progress bar
+            # Progress Bar
             progress_bar = st.progress(0)  
             progress_text = st.empty()  
+            fun_fact_box = st.empty()  # Empty box for updating facts
 
             all_rows = []
             offset = 0
@@ -43,7 +62,7 @@ if "df" not in st.session_state:
             for batch in range(1, total_batches + 1):
                 try:
                     rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
-
+                    
                     if not rows.data:
                         break
 
@@ -54,10 +73,14 @@ if "df" not in st.session_state:
                     progress_percentage = batch / total_batches
                     progress_bar.progress(min(progress_percentage, 1.0))
 
-                    # Update progress text
+                    # Update fetching status
                     progress_text.write(f"Fetching batch {batch}/{total_batches}...")
 
-                    time.sleep(0.5)  # Rate limit
+                    # 🛒 Generate and Display Fun Fact about a supermarket
+                    fun_fact = get_fun_fact()
+                    fun_fact_box.write(f"🛍️ **Fun Fact:** {fun_fact}")
+
+                    time.sleep(5)  # Wait 5 seconds before next batch
 
                 except Exception as e:
                     st.write(f"Error at batch {batch}, offset {offset}: {e}")
@@ -71,9 +94,9 @@ if "df" not in st.session_state:
             st.write(f"Error fetching data: {e}")
             return None
 
-    with st.spinner("Fetching data... Grab a coffee ☕ while we load everything!"):
-        df = fetch_data()
-        st.session_state.df = df  # Store for later use
+    # Fetch and store in session state
+    df = fetch_data()
+    st.session_state.df = df  # Store for later use
 else:
     df = st.session_state.df  # Load cached data
 
