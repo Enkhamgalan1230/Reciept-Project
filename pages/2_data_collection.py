@@ -198,6 +198,8 @@ with st.expander("See Sample Code of Scraper"):
 
     """, language="python")
 
+st.markdown("---")
+
 st.subheader("2️⃣ Data Cleaning & Standardization")
 st.write("We clean and format the data, ensuring all prices are correctly structured.")
 df = pd.DataFrame({"Product": ["Milk", "Eggs"], "Price (Raw)": ["£1.20", "99p"], "Cleaned Price": [1.20, 0.99]})
@@ -245,6 +247,7 @@ with col2:
 
 st.info("🔄 This tool automatically converts small units (e.g., 100g → 0.1kg) into standardized measurements for easier comparisons.")
 
+st.markdown("---")
 
 st.subheader("3️⃣ Storing Data in Supabase")
 st.write("The cleaned data is then stored in **Supabase**, allowing for real-time retrieval and analysis.")
