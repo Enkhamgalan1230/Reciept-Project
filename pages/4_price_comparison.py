@@ -176,15 +176,14 @@ for product, stores in product_mapping.items():
         )
 
         with cols[row_count % 4]:
-            with st.container(border=True):
+            with st.container(border=True, height=180):  # Fixed height for alignment
                 st.markdown(f"#### 🛒 {product}")
-                st.markdown(f"**Cheapest Store:** `{cheapest_store.capitalize()}`")
+                st.markdown(f"**Cheapest Store:** `{cheapest_store}`")
                 st.markdown(f"**Product Name:** `{cheapest_product}`")
                 st.metric(
                     label=f"💰 **Price:**",
                     value=f"£{cheapest_price:.2f}"
                 )
-                st.plotly_chart(fig, use_container_width=True)
     
     row_count += 1
 
