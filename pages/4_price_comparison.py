@@ -219,23 +219,40 @@ df_latest["Unit"] = df_latest.apply(determine_unit, axis=1)
 # Drop unnecessary columns
 df_latest = df_latest.drop(columns=["Year", "Month", "Day", "Unit_each", "Unit_kg", "Unit_litre", "Date"])
 
+# Load subcategories from CSV
+file_path = "subcategory.csv"
+subcategories_df = pd.read_csv(file_path)
+subcategory_list = subcategories_df["Subcategory"].unique().tolist()
+
+# Subcategory selection
+selected_subcategory = st.radio("Choose a product subcategory:", subcategory_list, horizontal=True)
+
+# Filter data by selected subcategory
+df_filtered = df_latest[df_latest["Subcategory"] == selected_subcategory]
+
 # Function to find similar products
 def find_similar_products(df, keyword, threshold=80):
     df["similarity"] = df["Name"].apply(lambda x: process.extractOne(keyword, [x])[1] if isinstance(x, str) else 0)
     return df[df["similarity"] >= threshold].sort_values(by="similarity", ascending=False)
 
+st.subheader("🔍 Search for a Product")
 
 # User input for keyword
 keyword = st.text_input("Enter a product name")
 
 if keyword:
-    filtered_df = find_similar_products(df_latest, keyword)
+    filtered_df = find_similar_products(df_filtered, keyword)
     
     # Ensure "Unit" exists in the filtered data
     if "Unit" not in filtered_df.columns:
         st.write("⚠️ 'Unit' column is missing from the filtered data. Displaying available columns.")
         st.dataframe(filtered_df)
     else:
-        # Display results without unnecessary columns
-        st.dataframe(filtered_df[["Store_Name", "Price", "Discount price", "Subcategory", "Name", "Standardised price per unit", "Unit", "Category"]])
-
+        # Display results in ascending order of price
+        filtered_df = filtered_df.sort_values(by="Price", ascending=True)
+        
+        # Display table with horizontal scroll and limit height
+        st.dataframe(
+            filtered_df[["Store_Name", "Price", "Discount price", "Subcategory", "Name", "Standardised price per unit", "Unit", "Category"]],
+            height=400
+        )
