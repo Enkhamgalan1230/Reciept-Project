@@ -53,7 +53,7 @@ with st.expander("How Our Web Scraper Works"):
 
     This method ensures we **efficiently** collect complete supermarket product data while avoiding detection. 🚀
     """)
-    st.image("flowchart.png")
+    st.image("assets/flowchart.png")
 
 
 with st.expander("See Sample Code of Scraper"):
