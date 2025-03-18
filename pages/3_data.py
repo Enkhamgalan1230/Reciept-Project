@@ -94,8 +94,7 @@ if "df" not in st.session_state:
             st.write(f"There are {max_rows} rows currently in the database.")
 
             # Show an initial fun message
-            st.write("#### We are using Supabase and there is a 1000-row limit per request, so fetching will take a little time. "
-                     " Grab a coffee ☕ while we load everything 😊")
+            st.write("#### Loading fresh data from Supabase! 🍽️ Since we fetch 1,000 rows at a time, it may take a moment. Why not grab a coffee ☕ and enjoy a fun fact while you wait? ")
 
             # Step 2: Fetch data with pagination
             batch_size = 1000
@@ -128,7 +127,7 @@ if "df" not in st.session_state:
 
                     # Update fun fact every few batches
                     if batch % 5 == 0:  # Change the fun fact every 2 batches
-                        fun_fact_box.write(f"🛍️ **Fun Fact:** {get_preloaded_fun_fact()}")
+                        fun_fact_box.write(f"####🛍️ **Fun Fact:** {get_preloaded_fun_fact()}")
 
                     time.sleep(0.5)  # Rate limit
 
