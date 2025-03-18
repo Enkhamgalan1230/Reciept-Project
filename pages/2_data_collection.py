@@ -202,6 +202,8 @@ st.subheader("2️⃣ Data Cleaning & Standardization")
 st.write("We clean and format the data, ensuring all prices are correctly structured.")
 df = pd.DataFrame({"Product": ["Milk", "Eggs"], "Price (Raw)": ["£1.20", "99p"], "Cleaned Price": [1.20, 0.99]})
 st.dataframe(df)
+st.info("🔄 Symbols, null values are removed or replaced at this stage and this will be followed by **Unit Conversion**.")
+
 
 # Function to convert units
 def convert_units(value, unit):
@@ -224,7 +226,7 @@ def convert_units(value, unit):
 
 # Streamlit UI
 st.subheader("🛠️ Try It Yourself: Unit Conversion")
-
+st.write("We cconvert the price into three main units for better comparison and understanding")
 # User input section
 unit_choice = st.radio("Select the unit you are entering:", ['100g', '10g', 'kg', '100ml', '75cl', 'litre', 'each'], horizontal= True)
 user_input = st.number_input("Enter the price value (£):", min_value=0.0, format="%.2f")
