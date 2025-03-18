@@ -144,7 +144,7 @@ for product, stores in product_mapping.items():
     cheapest_product = None
 
     for store, product_name in stores.items():
-        product_row = df_latest[df_latest["Name"] == product_name]
+        product_row = df_latest[df_latest["Name"].str.contains(product_name, case=False, na=False)]
         if not product_row.empty:
             price = product_row["Price"].values[0]
             price_data.append({"Store": store, "Price": price})
@@ -160,25 +160,27 @@ for product, stores in product_mapping.items():
             price_data.append({"Store": store, "Price": None})
 
     price_df = pd.DataFrame(price_data)
+    price_df.dropna(subset=["Price"], inplace=True)  # Remove empty prices to prevent blank charts
     
-    fig = px.bar(
-        price_df, x="Store", y="Price", text="Price",
-        title=f"{product} Price Comparison",
-        color="Store"
-    )
-    fig.update_traces(texttemplate="£%{text:.2f}", textposition="outside")
-    fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=500)
+    if not price_df.empty:
+        fig = px.bar(
+            price_df, x="Store", y="Price", text="Price",
+            title=f"{product} Price Comparison",
+            color="Store"
+        )
+        fig.update_traces(texttemplate="£%{text:.2f}", textposition="outside")
+        fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=500)
 
-    with cols[row_count % 3]:
-        with st.container():
-            st.write(f"### {product}")
-            st.write(f"**Cheapest Store:** {cheapest_store}")
-            st.write(f"**Product Name:** {cheapest_product}")
-            st.metric(
-                label=f"**Price:**",
-                value=f"£{cheapest_price:.2f}"
-            )
-            st.plotly_chart(fig, use_container_width=True)
+        with cols[row_count % 3]:
+            with st.container():
+                st.write(f"### {product}")
+                st.write(f"**Cheapest Store:** {cheapest_store}")
+                st.write(f"**Product Name:** {cheapest_product}")
+                st.metric(
+                    label=f"**Price:**",
+                    value=f"£{cheapest_price:.2f}"
+                )
+                st.plotly_chart(fig, use_container_width=True)
     
     row_count += 1
 
