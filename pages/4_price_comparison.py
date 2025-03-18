@@ -154,6 +154,11 @@ for product, stores in product_mapping.items():
                 cheapest_store = store
                 cheapest_product = product_name
 
+    # Ensure all five stores are represented, even if missing
+    for store in ["Tesco", "Asda", "Aldi", "Waitrose", "Sainsbury's"]:
+        if store not in [p["Store"] for p in price_data]:
+            price_data.append({"Store": store, "Price": None})
+
     price_df = pd.DataFrame(price_data)
     
     fig = px.bar(
@@ -162,17 +167,18 @@ for product, stores in product_mapping.items():
         color="Store"
     )
     fig.update_traces(texttemplate="£%{text:.2f}", textposition="outside")
-    fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=400)
+    fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=500)
 
     with cols[row_count % 3]:
-        st.write(f"### {product}")
-        st.write(f"**Cheapest Store:** {cheapest_store}")
-        st.write(f"**Product Name:** {cheapest_product}")
-        st.metric(
-            label=f"**Price:**",
-            value=f"£{cheapest_price:.2f}"
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        with st.container(border=True, padding=10):
+            st.write(f"### {product}")
+            st.write(f"**Cheapest Store:** {cheapest_store}")
+            st.write(f"**Product Name:** {cheapest_product}")
+            st.metric(
+                label=f"**Price:**",
+                value=f"£{cheapest_price:.2f}"
+            )
+            st.plotly_chart(fig, use_container_width=True)
     
     row_count += 1
 
