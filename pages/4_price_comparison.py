@@ -165,10 +165,16 @@ for product, stores in product_mapping.items():
     if not price_df.empty:
         fig = px.bar(
             price_df, x="Store", y="Price", text="Price",
+            title=f"{product} Price Comparison",
             color="Store"
         )
         fig.update_traces(texttemplate="£%{text:.2f}", textposition="outside")
-        fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=400)
+        fig.update_layout(
+            yaxis_title="Price (£)",
+            xaxis_title="Supermarket",
+            height=300,
+            xaxis_tickangle=-45  # Rotate x-axis labels to -45 degrees
+        )
 
         with cols[row_count % 4]:
             with st.container(border=True):
