@@ -231,8 +231,6 @@ with st.container(border=True, height=180):
 # Filter data by selected subcategory
 df_filtered = df_latest[df_latest["Subcategory"] == selected_subcategory]
 
-st.subheader("🔍 Search for a Product")
-
 # User input for keyword
 keyword = st.text_input("Enter a product name")
 

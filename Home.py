@@ -20,37 +20,37 @@ st.set_page_config(
 home_page = st.Page(
     page = "pages/1_home.py",
     title= "Home Page",
-    icon = "🏠"
+    #icon = "🏠"
 )
 
 data_collection = st.Page(
     page = "pages/2_data_collection.py",
     title= "Data Collection",
-    icon = "💾"
+    #icon = "💾"
 )
 
 data = st.Page(
     page = "pages/3_data.py",
     title= "Data Analysis",
-    icon = "📋"
+    #icon = "📋"
 )
 
 price_comparison = st.Page(
     page = "pages/4_price_comparison.py",
     title= "Price Comparison",
-    icon = "🆚"
+    #icon = "🆚"
 )
 
 page_5 = st.Page(
     page = "pages/5_fifth.py",
     title= "Fifth",
-    icon = "❤️"
+    #icon = "❤️"
 )
 
 page_6 = st.Page(
     page = "pages/6_sixth.py",
     title= "Third",
-    icon = "❤️"
+    #icon = "❤️"
 )
 
 pg = st.navigation(
