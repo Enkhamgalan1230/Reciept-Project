@@ -24,13 +24,13 @@ home_page = st.Page(
 )
 
 data = st.Page(
-    page = "pages/2_data.py",
+    page = "pages/3_data.py",
     title= "Data",
     icon = "📈"
 )
 
-page_3 = st.Page(
-    page = "pages/3_third.py",
+page_6 = st.Page(
+    page = "pages/6_sixth.py",
     title= "Third",
     icon = "❤️"
 )
@@ -48,7 +48,7 @@ page_5 = st.Page(
 )
 
 data_collection = st.Page(
-    page = "pages/data_collection.py",
+    page = "pages/2_data_collection.py",
     title= "Data Collection",
     icon = "💾"
 )
@@ -57,7 +57,7 @@ pg = st.navigation(
     {
         "Info": [home_page],
         "Data":[data_collection,data],
-        "Main Logics": [page_3,page_4,page_5]
+        "Main Logics": [page_4,page_5,page_6]
         
     }
 )
