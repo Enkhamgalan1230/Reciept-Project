@@ -117,6 +117,14 @@ product_mapping = {
     }
 }
 
+# Check if df is stored in session state
+if "df" in st.session_state:
+    df = st.session_state.df
+else:
+    st.write("⚠️ No data available. Please visit the Data Analysis page first.")
+
+st.title("📊 Supermarket Price Comparison Dashboard")
+
 # Filter dataset for selected products
 df_filtered = df[df["Name"].isin([name for products in product_mapping.values() for name in products.values()])]
 
