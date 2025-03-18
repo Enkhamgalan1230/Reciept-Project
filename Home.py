@@ -5,9 +5,17 @@ from st_supabase_connection import SupabaseConnection
 from supabase import create_client, Client
 import supabase
 import time
+import base64
 
 #This is the main file, not rlly home page.
+# Function to convert image to Base64
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
 
+logo = "assets/logo_longer_white.png"
+
+email_base64 = get_base64_image(logo)
 # Set page title and icon
 st.set_page_config(
     page_title="Reciept",  # Set the title in the navigation bar
