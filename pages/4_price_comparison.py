@@ -173,15 +173,15 @@ for product, stores in product_mapping.items():
 
         with cols[row_count % 4]:
             with st.container():
-                st.write(f"### {product}")
-                st.write(f"**Cheapest Store:** {cheapest_store}")
-                st.write(f"**Product Name:** {cheapest_product}")
+                st.markdown(f"#### 🛒 {product}")
+                st.markdown(f"**Cheapest Store:** `{cheapest_store}`")
+                st.markdown(f"**Product Name:** `{cheapest_product}`")
                 st.metric(
-                    label=f"**Price:**",
+                    label=f"💰 **Price:**",
                     value=f"£{cheapest_price:.2f}"
                 )
                 st.plotly_chart(fig, use_container_width=True)
     
     row_count += 1
 
-st.caption("Prices are based on the latest available scraped data.")
+st.caption("📌 Prices are based on the latest available scraped data.")
