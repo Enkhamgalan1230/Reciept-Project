@@ -71,9 +71,9 @@ if "df" not in st.session_state:
             st.write(f"Error fetching data: {e}")
             return None
 
-    # Fetch and store in session state
-    df = fetch_data()
-    st.session_state.df = df  # Store for later use
+    with st.spinner("Fetching data... Grab a coffee ☕ while we load everything!"):
+        df = fetch_data()
+        st.session_state.df = df  # Store for later use
 else:
     df = st.session_state.df  # Load cached data
 
