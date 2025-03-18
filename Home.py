@@ -35,10 +35,9 @@ data = st.Page(
     icon = "📋"
 )
 
-
 price_comparison = st.Page(
     page = "pages/4_price_comparison.py",
-    title= "Fourth",
+    title= "Price Comparison",
     icon = "🆚"
 )
 
