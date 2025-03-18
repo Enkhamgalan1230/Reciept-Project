@@ -203,6 +203,47 @@ st.write("We clean and format the data, ensuring all prices are correctly struct
 df = pd.DataFrame({"Product": ["Milk", "Eggs"], "Price (Raw)": ["£1.20", "99p"], "Cleaned Price": [1.20, 0.99]})
 st.dataframe(df)
 
+# Function to convert units
+def convert_units(value, unit):
+    if unit == '100g':
+        return value / 10, 'kg'
+    elif unit == '10g':
+        return value / 100, 'kg'
+    elif unit == 'kg':
+        return value, 'kg'
+    elif unit == '100ml':
+        return value / 10, 'litre'
+    elif unit == '75cl':
+        return value * (4 / 3), 'litre'
+    elif unit == 'litre':
+        return value, 'litre'
+    elif unit == 'each':
+        return value, 'each'
+    else:
+        return value, 'other'
+
+# Streamlit UI
+st.subheader("🛠️ Try It Yourself: Unit Conversion")
+
+# User input section
+unit_choice = st.radio("Select the unit you are entering:", ['100g', '10g', 'kg', '100ml', '75cl', 'litre', 'each'])
+user_input = st.number_input("Enter the value:", min_value=0.0, format="%.2f")
+
+# Convert the value
+standard_value, standard_unit = convert_units(user_input, unit_choice)
+
+# Display results in two columns
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric("Entered Value", f"{user_input} {unit_choice}")
+
+with col2:
+    st.metric("Standardized Value", f"{standard_value} {standard_unit}")
+
+st.info("🔄 This tool automatically converts small units (e.g., 100g → 0.1kg) into standardized measurements for easier comparisons.")
+
+
 st.subheader("3️⃣ Storing Data in Supabase")
 st.write("The cleaned data is then stored in **Supabase**, allowing for real-time retrieval and analysis.")
 with st.expander("Supabase Query Example"):

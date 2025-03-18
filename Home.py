@@ -26,7 +26,7 @@ home_page = st.Page(
 data = st.Page(
     page = "pages/3_data.py",
     title= "Data",
-    icon = "📈"
+    icon = "📋"
 )
 
 page_6 = st.Page(
