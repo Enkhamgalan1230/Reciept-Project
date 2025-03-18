@@ -61,7 +61,7 @@ pg = st.navigation(
         
     }
 )
-st.logo("assets/logo_longer.png",icon_image="assets/logo.png", size= "large")
+st.logo("assets/logo_longer_white.png",icon_image="assets/logo.png", size= "large")
 
 pg.run()
 
