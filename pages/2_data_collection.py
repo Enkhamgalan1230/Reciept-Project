@@ -186,7 +186,7 @@ with st.expander("See Sample Code of Scraper"):
     # Create DataFrame from the list
     df_products = pd.DataFrame(all_products)
 
-    desktop_path = os.path.expanduser(r"C:\Users\Entwan\Desktop")
+    desktop_path = os.path.expanduser("C:\\Users\\Entwan\\Desktop")
     current_date = datetime.now().strftime("%Y-%m-%d")
     csv_file_path = os.path.join(desktop_path, f"Tesco_{current_date}.csv")
     df_products.to_csv(csv_file_path, index=False, encoding='utf-8')
