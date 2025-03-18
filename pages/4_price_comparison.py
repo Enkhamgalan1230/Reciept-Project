@@ -165,7 +165,6 @@ for product, stores in product_mapping.items():
     if not price_df.empty:
         fig = px.bar(
             price_df, x="Store", y="Price", text="Price",
-            title=f"{product} Price Comparison",
             color="Store"
         )
         fig.update_traces(texttemplate="£%{text:.2f}", textposition="outside")
@@ -179,7 +178,7 @@ for product, stores in product_mapping.items():
         with cols[row_count % 4]:
             with st.container(border=True):
                 st.markdown(f"#### 🛒 {product}")
-                st.markdown(f"**Cheapest Store:** `{cheapest_store}`")
+                st.markdown(f"**Cheapest Store:** `{cheapest_store.capitalize()}`")
                 st.markdown(f"**Product Name:** `{cheapest_product}`")
                 st.metric(
                     label=f"💰 **Price:**",
