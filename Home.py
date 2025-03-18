@@ -44,13 +44,13 @@ price_comparison = st.Page(
 page_5 = st.Page(
     page = "pages/5_fifth.py",
     title= "Fifth",
-    icon = "❤️"
+    icon = ""
 )
 
 page_6 = st.Page(
     page = "pages/6_sixth.py",
     title= "Third",
-    icon = "❤️"
+    icon = ""
 )
 
 pg = st.navigation(
