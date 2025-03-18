@@ -176,7 +176,7 @@ for product, stores in product_mapping.items():
         )
 
         with cols[row_count % 4]:
-            with st.container(border=True, height=500):  # Fixed height for alignment
+            with st.container(border=True, height=300):  # Fixed height for alignment
                 st.markdown(f"#### 🛒 {product}")
                 st.markdown(f"**Cheapest Store:** `{cheapest_store}`")
                 st.markdown(f"**Product Name:** `{cheapest_product}`")
