@@ -269,10 +269,10 @@ standard_value, standard_unit = convert_units(user_input, unit_choice)
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("Entered Value (£)", f"{user_input}","({unit_choice})")
+    st.metric("Entered Value (£)", f"{user_input} ({unit_choice})")
 
 with col2:
-    st.metric("Standardised Value (£)", f"{standard_value}", "({standard_unit})")
+    st.metric("Standardised Value (£)", f"{standard_value} ({standard_unit})")
 
 st.info("🔄 This tool automatically converts small units (e.g., 100g → 0.1kg) into standardized measurements for easier comparisons.")
 
