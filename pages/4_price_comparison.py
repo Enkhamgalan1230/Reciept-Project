@@ -172,7 +172,7 @@ for product, stores in product_mapping.items():
         fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=350)
 
         with cols[row_count % 4]:
-            with st.container(border=True, padding=10):
+            with st.container(border=True):
                 st.markdown(f"#### 🛒 {product}")
                 st.markdown(f"**Cheapest Store:** `{cheapest_store}`")
                 st.markdown(f"**Product Name:** `{cheapest_product}`")
