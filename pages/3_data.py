@@ -127,7 +127,7 @@ if "df" not in st.session_state:
 
                     # Update fun fact every few batches
                     if batch % 5 == 0:  # Change the fun fact every 2 batches
-                        fun_fact_box.write(f"####🛍️ **Fun Fact:** {get_preloaded_fun_fact()}")
+                        fun_fact_box.success(f"🛒 **Did You Know?** {get_preloaded_fun_fact()}")
 
                     time.sleep(0.5)  # Rate limit
 
