@@ -226,8 +226,8 @@ def convert_units(value, unit):
 st.subheader("🛠️ Try It Yourself: Unit Conversion")
 
 # User input section
-unit_choice = st.radio("Select the unit you are entering:", ['100g', '10g', 'kg', '100ml', '75cl', 'litre', 'each'])
-user_input = st.number_input("Enter the value:", min_value=0.0, format="%.2f")
+unit_choice = st.radio("Select the unit you are entering:", ['100g', '10g', 'kg', '100ml', '75cl', 'litre', 'each'], horizontal= True)
+user_input = st.number_input("Enter the price value (£):", min_value=0.0, format="%.2f")
 
 # Convert the value
 standard_value, standard_unit = convert_units(user_input, unit_choice)
@@ -236,10 +236,10 @@ standard_value, standard_unit = convert_units(user_input, unit_choice)
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("Entered Value", f"{user_input} {unit_choice}")
+    st.metric("Entered Value (£)", f"{user_input} {unit_choice}")
 
 with col2:
-    st.metric("Standardized Value", f"{standard_value} {standard_unit}")
+    st.metric("Standardised Value (£)", f"{standard_value} {standard_unit}")
 
 st.info("🔄 This tool automatically converts small units (e.g., 100g → 0.1kg) into standardized measurements for easier comparisons.")
 
