@@ -117,14 +117,6 @@ product_mapping = {
     }
 }
 
-# Check if df is stored in session state
-if "df" in st.session_state:
-    df = st.session_state.df
-else:
-    st.write("⚠️ No data available. Please visit the Data Analysis page first.")
-
-st.title("📊 Supermarket Price Comparison Dashboard")
-
 # Filter dataset for selected products
 df_filtered = df[df["Name"].isin([name for products in product_mapping.values() for name in products.values()])]
 
@@ -132,8 +124,9 @@ df_filtered = df[df["Name"].isin([name for products in product_mapping.values() 
 df_filtered["Date"] = pd.to_datetime(df_filtered[["Year", "Month", "Day"]])
 df_latest = df_filtered.sort_values("Date").groupby("Name").last().reset_index()
 
-# Create 5 columns layout
-cols = st.columns(5)
+# Create 3 columns layout with 5 rows
+total_products = len(product_mapping)
+cols = st.columns(3)
 row_count = 0
 
 for product, stores in product_mapping.items():
@@ -161,13 +154,15 @@ for product, stores in product_mapping.items():
         color="Store"
     )
     fig.update_traces(texttemplate="£%{text:.2f}", textposition="outside")
-    fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=250)
+    fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=400)
 
-    with cols[row_count % 5]:
+    with cols[row_count % 3]:
+        st.write(f"### {product}")
+        st.write(f"**Cheapest Store:** {cheapest_store}")
+        st.write(f"**Product Name:** {cheapest_product}")
         st.metric(
-            label=f"**{product}**",
-            value=f"£{cheapest_price:.2f}",
-            delta=f"🛒 {cheapest_store} ({cheapest_product})"
+            label=f"**Price:**",
+            value=f"£{cheapest_price:.2f}"
         )
         st.plotly_chart(fig, use_container_width=True)
     
