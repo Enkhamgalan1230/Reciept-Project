@@ -225,7 +225,7 @@ subcategories_df = pd.read_csv(file_path)
 subcategory_list = subcategories_df["Subcategory"].unique().tolist()
 
 # Subcategory selection
-with st.container(border=True, height=300):
+with st.container(border=True, height=100):
     selected_subcategory = st.radio("Choose a product subcategory:", subcategory_list, horizontal=True)
 
 # Filter data by selected subcategory
