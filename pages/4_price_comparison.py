@@ -7,6 +7,7 @@ import supabase
 import time
 import matplotlib.pyplot as plt
 import plotly.express as px
+from fuzzywuzzy import process
 
 
 product_mapping = {
@@ -123,6 +124,28 @@ if "df" in st.session_state:
 else:
     st.write("⚠️ No data available. Please visit the Data Analysis page first.")
 
+# Convert date columns into a single Date column
+df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
+
+# Keep only the latest data per product
+df_latest = df.sort_values("Date").groupby("Name").last().reset_index()
+
+# Create a new column 'Unit' that consolidates unit information
+df_latest["Unit"] = df_latest.apply(
+    lambda row: "each" if row["Unit_each"] > 0 else 
+                "kg" if row["Unit_kg"] > 0 else 
+                "litre" if row["Unit_litre"] > 0 else "N/A", axis=1
+)
+
+# Drop unnecessary columns
+df_latest = df_latest.drop(columns=["Year", "Month", "Day", "Unit_each", "Unit_kg", "Unit_litre", "Date"])
+
+# Function to find similar products
+def find_similar_products(df, keyword, threshold=80):
+    df["similarity"] = df["Name"].apply(lambda x: process.extractOne(keyword, [x])[1])
+    return df[df["similarity"] >= threshold].sort_values(by="similarity", ascending=False)
+
+
 st.title("📊 Price Comparison")
 st.markdown("---")
 
@@ -195,6 +218,20 @@ st.caption("📌 Prices are based on the latest available scraped data.")
 
 st.markdown("---")
 
-st.subheader("🏆 Search Comparison")
+st.subheader("🔍 Search Comparison")
 
+def find_similar_products(df, keyword, threshold=80):
+    df["similarity"] = df["names"].apply(lambda x: process.extractOne(keyword, [x])[1])
+    return df[df["similarity"] >= threshold].sort_values(by="similarity", ascending=False)
+
+st.write("Enter a product name to compare prices across supermarkets.")
+
+# User input for keyword
+keyword = st.text_input("Enter a product name")
+
+if keyword:
+    filtered_df = find_similar_products(df_latest, keyword)
+    
+    # Display results without unnecessary columns
+    st.dataframe(filtered_df[["Store_Name", "Price", "Discount price", "Subcategory", "Name", "Standardised price per unit", "Unit", "Category"]])
 
