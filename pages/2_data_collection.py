@@ -30,20 +30,20 @@ with st.expander("Supermarkets"):
 
 with st.expander("How Our Web Scraper Works"):
     ("""
-    ### 📌 How Selenium Works in Web Scraping  
+    #### 📌 How Selenium Works in Web Scraping  
     Selenium is a **powerful tool** that automates web browsers to interact with web pages just like a human user. We use it to extract supermarket product data by mimicking actions such as **clicking buttons, scrolling, and navigating pages**.
 
-    ### 🖥️ Headless Browsing for Efficiency  
+    #### 🖥️ Headless Browsing for Efficiency  
     To speed up the scraping process, we use a **headless browser**, which runs in the background **without opening a visible window**. This makes the scraper faster and reduces system resource usage.
 
-    ### 🔄 User-Agent Switching to Avoid Detection  
+    #### 🔄 User-Agent Switching to Avoid Detection  
     Websites often block scrapers if they detect automated access. To prevent this, we use a **User-Agent**, which tells the website what browser we are using.  
     Instead of always using the default User-Agent, our scraper **randomly switches** between different browser types (e.g., Chrome, Firefox) to appear more like a real user.
 
-    ### 🔗 Extracting URLs and Navigating the Website  
+    #### 🔗 Extracting URLs and Navigating the Website  
     Before scraping, we manually collect URLs for each **product category** (e.g., Fruits, Vegetables, Dairy). These serve as **starting points** for our scraper. Selenium loads each URL, finds the product listings, and extracts important details.
 
-    ### 🔍 Main Logic of the Web Scraper  
+    #### 🔍 Main Logic of the Web Scraper  
     1️⃣ **Load the Category Page** → Open a category URL in Selenium.  
     2️⃣ **Find Product Elements** → Locate product boxes using **CSS selectors**.  
     3️⃣ **Extract Product Details** → Scrape the product **name, price, unit size, and discount**.  
