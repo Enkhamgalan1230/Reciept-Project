@@ -230,19 +230,22 @@ selected_subcategory = st.radio("Choose a product subcategory:", subcategory_lis
 # Filter data by selected subcategory
 df_filtered = df_latest[df_latest["Subcategory"] == selected_subcategory]
 
-# Function to find similar products
-def find_similar_products(df, keyword, threshold=80):
-    df["similarity"] = df["Name"].apply(lambda x: process.extractOne(keyword, [x])[1] if isinstance(x, str) else 0)
-    return df[df["similarity"] >= threshold].sort_values(by="similarity", ascending=False)
-
 st.subheader("🔍 Search for a Product")
 
 # User input for keyword
 keyword = st.text_input("Enter a product name")
 
+def find_strict_match_products(df, keyword):
+    """ Returns products that contain all keywords in the input query """
+    keywords = keyword.lower().split()  # Split input into words
+    df["match_score"] = df["Name"].apply(
+        lambda x: sum(kw in x.lower() for kw in keywords)  # Count how many keywords match
+    )
+    return df[df["match_score"] == len(keywords)].drop(columns=["match_score"])  # Keep only full matches
+
 if keyword:
-    filtered_df = find_similar_products(df_filtered, keyword)
-    
+    filtered_df = find_strict_match_products(df_filtered, keyword)
+
     # Ensure "Unit" exists in the filtered data
     if "Unit" not in filtered_df.columns:
         st.write("⚠️ 'Unit' column is missing from the filtered data. Displaying available columns.")
@@ -250,7 +253,7 @@ if keyword:
     else:
         # Display results in ascending order of price
         filtered_df = filtered_df.sort_values(by="Price", ascending=True)
-        
+
         # Display table with horizontal scroll and limit height
         st.dataframe(
             filtered_df[["Store_Name", "Price", "Discount price", "Subcategory", "Name", "Standardised price per unit", "Unit", "Category"]],
