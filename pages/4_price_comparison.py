@@ -17,98 +17,98 @@ product_mapping = {
         "waitrose" : "Essential Chicken Breast Fillets",
         "Sainsburys" : "Sainsburys British Fresh Chicken Breast Fillets Skinless & Boneless 1kg"
     },
-    "Canned Tuna" : {
+    "Canned Tuna (~145g)" : {
         "tesco" : "Stockwell & Co Tuna Chunks In Brine 145G",
         "asda" : "ASDA Skipjack Tuna Chunks in Brine",
         "aldi" : "Everyday Essentials Tuna Chunks In Brine 145g",
         "waitrose" : "Essential MSC Tuna Chunks in Brine",
         "Sainsburys" : "Sainsbury's Tuna Chunks in Brine 145g"
     },
-    "Long Grain Rice" : {
+    "Long Grain Rice (1kg)" : {
         "tesco" : "Tesco Easy Cook Long Grain Rice 1Kg",
         "asda" : "ASDA Long Grain White Rice 1kg",
         "aldi" : "Worldwide Foods Easy Cook Long Grain Rice 1kg",
         "waitrose" : "Essential Long Grain Rice Easy Cook",
         "Sainsburys" : "Sainsbury's Long Grain Rice 1kg"
     },
-    "Penne Pasta" : {
+    "Penne Pasta (500g)" : {
         "tesco" : "Tesco Penne Pasta Quills 500G",
         "asda" : "ASDA Penne 500g",
         "aldi" : "Everyday Essentials Penne Pasta 500g",
         "waitrose" : "Essential Penne",
         "Sainsburys" : "Sainsbury's Quick Cook Penne Pasta 500g"
     },
-    "WholeMeal Bread" : {
+    "WholeMeal Bread (800g)" : {
         "tesco" : "H.W. Nevills Medium Sliced Wholemeal Bread 800g",
         "asda" : "The BAKERY at ASDA Wholemeal Medium Sliced Bread",
         "aldi" : "Everyday Essentials Medium Sliced Wholemeal Bread 800g",
         "waitrose" : "Hovis Wholemeal Medium Sliced Bread",
         "Sainsburys" : "Sainsbury's Medium Sliced Wholemeal Bread 800g"
     },
-    "Olive Oil" : {
+    "Olive Oil (1l)" : {
         "tesco" : "Tesco Extra Virgin Olive Oil 1Ltr",
         "asda" : "ASDA Extra Virgin Olive Oil",
         "aldi" : "Solesta Extra Virgin Olive Oil 1l",
         "waitrose" : "Waitrose Extra Virgin Olive Oil",
         "Sainsburys" : "Sainsbury's Olive Oil, Extra Virgin 1L"
     },
-    "Eggs (6 pack)" : {
+    "Eggs (6pc)" : {
         "tesco" : "Tesco Large Free Range Eggs 6 Pack",
         "asda" : "ASDA 6 Large Free Range Eggs",
         "aldi" : "Merevale British Free Range Very Large Eggs 438g/6 Pack",
         "waitrose" : "Waitrose Blacktail Free Range Very Large Eggs",
         "Sainsburys" : "Sainsbury's British Free Range Eggs Large x6"
     },
-    "Semi Skimmed Milk" : {
+    "Semi Skimmed Milk (2pints)" : {
         "tesco" : "Tesco British Semi Skimmed Milk 1.13L, 2 Pints",
         "asda" : "ASDA British Milk Semi Skimmed 2 Pints",
         "aldi" : "Cowbelle British Semi-skimmed Milk 2 Pints",
         "waitrose" : "Essential British Free Range Semi-Skimmed Milk 2 Pints",
         "Sainsburys" : "Sainsbury British Semi Skimmed Milk 1.13L"
     },
-    "Granola" : {
+    "Granola (1kg)" : {
         "tesco" : "Tesco Honey & Almond Granola 1Kg",
         "asda" : "ASDA Tropical Granola",
         "aldi" : "Harvest Morn Raisin & Almond Granola 1kg",
         "waitrose" : "Waitrose Raisin, Almond Honey Granola 1Kg",
         "Sainsburys" : "Sainsbury's Granola, Raisin, Nut & Honey 1kg"
     },
-    "Salted Butter" : {
+    "Salted Butter(250g)" : {
         "tesco" : "Tesco British Salted Block Butter 250G",
         "asda" : "ASDA British Salted Butter 250g",
         "aldi" : "Cowbelle British Salted Butter 250g",
         "waitrose" : "Essential Salted Butter",
         "Sainsburys" : "Sainsbury's British Butter, Salted 250g"
     },
-    "Ketchup" : {
+    "Ketchup(460g-970g)" : {
         "tesco" : "Tesco Tomato Ketchup 890G",
         "asda" : "ASDA Classic Tomato Ketchup 970g",
         "aldi" : "Bramwells Tomato Ketchup 550g/500ml",
         "waitrose" : "Essential Tomato Ketchup",
         "Sainsburys" : "Stamford Street Co. Tomato Ketchup 460g"
     },
-    "Frozen French Fries" : {
+    "Frozen French Fries(~1.5kg)" : {
         "tesco" : "Tesco French Fries 1.5Kg",
         "asda" : "ASDA French Fries",
         "aldi" : "Four Seasons Steak Cut Chips 1.5kg",
         "waitrose" : "Essential Frozen Straight Cut Oven Chips",
         "Sainsburys" : "Sainsbury's French Fries 1.5kg"
     },
-    "Cheddar Cheese" : {
+    "Cheddar Cheese(~200g)" : {
         "tesco" : "Tesco British Mature Cheddar Cheese 220G",
         "asda" : "ASDA Mature Cheddar Cheese",
         "aldi" : "Glen Lochy Lockerbie Mature Cheddar 200g",
         "waitrose" : "Essential Mature Cheddar Cheese Strength 4",
         "Sainsburys" : "Sainsbury's British Mature Cheddar Cheese 400g"
     },
-    "Instant Coffee" : {
+    "Instant Coffee(200g)" : {
         "tesco" : "Tesco Gold Instant Coffee 200G",
         "asda" : "ASDA Gold Roasted Coffee Instant Granules 200g",
         "aldi" : "Alcafé Rich Roast Instant Coffee Granules 200g",
         "waitrose" : "Nescafe Gold Blend Instant Coffee",
         "Sainsburys" : "Kenco Smooth Instant Coffee 200g"
     },
-    "Ground Beef" : {
+    "Ground Beef(500g)" : {
         "tesco" : "Tesco Lean Beef Steak Mince 5% Fat 500g",
         "asda" : "ASDA Flavourful Lean Beef Steak Mince",
         "aldi" : "Nature's Glen Scotch Beef Lean Mince 5% Fat 500g",
