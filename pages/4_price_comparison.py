@@ -132,9 +132,9 @@ df_filtered = df[df["Name"].isin([name for products in product_mapping.values() 
 df_filtered["Date"] = pd.to_datetime(df_filtered[["Year", "Month", "Day"]])
 df_latest = df_filtered.sort_values("Date").groupby("Name").last().reset_index()
 
-# Create 3 columns layout with 5 rows
+# Create 4 columns layout
 total_products = len(product_mapping)
-cols = st.columns(3)
+cols = st.columns(4)
 row_count = 0
 
 for product, stores in product_mapping.items():
@@ -171,7 +171,7 @@ for product, stores in product_mapping.items():
         fig.update_traces(texttemplate="£%{text:.2f}", textposition="outside")
         fig.update_layout(yaxis_title="Price (£)", xaxis_title="Supermarket", height=500)
 
-        with cols[row_count % 3]:
+        with cols[row_count % 4]:
             with st.container():
                 st.write(f"### {product}")
                 st.write(f"**Cheapest Store:** {cheapest_store}")
