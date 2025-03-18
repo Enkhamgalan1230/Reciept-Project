@@ -15,7 +15,7 @@ product_mapping = {
         "asda" : "ASDA Tender Chicken Breast Fillets",
         "aldi" : "Shazans Chicken Breast Fillets 950g",
         "waitrose" : "Essential Chicken Breast Fillets",
-        "Sainsburys" : "Sainsbury's British Fresh Chicken Breast Fillets Skinless & Boneless 1kg"
+        "Sainsburys" : "Sainsburys British Fresh Chicken Breast Fillets Skinless & Boneless 1kg"
     },
     "Canned Tuna" : {
         "tesco" : "Stockwell & Co Tuna Chunks In Brine 145G",
@@ -39,7 +39,7 @@ product_mapping = {
         "Sainsburys" : "Sainsbury's Quick Cook Penne Pasta 500g"
     },
     "WholeMeal Bread" : {
-        "tesco" : "H.W. Nevill's Medium Sliced Wholemeal Bread 800g",
+        "tesco" : "H.W. Nevills Medium Sliced Wholemeal Bread 800g",
         "asda" : "The BAKERY at ASDA Wholemeal Medium Sliced Bread",
         "aldi" : "Everyday Essentials Medium Sliced Wholemeal Bread 800g",
         "waitrose" : "Hovis Wholemeal Medium Sliced Bread",
@@ -64,7 +64,7 @@ product_mapping = {
         "asda" : "ASDA British Milk Semi Skimmed 2 Pints",
         "aldi" : "Cowbelle British Semi-skimmed Milk 2 Pints",
         "waitrose" : "Essential British Free Range Semi-Skimmed Milk 2 Pints",
-        "Sainsburys" : "Sainsbury's British Semi Skimmed Milk 1.13L (2 pint)"
+        "Sainsburys" : "Sainsbury British Semi Skimmed Milk 1.13L (2 pint)"
     },
     "Granola" : {
         "tesco" : "Tesco Honey & Almond Granola 1Kg",
