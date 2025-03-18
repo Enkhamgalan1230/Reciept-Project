@@ -221,7 +221,7 @@ st.markdown("---")
 st.subheader("🔍 Search Comparison")
 
 def find_similar_products(df, keyword, threshold=80):
-    df["similarity"] = df["names"].apply(lambda x: process.extractOne(keyword, [x])[1])
+    df["similarity"] = df["Name"].apply(lambda x: process.extractOne(keyword, [x])[1])
     return df[df["similarity"] >= threshold].sort_values(by="similarity", ascending=False)
 
 st.write("Enter a product name to compare prices across supermarkets.")
