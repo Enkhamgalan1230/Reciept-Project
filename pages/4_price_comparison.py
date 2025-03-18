@@ -10,7 +10,7 @@ import plotly.express as px
 
 
 product_mapping = {
-    "chicken breast 1kg" : {
+    "Chicken Breast (1kg)" : {
         "tesco" : "Tesco British Chicken Breast Fillets 950G",
         "asda" : "ASDA Tender Chicken Breast Fillets",
         "aldi" : "Shazans Chicken Breast Fillets 950g",
@@ -176,10 +176,10 @@ for product, stores in product_mapping.items():
         )
 
         with cols[row_count % 4]:
-            with st.container(border=True, height=300):  # Fixed height for alignment
+            with st.container(border=True, height=500):  # Fixed height for alignment
                 st.markdown(f"#### 🛒 {product}")
-                st.markdown(f"**Cheapest Store:** `{cheapest_store}`")
                 st.markdown(f"**Cheapest Store:** `{cheapest_store.capitalize()}`")
+                st.markdown(f"**Product Name:** `{cheapest_product}`")
                 st.metric(
                     label=f"💰 **Price:**",
                     value=f"£{cheapest_price:.2f}"
