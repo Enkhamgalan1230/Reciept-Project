@@ -184,6 +184,7 @@ for product, stores in product_mapping.items():
                     label=f"💰 **Price:**",
                     value=f"£{cheapest_price:.2f}"
                 )
+                st.plotly_chart(fig, use_container_width=True)
     
     row_count += 1
 
