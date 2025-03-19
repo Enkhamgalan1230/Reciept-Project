@@ -229,11 +229,20 @@ subcategory_list = subcategories_df["Subcategory"].unique().tolist()
 with st.container(border=True, height=180):
     selected_subcategories = st.pills("Choose product subcategories:", subcategory_list, selection_mode="multi")
 
+# Allow multiple store selections using st.pills
+store_list = ["Tesco", "Asda", "Aldi", "Waitrose", "Sainsbury's"]
+with st.container(border=True, height=100):
+    selected_stores = st.pills("Choose stores to compare:", store_list, selection_mode="multi")
+
 # Filter data based on selected subcategories
 if selected_subcategories:
     df_filtered = df_latest[df_latest["Subcategory"].isin(selected_subcategories)]
 else:
     df_filtered = df_latest  # If nothing is selected, show all data
+
+# Further filter by selected stores
+if selected_stores:
+    df_filtered = df_filtered[df_filtered["Store_Name"].isin(selected_stores)]
 
 # User input for keyword
 keyword = st.text_input("Enter a product name", placeholder="Ex: Chicken breast 400g")
