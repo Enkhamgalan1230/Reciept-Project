@@ -57,21 +57,23 @@ top_expensive = top_expensive[["Name", "Price", "Store_Name", "Unit Type"]]
 
 st.table(top_expensive)
 
-# 🔹 Top 5 Most Expensive Products Per Store
-st.subheader("🏬 Top 5 Most Expensive Products Per Store")
+# 🔹 Store Selection for Most Expensive Items
+st.subheader("🏬 Select Store to View Most Expensive Items")
 
 # Get unique store names
 stores = df_unique["Store_Name"].unique()
 
-# Create five columns for each store
-columns = st.columns(len(stores))
+# Use st.pills for store selection
+#selected_store = st.radio("Choose a store:", stores, horizontal=True)
+selected_store = st.pills("Choose a store:", stores)
 
-for col, store in zip(columns, stores):
-    with col:
-        st.markdown(f"**{store}**")  # Store Name as a header
-        top_store = df_unique[df_unique["Store_Name"] == store].sort_values(by="Price", ascending=False).head(5)
-        top_store = top_store[["Name", "Price", "Unit Type"]]
-        st.table(top_store)
+
+# Filter top 5 most expensive for selected store
+if selected_store:
+    st.subheader(f"💸 {selected_store}'s Most Expensive Products")
+    top_store = df_unique[df_unique["Store_Name"] == selected_store].sort_values(by="Price", ascending=False).head(5)
+    top_store = top_store[["Name", "Price", "Unit Type"]]
+    st.table(top_store)
 
 # 📊 Price Distribution Plot
 st.subheader("📊 Price Distribution")
