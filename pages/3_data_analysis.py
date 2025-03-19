@@ -36,6 +36,7 @@ st.subheader("📋 Sample Data")
 sample_df = df.sample(n=10, random_state=42)  # You can remove 'random_state' for full randomness
 st.dataframe(sample_df)
 # 🔹 Top 5 Most Expensive Products
+st.markdown("---")
 st.subheader("💰 Top 5 Most Expensive Products")
 
 # Determine Unit Type
@@ -76,12 +77,14 @@ if selected_store:
     st.table(top_store)
 
 # 📊 Price Distribution Plot
+st.markdown("---")
 st.subheader("📊 Price Distribution")
 fig1 = px.histogram(df, x="Price", nbins=30, title="Distribution of Product Prices", 
                     color_discrete_sequence=["#3498db"], template="plotly_white")
 st.plotly_chart(fig1, use_container_width=True)
 
 # 📉 Price Trends Over Time (Fix KeyError)
+st.markdown("---")
 st.subheader("📉 Price Trends Over Time")
 
 if "Date" in df.columns and not df["Date"].isnull().all():
@@ -93,6 +96,7 @@ else:
     st.error("❌ No valid 'Date' column found. Ensure 'Year', 'Month', and 'Day' exist in the dataset.")
 
 # 🛍️ Average Price by Category
+st.markdown("---")
 st.subheader("🛍️ Average Price by Category")
 avg_price_category = df.groupby("Category")["Price"].mean().reset_index()
 fig3 = px.bar(avg_price_category, x="Category", y="Price", title="Average Price by Category",
@@ -100,6 +104,7 @@ fig3 = px.bar(avg_price_category, x="Category", y="Price", title="Average Price 
 st.plotly_chart(fig3, use_container_width=True)
 
 # 🏪 Price Comparison Across Stores
+st.markdown("---")
 st.subheader("🏪 Price Comparison Across Stores")
 avg_price_per_store = df.groupby("Store_Name")["Price"].mean().reset_index()
 fig4 = px.bar(avg_price_per_store, x="Store_Name", y="Price", title="Average Price Per Store",
