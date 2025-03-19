@@ -139,9 +139,6 @@ if "df" not in st.session_state:
 else:
     df = st.session_state.df  # Load cached data
 
-# Ensure fetching messages disappear once data is ready
-st.markdown("---")
-
 if df is not None:
     st.write("✅ **Data loaded successfully!**")
     st.markdown("---")
