@@ -75,3 +75,6 @@ with st.container(border=True):
                 value=f"£{row['Price_latest']:.2f}",
                 delta=f"{row['Inflation']:.2f}%" if row['Inflation'] != 0 else "0.00%",
             )
+    
+st.caption("📌 Prices and categories are based on the latest available data and previous week's data.")
+
