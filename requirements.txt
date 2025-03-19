@@ -13,3 +13,4 @@ supabase
 plotly.express
 fuzzywuzzy
 wordcloud
+streamlit_geolocation
