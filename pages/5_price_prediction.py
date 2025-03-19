@@ -26,11 +26,16 @@ latest_date = df["datetime"].max()
 # Filter data to only include rows from the latest date
 df_latest = df[df["datetime"] == latest_date]
 
-# Compute the average price for each store
-average_prices = df_latest.groupby("Store_Name")["Price"].mean().reset_index()
+# Compute the average price for each subcategory in each store
+average_prices = df_latest.groupby(["Store_Name", "Subcategory"])["Price"].mean().reset_index()
 
 # Display results
-st.subheader("📌 Average Prices by Store (Latest Date)")
+st.subheader("📌 Average Prices by Store & Subcategory (Latest Date)")
 
-for _, row in average_prices.iterrows():
-    st.markdown(f"**{row['Store_Name']}**: £{row['Price']:.2f}")
+# Organize and display store-wise
+for store in average_prices["Store_Name"].unique():
+    st.markdown(f"### 🏪 {store}")  # Store name as a header
+    store_data = average_prices[average_prices["Store_Name"] == store]
+    
+    for _, row in store_data.iterrows():
+        st.markdown(f"- **{row['Subcategory']}**: £{row['Price']:.2f}")
