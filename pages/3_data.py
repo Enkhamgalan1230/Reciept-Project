@@ -164,8 +164,11 @@ if df is not None:
 
     # 🔹 Show Sample Data
     st.subheader("📋 Sample Data")
-    st.dataframe(df.head(10))
+    # Shuffle and select 10 random rows
+    sample_df = df.sample(n=10, random_state=42)  # You can remove 'random_state' for full randomness
 
+    st.subheader("📋 Sample Data")
+    st.dataframe(sample_df)
     # 🔹 Top 5 Most Expensive Products
     st.subheader("💰 Top 5 Most Expensive Products")
 
