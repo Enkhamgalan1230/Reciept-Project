@@ -230,7 +230,7 @@ with st.container(border=True, height=180):
     selected_subcategories = st.pills("Choose product subcategories:", subcategory_list, selection_mode="multi")
 
 # Allow multiple store selections using st.pills
-store_list = ["Tesco", "Asda", "Aldi", "Waitrose", "Sainsbury's"]
+store_list = ["Tesco", "Asda", "Aldi", "Waitrose", "Sainsburys"]
 with st.container(border=True, height=100):
     selected_stores = st.pills("Choose stores to compare:", store_list, selection_mode="multi")
 
