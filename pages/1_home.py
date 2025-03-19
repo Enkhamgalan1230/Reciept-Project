@@ -29,6 +29,8 @@ with col2:
         By analysing grocery prices across five different supermarkets, predicting and alerting users to potential price changes, 
         providing weekly price inflation status updates, and generating a personalised shopping list, 
         this app will help users manage their spending and make well-informed decisions 🚀.
+
+        Entwan Enkhbayar
         """
     )
 
