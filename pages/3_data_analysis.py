@@ -57,6 +57,22 @@ top_expensive = top_expensive[["Name", "Price", "Store_Name", "Unit Type"]]
 
 st.table(top_expensive)
 
+# 🔹 Top 5 Most Expensive Products Per Store
+st.subheader("🏬 Top 5 Most Expensive Products Per Store")
+
+# Get unique store names
+stores = df_unique["Store_Name"].unique()
+
+# Create five columns for each store
+columns = st.columns(len(stores))
+
+for col, store in zip(columns, stores):
+    with col:
+        st.markdown(f"**{store}**")  # Store Name as a header
+        top_store = df_unique[df_unique["Store_Name"] == store].sort_values(by="Price", ascending=False).head(5)
+        top_store = top_store[["Name", "Price", "Unit Type"]]
+        st.table(top_store)
+
 # 📊 Price Distribution Plot
 st.subheader("📊 Price Distribution")
 fig1 = px.histogram(df, x="Price", nbins=30, title="Distribution of Product Prices", 
