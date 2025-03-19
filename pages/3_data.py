@@ -72,6 +72,15 @@ fun_facts = [
     "Aldi operates a **no-frills shopping model** to keep costs low for customers! 💰"
 ]
 
+def get_preloaded_fun_fact():
+    return random.choice(fun_facts)
+
+st.title("📊 Data")
+st.markdown("---")
+
+# Initialize Supabase connection
+conn = st.connection("supabase", type=SupabaseConnection)
+
 # Function to fetch data and cache it globally
 @st.cache_data  # This ensures data is cached persistently across sessions and tabs
 def fetch_data():
