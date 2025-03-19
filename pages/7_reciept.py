@@ -21,8 +21,22 @@ def get_nearby_stores(lat, lon, radius=5000, limit=5):
         "radius": radius,
         "limit": limit
     }
+    
     response = requests.get(url, params=params)
-    return response.json()
+    
+    # DEBUG: Print response status and content
+    st.write("Response Status:", response.status_code)
+    st.write("Response Content:", response.text)
+    
+    if response.status_code == 200:
+        try:
+            return response.json()
+        except requests.exceptions.JSONDecodeError:
+            st.error("Error decoding JSON. API might be rate-limited.")
+            return []
+    else:
+        st.error("Failed to fetch nearby supermarkets.")
+        return []
 
 # Function to find the closest store
 def find_closest_store(user_lat, user_lon, stores):
