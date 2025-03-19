@@ -37,9 +37,9 @@ df_previous = df[df["datetime"] == second_latest_date]
 stores = df["Store_Name"].unique().tolist()
 selected_store = st.pills("Pick a Supermarket", stores, selection_mode="single")
 
-# If no store is selected, show a message
+# If no store is selected, show a success message
 if not selected_store:
-    st.markdown("<h3 style='text-align: center; color: gray;'>Please choose a store</h3>", unsafe_allow_html=True)
+    st.success("✅ Please choose a store")
     st.stop()
 
 # Filter data for the selected store
@@ -59,21 +59,6 @@ df_inflation["Price_previous"].fillna(df_inflation["Price_latest"], inplace=True
 df_inflation["Inflation"] = ((df_inflation["Price_latest"] - df_inflation["Price_previous"]) / df_inflation["Price_previous"]) * 100
 df_inflation["Inflation"].fillna(0, inplace=True)
 
-# Format prices and inflation
-df_inflation["Price_latest"] = df_inflation["Price_latest"].apply(lambda x: f"£{x:.2f}" if pd.notna(x) else "No Data")
-
-# Fix inflation arrows:
-def format_inflation(value):
-    value = float(value)
-    if value > 0:
-        return f"<span style='color:green; font-size: 14px; font-weight: bold;'>{value:.2f}% ⬆️</span>"
-    elif value < 0:
-        return f"<span style='color:red; font-size: 14px; font-weight: bold;'>{value:.2f}% 🔻</span>"
-    else:
-        return f"<span style='color:gray; font-size: 14px; font-weight: bold;'>0.00%</span>"
-
-df_inflation["Inflation"] = df_inflation["Inflation"].apply(format_inflation)
-
 # Display selected store title inside a **container with border**
 with st.container(border=True):
     st.markdown(f"## {selected_store}")
@@ -81,18 +66,11 @@ with st.container(border=True):
     # Use a **5-column layout** for better spacing
     columns = st.columns(5)
     for idx, row in df_inflation.iterrows():
-        # Place items in columns dynamically (cycling through the 5 columns)
         col = columns[idx % 5]
 
-        # Wrap each category in a small container using **HTML & CSS for spacing & height**
-        col.markdown(
-            f"""
-            <div style="border: 1px solid #444; padding: 12px; border-radius: 12px; height: 140px; 
-                        text-align: center; margin-bottom: 10px; background-color: #222;">
-                <div style="font-weight: bold; font-size: 16px;">{row['Subcategory'].replace('_', ' ').title()}</div>
-                <div style="font-size: 20px; font-weight: bold;">{row['Price_latest']}</div>
-                <div>{row['Inflation']}</div>
-            </div>
-            """,
-            unsafe_allow_html=True
+        # Use **st.metric** for better UI with automatic green/red arrows
+        col.metric(
+            label=row["Subcategory"].replace("_", " ").title(),  # Format category names
+            value=f"£{row['Price_latest']:.2f}",
+            delta=f"{row['Inflation']:.2f}%" if row['Inflation'] != 0 else "0.00%",
         )
