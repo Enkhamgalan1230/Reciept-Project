@@ -176,7 +176,7 @@ for product, stores in product_mapping.items():
             yaxis_title="Price (£)",
             xaxis_title="Supermarket",
             height=300,
-            xaxis_tickangle=-45  # Rotate x-axis labels to -45 degrees
+            xaxis_tickangle=-45, # Rotate x-axis labels to -45 degrees
             xaxis=dict(showticklabels=False)
         )
 
