@@ -58,7 +58,7 @@ price_inflation = st.Page(
 price_prediction = st.Page(
     page = "pages/6_price_prediction.py",
     title= "Price Prediction",
-    icon = ""
+    icon = "🔮"
 )
 
 reciept = st.Page(
