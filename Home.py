@@ -61,6 +61,12 @@ price_prediction = st.Page(
     icon = ""
 )
 
+reciept = st.Page(
+    page = "pages/7_reciept.py",
+    title= "Reciept",
+    icon = "📃"
+)
+
 data_fetcher = st.Page(
     page = "pages/data_fetcher.py",
     title= "Data Fetcher",
@@ -72,7 +78,7 @@ pg = st.navigation(
     {
         "Info": [home_page],
         "Data":[data_collection,data],
-        "Main Logics": [price_comparison,price_inflation,price_prediction],
+        "Main Logics": [price_comparison,price_inflation,price_prediction, reciept],
         "Boring Stuff": [data_fetcher]
     }
 )
