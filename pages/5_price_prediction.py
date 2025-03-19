@@ -72,8 +72,15 @@ if selected_store:
             # Place items in columns dynamically (cycling through the 5 columns)
             col = columns[idx % 5]
 
-            # Wrap each category in a small, evenly spaced container
-            with col.container(border=True, height=120, padding=10):
-                col.markdown(f"<div style='text-align: center; font-weight: bold; font-size: 16px;'>{row['Subcategory'].replace('_', ' ').title()}</div>", unsafe_allow_html=True)
-                col.markdown(f"<div style='text-align: center; font-size: 18px; font-weight: bold;'>{row['Price_latest']}</div>", unsafe_allow_html=True)
-                col.markdown(f"<div style='text-align: center;'>{price_change}</div>", unsafe_allow_html=True)
+            # Wrap each category in a small container using **HTML & CSS for spacing & height**
+            col.markdown(
+                f"""
+                <div style="border: 1px solid #444; padding: 10px; border-radius: 10px; height: 130px; 
+                            text-align: center; margin-bottom: 10px; background-color: #222;">
+                    <div style="font-weight: bold; font-size: 16px;">{row['Subcategory'].replace('_', ' ').title()}</div>
+                    <div style="font-size: 18px; font-weight: bold;">{row['Price_latest']}</div>
+                    <div>{price_change}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
