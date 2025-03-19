@@ -37,50 +37,62 @@ df_previous = df[df["datetime"] == second_latest_date]
 stores = df["Store_Name"].unique().tolist()
 selected_store = st.pills("Pick a Supermarket", stores, selection_mode="single")
 
-if selected_store:
-    # Filter data for the selected store
-    df_latest_store = df_latest[df_latest["Store_Name"] == selected_store]
-    df_previous_store = df_previous[df_previous["Store_Name"] == selected_store]
+# If no store is selected, show a message
+if not selected_store:
+    st.markdown("<h3 style='text-align: center; color: gray;'>Please choose a store</h3>", unsafe_allow_html=True)
+    st.stop()
 
-    # Compute the average price for each subcategory in the selected store
-    latest_prices = df_latest_store.groupby("Subcategory")["Price"].mean().reset_index()
-    previous_prices = df_previous_store.groupby("Subcategory")["Price"].mean().reset_index()
+# Filter data for the selected store
+df_latest_store = df_latest[df_latest["Store_Name"] == selected_store]
+df_previous_store = df_previous[df_previous["Store_Name"] == selected_store]
 
-    # Merge both datasets
-    df_inflation = latest_prices.merge(previous_prices, on="Subcategory", suffixes=("_latest", "_previous"), how="outer")
+# Compute the average price for each subcategory in the selected store
+latest_prices = df_latest_store.groupby("Subcategory")["Price"].mean().reset_index()
+previous_prices = df_previous_store.groupby("Subcategory")["Price"].mean().reset_index()
 
-    # Handle missing data by filling with available values and setting inflation to 0 if missing
-    df_inflation["Price_latest"].fillna(df_inflation["Price_previous"], inplace=True)
-    df_inflation["Price_previous"].fillna(df_inflation["Price_latest"], inplace=True)
-    df_inflation["Inflation"] = ((df_inflation["Price_latest"] - df_inflation["Price_previous"]) / df_inflation["Price_previous"]) * 100
-    df_inflation["Inflation"].fillna(0, inplace=True)
+# Merge both datasets
+df_inflation = latest_prices.merge(previous_prices, on="Subcategory", suffixes=("_latest", "_previous"), how="outer")
 
-    # Format prices and inflation
-    df_inflation["Price_latest"] = df_inflation["Price_latest"].apply(lambda x: f"£{x:.2f}" if pd.notna(x) else "No Data")
-    df_inflation["Inflation"] = df_inflation["Inflation"].apply(lambda x: f"{x:.2f}%" if pd.notna(x) else "0.00%")
+# Handle missing data by filling with available values and setting inflation to 0 if missing
+df_inflation["Price_latest"].fillna(df_inflation["Price_previous"], inplace=True)
+df_inflation["Price_previous"].fillna(df_inflation["Price_latest"], inplace=True)
+df_inflation["Inflation"] = ((df_inflation["Price_latest"] - df_inflation["Price_previous"]) / df_inflation["Price_previous"]) * 100
+df_inflation["Inflation"].fillna(0, inplace=True)
 
-    # Display selected store title inside a **container with border**
-    with st.container(border=True):
-        st.markdown(f"## {selected_store}")
+# Format prices and inflation
+df_inflation["Price_latest"] = df_inflation["Price_latest"].apply(lambda x: f"£{x:.2f}" if pd.notna(x) else "No Data")
 
-        # Use a **5-column layout** for better spacing
-        columns = st.columns(5)
-        for idx, row in df_inflation.iterrows():
-            price_color = "green" if float(row["Inflation"].replace('%', '')) > 0 else "red"
-            price_change = f"<span style='color:{price_color}; font-size: 14px; font-weight: bold;'>{row['Inflation']} {'🔺' if price_color == 'green' else '🔻'}</span>"
+# Fix inflation arrows:
+def format_inflation(value):
+    value = float(value)
+    if value > 0:
+        return f"<span style='color:green; font-size: 14px; font-weight: bold;'>{value:.2f}% ⬆️</span>"
+    elif value < 0:
+        return f"<span style='color:red; font-size: 14px; font-weight: bold;'>{value:.2f}% 🔻</span>"
+    else:
+        return f"<span style='color:gray; font-size: 14px; font-weight: bold;'>0.00%</span>"
 
-            # Place items in columns dynamically (cycling through the 5 columns)
-            col = columns[idx % 5]
+df_inflation["Inflation"] = df_inflation["Inflation"].apply(format_inflation)
 
-            # Wrap each category in a small container using **HTML & CSS for spacing & height**
-            col.markdown(
-                f"""
-                <div style="border: 1px solid #444; padding: 10px; border-radius: 10px; height: 130px; 
-                            text-align: center; margin-bottom: 10px; background-color: #222;">
-                    <div style="font-weight: bold; font-size: 16px;">{row['Subcategory'].replace('_', ' ').title()}</div>
-                    <div style="font-size: 18px; font-weight: bold;">{row['Price_latest']}</div>
-                    <div>{price_change}</div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+# Display selected store title inside a **container with border**
+with st.container(border=True):
+    st.markdown(f"## {selected_store}")
+
+    # Use a **5-column layout** for better spacing
+    columns = st.columns(5)
+    for idx, row in df_inflation.iterrows():
+        # Place items in columns dynamically (cycling through the 5 columns)
+        col = columns[idx % 5]
+
+        # Wrap each category in a small container using **HTML & CSS for spacing & height**
+        col.markdown(
+            f"""
+            <div style="border: 1px solid #444; padding: 12px; border-radius: 12px; height: 140px; 
+                        text-align: center; margin-bottom: 10px; background-color: #222;">
+                <div style="font-weight: bold; font-size: 16px;">{row['Subcategory'].replace('_', ' ').title()}</div>
+                <div style="font-size: 20px; font-weight: bold;">{row['Price_latest']}</div>
+                <div>{row['Inflation']}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
