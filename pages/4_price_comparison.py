@@ -177,6 +177,7 @@ for product, stores in product_mapping.items():
             xaxis_title="Supermarket",
             height=300,
             xaxis_tickangle=-45  # Rotate x-axis labels to -45 degrees
+            xaxis=dict(showticklabels=False)
         )
 
         with cols[row_count % 4]:
