@@ -5,7 +5,7 @@ import pandas as pd
 if "df" in st.session_state:
     df = st.session_state.df  # Retrieve cached data
 else:
-    st.write("⚠️ No data available. Please visit the Data Analysis page first.")
+    st.write("⚠️ No data available. Please visit the Data Fetcher page first.")
     st.stop()
 
 st.title("💷 Price Inflation")

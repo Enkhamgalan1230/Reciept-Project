@@ -38,7 +38,7 @@ data_collection = st.Page(
 )
 
 data = st.Page(
-    page = "pages/3_data.py",
+    page = "pages/3_data_analysis.py",
     title= "Data Analysis",
     icon = "📈"
 )

@@ -16,6 +16,9 @@ else:
     st.write("⚠️ No data available. Please visit the Data Fetcher page first.")
     st.stop()
 
+st.title("📊 Data Analysis")
+st.markdown("---")
+
 # 🔹 Create "Date" Column
 if {"Year", "Month", "Day"}.issubset(df.columns):
     df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]], errors="coerce")
