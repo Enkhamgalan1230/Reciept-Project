@@ -235,7 +235,7 @@ else:
     df_filtered = df_latest  # If nothing is selected, show all data
 
 # User input for keyword
-keyword = st.text_input("Enter a product name", placeholder="*Ex: Chicken breast 400g*")
+keyword = st.text_input("Enter a product name", placeholder="Ex: Chicken breast 400g")
 
 def find_strict_match_products(df, keyword):
     """ Returns products that contain all keywords in the input query """
