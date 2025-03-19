@@ -224,9 +224,9 @@ file_path = "subcategory.csv"
 subcategories_df = pd.read_csv(file_path)
 subcategory_list = subcategories_df["Subcategory"].unique().tolist()
 
-# Subcategory selection
+# Subcategory selection using st.pills
 with st.container(border=True, height=180):
-    selected_subcategory = st.radio("Choose a product subcategory:", subcategory_list, horizontal=True)
+    selected_subcategory = st.pills("Choose a product subcategory:", subcategory_list)
 
 # Filter data by selected subcategory
 df_filtered = df_latest[df_latest["Subcategory"] == selected_subcategory]
