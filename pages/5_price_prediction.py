@@ -59,21 +59,18 @@ if selected_store:
     df_inflation["Price_latest"] = df_inflation["Price_latest"].apply(lambda x: f"£{x:.2f}" if pd.notna(x) else "No Data")
     df_inflation["Inflation"] = df_inflation["Inflation"].apply(lambda x: f"{x:.2f}%" if pd.notna(x) else "0.00%")
 
-    # Display selected store title
-    st.markdown(f"## {selected_store}")
+    # Display selected store title inside a **container with border**
+    with st.container(border=True):
+        st.markdown(f"## {selected_store}")
 
-    # Display results in a two-column layout
-    col1, col2 = st.columns(2)
-    for idx, row in df_inflation.iterrows():
-        price_color = "green" if float(row["Inflation"].replace('%', '')) > 0 else "red"
-        price_change = f"<span style='color:{price_color};'>{row['Inflation']} {'🔺' if price_color == 'green' else '🔻'}</span>"
+        # Use a **5-column layout** for better spacing
+        columns = st.columns(5)
+        for idx, row in df_inflation.iterrows():
+            price_color = "green" if float(row["Inflation"].replace('%', '')) > 0 else "red"
+            price_change = f"<span style='color:{price_color}; font-size: 14px; font-weight: bold;'>{row['Inflation']} {'🔺' if price_color == 'green' else '🔻'}</span>"
 
-        # Alternate between columns for a neat display
-        if idx % 2 == 0:
-            col1.markdown(f"### {row['Subcategory']}")
-            col1.markdown(f"**{row['Price_latest']}**")
-            col1.markdown(price_change, unsafe_allow_html=True)
-        else:
-            col2.markdown(f"### {row['Subcategory']}")
-            col2.markdown(f"**{row['Price_latest']}**")
-            col2.markdown(price_change, unsafe_allow_html=True)
+            # Place items in columns dynamically (cycling through the 5 columns)
+            col = columns[idx % 5]
+            col.markdown(f"<div style='text-align: center; font-weight: bold; font-size: 16px;'>{row['Subcategory'].replace('_', ' ').title()}</div>", unsafe_allow_html=True)
+            col.markdown(f"<div style='text-align: center; font-size: 18px; font-weight: bold;'>{row['Price_latest']}</div>", unsafe_allow_html=True)
+            col.markdown(f"<div style='text-align: center;'>{price_change}</div>", unsafe_allow_html=True)
