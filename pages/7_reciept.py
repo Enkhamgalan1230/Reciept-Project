@@ -14,7 +14,7 @@ def get_user_location():
 def get_nearby_stores(lat, lon, radius=5000, limit=5):
     url = "https://nominatim.openstreetmap.org/search"
     params = {
-        "q": "supermarket",
+        "q": "Tesco, Aldi, Sainsbury's , Asda, Waitrose",
         "format": "json",
         "lat": lat,
         "lon": lon,
