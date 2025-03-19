@@ -239,13 +239,13 @@ st.info("🔄 Symbols, null values are removed or replaced at this stage and thi
 # Function to convert units
 def convert_units(value, unit):
     if unit == '100g':
-        return value / 10, 'kg'
+        return value * 10, 'kg'
     elif unit == '10g':
-        return value / 100, 'kg'
+        return value * 100, 'kg'
     elif unit == 'kg':
         return value, 'kg'
     elif unit == '100ml':
-        return value / 10, 'litre'
+        return value * 10, 'litre'
     elif unit == '75cl':
         return value * (4 / 3), 'litre'
     elif unit == 'litre':
