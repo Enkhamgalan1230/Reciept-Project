@@ -61,14 +61,24 @@ price_prediction = st.Page(
     icon = ""
 )
 
+data_fetcher = st.Page(
+    page = "pages/data_fetcher.py",
+    title= "Data Fetcher",
+    icon = "🛠️"
+)
+
+
 pg = st.navigation(
     {
         "Info": [home_page],
         "Data":[data_collection,data],
-        "Main Logics": [price_comparison,price_inflation,price_prediction]
-        
+        "Main Logics": [price_comparison,price_inflation,price_prediction],
+        "Boring Stuff": [data_fetcher]
     }
 )
+
+
+
 st.logo("assets/logo_longer_white.png",icon_image="assets/logo.png", size= "large")
 
 pg.run()
