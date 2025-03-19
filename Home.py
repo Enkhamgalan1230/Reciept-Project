@@ -49,8 +49,8 @@ price_comparison = st.Page(
     icon = "🏷️"
 )
 
-page_5 = st.Page(
-    page = "pages/5_fifth.py",
+price_prediction = st.Page(
+    page = "pages/5_price_prediction.py",
     title= "Fifth",
     icon = ""
 )
@@ -65,7 +65,7 @@ pg = st.navigation(
     {
         "Info": [home_page],
         "Data":[data_collection,data],
-        "Main Logics": [price_comparison,page_5,page_6]
+        "Main Logics": [price_comparison,price_prediction,page_6]
         
     }
 )
