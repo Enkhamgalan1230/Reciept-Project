@@ -135,7 +135,7 @@ if "df" not in st.session_state:
                     break
 
             df = pd.DataFrame(all_rows)
-            st.write("✅ Data fetching completed!.")
+            st.success("✅ Data fetching completed!. Now you can visit other pages")
             st.balloons()
             return df
 
