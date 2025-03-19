@@ -51,7 +51,7 @@ price_comparison = st.Page(
 
 price_prediction = st.Page(
     page = "pages/5_price_prediction.py",
-    title= "Fifth",
+    title= "Price Prediction",
     icon = ""
 )
 
