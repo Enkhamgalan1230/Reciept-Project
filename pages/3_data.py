@@ -72,17 +72,8 @@ fun_facts = [
     "Aldi operates a **no-frills shopping model** to keep costs low for customers! 💰"
 ]
 
-def get_preloaded_fun_fact():
-    return random.choice(fun_facts)
-st.title("📊 Data")
-
-st.markdown("---")
-
-# Initialize Supabase connection
-conn = st.connection("supabase", type=SupabaseConnection)
-
-# Function to fetch data
-@st.cache_data  # Cache fetched data
+# Function to fetch data and cache it globally
+@st.cache_data  # This ensures data is cached persistently across sessions and tabs
 def fetch_data():
     try:
         row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
@@ -93,7 +84,7 @@ def fetch_data():
         all_rows = []
         offset = 0
 
-        # Show loading UI only when fetching
+        # Show loading UI only if fetching data
         with st.status("🔄 Fetching data from Supabase...", expanded=True) as status:
             progress_bar = st.progress(0)
             progress_text = st.empty()
@@ -113,17 +104,16 @@ def fetch_data():
                 progress_bar.progress(min(progress_percentage, 1.0))
                 progress_text.write(f"Fetching batch {batch}/{total_batches}...")
 
-                # Update fun fact every few batches
+                # Show a random fun fact every few batches
                 if batch % 5 == 0:
-                    fun_fact_box.success(f"🛒 **Did You Know?** {get_preloaded_fun_fact()}")
+                    fun_fact_box.info(f"🛒 **Did You Know?** {get_preloaded_fun_fact()}")
 
                 time.sleep(0.5)  # Avoid overwhelming the API
 
-            # Clear the fetching UI
+            # Clear UI elements after fetching
             progress_bar.empty()
             progress_text.empty()
             fun_fact_box.empty()
-
             status.update(label="✅ Data fetching completed!", state="complete")
 
         return pd.DataFrame(all_rows)
@@ -132,12 +122,8 @@ def fetch_data():
         st.error(f"❌ Error fetching data: {e}")
         return None
 
-# Load data only if not in session state
-if "df" not in st.session_state:
-    df = fetch_data()
-    st.session_state.df = df  # Store in session state
-else:
-    df = st.session_state.df  # Load cached data
+# Load data from persistent cache
+df = fetch_data()
 
 if df is not None:
     st.write("✅ **Data loaded successfully!**")
