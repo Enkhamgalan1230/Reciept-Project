@@ -224,12 +224,15 @@ file_path = "subcategory.csv"
 subcategories_df = pd.read_csv(file_path)
 subcategory_list = subcategories_df["Subcategory"].unique().tolist()
 
-# Subcategory selection using st.pills
+# Allow multiple subcategory selections using st.multiselect
 with st.container(border=True, height=180):
-    selected_subcategory = st.pills("Choose a product subcategory:", subcategory_list)
+    selected_subcategories = st.multiselect("Choose product subcategories:", subcategory_list)
 
-# Filter data by selected subcategory
-df_filtered = df_latest[df_latest["Subcategory"] == selected_subcategory]
+# Filter data based on selected subcategories
+if selected_subcategories:
+    df_filtered = df_latest[df_latest["Subcategory"].isin(selected_subcategories)]
+else:
+    df_filtered = df_latest  # If nothing is selected, show all data
 
 # User input for keyword
 keyword = st.text_input("Enter a product name")
