@@ -82,57 +82,71 @@ st.markdown("---")
 conn = st.connection("supabase", type=SupabaseConnection)
 
 # Function to fetch data and cache it globally
-@st.cache_data  # This ensures data is cached persistently across sessions and tabs
-def fetch_data():
-    try:
-        row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
-        max_rows = row_count_result.count
+# Only fetch data if it's not already stored in session state
+if "df" not in st.session_state:
+    @st.cache_data  # Cache the fetched data
+    def fetch_data():
+        try:
+            # Step 1: Get total row count dynamically
+            row_count_result = conn.table("Product").select("*", count="exact", head=True).execute()
+            max_rows = row_count_result.count
+            st.write(f"There are {max_rows} rows currently in the database.")
 
-        batch_size = 1000
-        total_batches = (max_rows + batch_size - 1) // batch_size
-        all_rows = []
-        offset = 0
+            # Show an initial fun message
+            st.write("#### Loading fresh data from Supabase! 🍽️ Since we fetch 1,000 rows at a time, it may take a moment. Why not grab a coffee ☕ and enjoy a fun fact while you wait? ")
 
-        # Show loading UI only if fetching data
-        with st.status("🔄 Fetching data from Supabase...", expanded=True) as status:
+            # Step 2: Fetch data with pagination
+            batch_size = 1000
+            total_batches = (max_rows + batch_size - 1) // batch_size  # Round up
+
+            # UI elements for updates
             progress_bar = st.progress(0)
             progress_text = st.empty()
-            fun_fact_box = st.empty()  # Display fun facts dynamically
+            fun_fact_box = st.empty()  # Dynamic box for fun facts
+
+            all_rows = []
+            offset = 0
 
             for batch in range(1, total_batches + 1):
-                rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
+                try:
+                    rows = conn.table("Product").select("*").range(offset, offset + batch_size - 1).execute()
 
-                if not rows.data:
+                    if not rows.data:
+                        break
+
+                    all_rows.extend(rows.data)
+                    offset += batch_size
+
+                    # Update progress bar
+                    progress_percentage = batch / total_batches
+                    progress_bar.progress(min(progress_percentage, 1.0))
+
+                    # Update progress text
+                    progress_text.write(f"Fetching batch {batch}/{total_batches}...")
+
+                    # Update fun fact every few batches
+                    if batch % 5 == 0:  # Change the fun fact every 2 batches
+                        fun_fact_box.success(f"🛒 **Did You Know?** {get_preloaded_fun_fact()}")
+
+                    time.sleep(0.5)  # Rate limit
+
+                except Exception as e:
+                    st.write(f"Error at batch {batch}, offset {offset}: {e}")
                     break
 
-                all_rows.extend(rows.data)
-                offset += batch_size
+            df = pd.DataFrame(all_rows)
+            st.write("✅ Data fetching completed! Please refresh this page 🔄.")
+            st.balloons()
+            return df
 
-                # Update progress
-                progress_percentage = batch / total_batches
-                progress_bar.progress(min(progress_percentage, 1.0))
-                progress_text.write(f"Fetching batch {batch}/{total_batches}...")
+        except Exception as e:
+            st.write(f"Error fetching data: {e}")
+            return None
 
-                # Show a random fun fact every few batches
-                if batch % 5 == 0:
-                    fun_fact_box.info(f"🛒 **Did You Know?** {get_preloaded_fun_fact()}")
-
-                time.sleep(0.5)  # Avoid overwhelming the API
-
-            # Clear UI elements after fetching
-            progress_bar.empty()
-            progress_text.empty()
-            fun_fact_box.empty()
-            status.update(label="✅ Data fetching completed!", state="complete")
-
-        return pd.DataFrame(all_rows)
-
-    except Exception as e:
-        st.error(f"❌ Error fetching data: {e}")
-        return None
-
-# Load data from persistent cache
-df = fetch_data()
+    df = fetch_data()
+    st.session_state.df = df  # Store for later use
+else:
+    df = st.session_state.df  # Load cached data
 
 if df is not None:
     st.write("✅ **Data loaded successfully!**")
