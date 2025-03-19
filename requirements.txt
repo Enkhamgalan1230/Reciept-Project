@@ -12,3 +12,4 @@ st-supabase-connection
 supabase
 plotly.express
 fuzzywuzzy
+wordcloud
