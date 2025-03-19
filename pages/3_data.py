@@ -135,6 +135,7 @@ if "df" not in st.session_state:
 
             df = pd.DataFrame(all_rows)
             st.write("✅ Data fetching completed! Please refresh this page 🔄.")
+            st.balloons()
             return df
 
         except Exception as e:
