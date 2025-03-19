@@ -35,7 +35,7 @@ df_previous = df[df["datetime"] == second_latest_date]
 
 # Allow user to select **one store** using `st.pills`
 stores = df["Store_Name"].unique().tolist()
-selected_store = st.pills("Pick a Supermarket", stores, selection_mode="single")
+selected_store = st.pills("Pick a Supermarket to See Average Price Inflation", stores, selection_mode="single")
 
 # If no store is selected, show a success message
 if not selected_store:
