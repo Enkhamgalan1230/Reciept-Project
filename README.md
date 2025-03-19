@@ -67,6 +67,10 @@ strategies.
 
 Data gathering scraper: ✔️
 Pre-processing, cleaning, generalising: ✔️
+Database setup:✔️
+Cloud application:✔️
+Comparison logic:✔️
 
-Next step: Comparison logic 
+
+Next step: 
 
