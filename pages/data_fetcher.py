@@ -149,6 +149,6 @@ else:
     df = st.session_state.df  # Load cached data
 
 if df is not None:
-    st.write("✅ **Data loaded successfully!**")
+    st.write("✅ *Data loaded successfully! Nothing to see here.*")
 else:
     st.write("⚠️ No data available.")
