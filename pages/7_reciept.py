@@ -22,11 +22,11 @@ def get_nearby_stores(lat, lon, radius=5000, limit=5):
         "limit": limit
     }
     
-    response = requests.get(url, params=params)
-    
-    # DEBUG: Print response status and content
-    st.write("Response Status:", response.status_code)
-    st.write("Response Content:", response.text)
+    headers = {
+        "User-Agent": "MyStreamlitApp/1.0 (zaecisama@gmail.com)"  # Replace with your email
+    }
+
+    response = requests.get(url, params=params, headers=headers)
     
     if response.status_code == 200:
         try:
@@ -35,9 +35,8 @@ def get_nearby_stores(lat, lon, radius=5000, limit=5):
             st.error("Error decoding JSON. API might be rate-limited.")
             return []
     else:
-        st.error("Failed to fetch nearby supermarkets.")
+        st.error(f"Failed to fetch nearby supermarkets. Status code: {response.status_code}")
         return []
-
 # Function to find the closest store
 def find_closest_store(user_lat, user_lon, stores):
     user_location = (user_lat, user_lon)
