@@ -124,7 +124,7 @@ if "df" in st.session_state:
 else:
     st.write("⚠️ No data available. Please visit the Data Fetcher page first.")
 
-st.title("📊 Price Comparison")
+st.title("🏷️ Price Comparison")
 st.markdown("---")
 
 st.subheader("🏆 Dashboard with 15 Popular Items")
