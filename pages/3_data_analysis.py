@@ -1,13 +1,14 @@
 import streamlit as st
 import mysql.connector
 import pandas as pd
-from st_supabase_connection import SupabaseConnection
-from supabase import create_client, Client
 import supabase
 import time
 import matplotlib.pyplot as plt
 import plotly.express as px
 import random
+from wordcloud import WordCloud
+from collections import Counter
+import re
 
 # Check if df is stored in session state
 if "df" in st.session_state:
