@@ -78,8 +78,6 @@ st.title("📊 Data")
 
 st.markdown("---")
 
-
-
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
 
@@ -136,7 +134,7 @@ if "df" not in st.session_state:
                     break
 
             df = pd.DataFrame(all_rows)
-            st.write("✅ Data fetching completed!")
+            st.write("✅ Data fetching completed! Please refresh this page 🔄.")
             return df
 
         except Exception as e:
@@ -147,6 +145,7 @@ if "df" not in st.session_state:
     st.session_state.df = df  # Store for later use
 else:
     df = st.session_state.df  # Load cached data
+
 if df is not None:
     st.write("✅ **Data loaded successfully!**")
     st.markdown("---")
