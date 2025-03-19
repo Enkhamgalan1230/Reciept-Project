@@ -122,7 +122,7 @@ product_mapping = {
 if "df" in st.session_state:
     df = st.session_state.df
 else:
-    st.write("⚠️ No data available. Please visit the Data Fetcher page first.")
+    st.write("⚠️ No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
 st.title("🏷️ Price Comparison")
 st.markdown("---")
