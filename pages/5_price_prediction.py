@@ -10,7 +10,7 @@ else:
 
 st.title("📊 Price Prediction")
 st.markdown("---")
-st.subheader("🏆 Weekly Average Price Inflation")
+st.subheader("💷 Weekly Average Price Inflation Board")
 
 # Load Subcategories from CSV
 subcategory_file = "subcategory.csv"
@@ -39,7 +39,7 @@ selected_store = st.pills("Pick a Supermarket", stores, selection_mode="single")
 
 # If no store is selected, show a success message
 if not selected_store:
-    st.success("✅ Please choose a store")
+    st.success("✅ Please choose a store to see the board")
     st.stop()
 
 # Filter data for the selected store
@@ -68,9 +68,10 @@ with st.container(border=True):
     for idx, row in df_inflation.iterrows():
         col = columns[idx % 5]
 
-        # Use **st.metric** for better UI with automatic green/red arrows
-        col.metric(
-            label=row["Subcategory"].replace("_", " ").title(),  # Format category names
-            value=f"£{row['Price_latest']:.2f}",
-            delta=f"{row['Inflation']:.2f}%" if row['Inflation'] != 0 else "0.00%",
-        )
+        # Wrap each category in a small, evenly spaced container
+        with col.container(border=True):
+            st.metric(
+                label=row["Subcategory"].replace("_", " ").title(),  # Format category names
+                value=f"£{row['Price_latest']:.2f}",
+                delta=f"{row['Inflation']:.2f}%" if row['Inflation'] != 0 else "0.00%",
+            )
