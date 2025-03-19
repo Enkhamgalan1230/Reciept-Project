@@ -59,7 +59,7 @@ top_expensive = top_expensive[["Name", "Price", "Store_Name", "Unit Type"]]
 st.table(top_expensive)
 
 # 🔹 Store Selection for Most Expensive Items
-st.subheader("🏬 Select Store to View Most Expensive Items")
+st.subheader("🏬 Select Store to View Their Most Expensive Items")
 
 # Get unique store names
 stores = df_unique["Store_Name"].unique()
@@ -112,3 +112,40 @@ fig4 = px.bar(avg_price_per_store, x="Store_Name", y="Price", title="Average Pri
 st.plotly_chart(fig4, use_container_width=True)
 
 
+def generate_wordcloud(df):
+    # Combine all product names into a single text
+    text = " ".join(df["Name"].dropna())
+
+    # Remove special characters and numbers
+    text = re.sub(r"[^a-zA-Z\s]", "", text)
+
+    # Convert to lowercase and split words
+    words = text.lower().split()
+
+    # Define stopwords to exclude common words (can be expanded)
+    stopwords = set(["the", "and", "for", "with", "per", "of", "in", "to", "a", "kg", "litre", "each"])
+
+    # Filter words (remove stopwords)
+    filtered_words = [word for word in words if word not in stopwords]
+
+    # Create Word Cloud
+    wordcloud = WordCloud(
+        width=800, height=400,
+        background_color="white",
+        colormap="coolwarm",
+        max_words=100
+    ).generate(" ".join(filtered_words))
+
+    return wordcloud
+
+# 🔹 Streamlit App UI
+st.markdown("---")
+st.subheader("📌 Most Common Words in Product Names")
+
+# Generate and display word cloud
+wordcloud = generate_wordcloud(df)
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.imshow(wordcloud, interpolation="bilinear")
+ax.axis("off")
+st.pyplot(fig)
