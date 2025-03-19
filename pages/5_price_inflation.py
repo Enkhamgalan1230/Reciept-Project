@@ -8,9 +8,9 @@ else:
     st.write("⚠️ No data available. Please visit the Data Analysis page first.")
     st.stop()
 
-st.title("📊 Price Prediction")
+st.title("💷 Price Inflation")
 st.markdown("---")
-st.subheader("💷 Weekly Average Price Inflation Board")
+st.subheader("Inflation Board")
 
 # Load Subcategories from CSV
 subcategory_file = "subcategory.csv"
