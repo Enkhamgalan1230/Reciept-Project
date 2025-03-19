@@ -16,7 +16,7 @@ else:
     st.write("⚠️ No data available. Please visit the Data Fetcher page first.")
     st.stop()
 
-st.title("📊 Data Analysis")
+st.title("📈 Data Analysis")
 st.markdown("---")
 
 # 🔹 Create "Date" Column
