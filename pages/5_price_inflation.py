@@ -74,6 +74,7 @@ with st.container(border=True):
                 label=row["Subcategory"].replace("_", " ").title(),  # Format category names
                 value=f"£{row['Price_latest']:.2f}",
                 delta=f"{row['Inflation']:.2f}%" if row['Inflation'] != 0 else "0.00%",
+                delta_color = 'inverse'
             )
     
 st.caption("📌 Prices and categories are based on the latest available data and previous week's data.")
