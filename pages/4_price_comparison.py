@@ -224,9 +224,9 @@ file_path = "subcategory.csv"
 subcategories_df = pd.read_csv(file_path)
 subcategory_list = subcategories_df["Subcategory"].unique().tolist()
 
-# Allow multiple subcategory selections using st.multiselect
+# Allow multiple subcategory selections using st.pills with selection_mode="multi"
 with st.container(border=True, height=180):
-    selected_subcategories = st.multiselect("Choose product subcategories:", subcategory_list)
+    selected_subcategories = st.pills("Choose product subcategories:", subcategory_list, selection_mode="multi")
 
 # Filter data based on selected subcategories
 if selected_subcategories:
