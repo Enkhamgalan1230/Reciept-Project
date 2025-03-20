@@ -4,14 +4,18 @@ import pandas as pd
 from geopy.distance import geodesic
 from streamlit_geolocation import streamlit_geolocation
 from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share_link, get_geolocation
+from streamlit_folium import folium_static
+import folium
 
-st.title("Reciept 📃")
-
+# 🎨 Add Styling
+st.title("🛒 Receipt 📃")
 st.markdown("---")
+st.subheader("🔍 Closest Store Finder 📍")
 
-st.subheader("Closest store finder 📍")
+# ℹ️ Info message
+st.info("👇 Please tick the checkbox to capture your location.")
 
-
+# 🌍 Function to get store locations
 def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
     url = "https://photon.komoot.io/api/"
     params = {
@@ -52,16 +56,15 @@ def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
 
     return found_stores
 
-# User's location (get from geolocation function)
-st.info("👇Please tick the checkbox.")
-if st.checkbox("Check my location"):
+# 📍 Check user location
+if st.checkbox("✅ Check my location"):
     loc = get_geolocation()
     if loc and "coords" in loc:
         user_lat = loc["coords"].get("latitude")
         user_lon = loc["coords"].get("longitude")
 
         if user_lat and user_lon is not None: 
-            st.write(f"Location Captured ✅")
+            st.success("📍 Location Captured!")
 
         # Define search parameters
         max_distance_km = 5
@@ -72,10 +75,39 @@ if st.checkbox("Check my location"):
             stores = get_store_locations(store, user_lat, user_lon, max_distance_km)
             all_stores.extend(stores)
 
-        # Display results
+        # 🔽 Sort stores by distance (nearest first)
+        all_stores = sorted(all_stores, key=lambda x: x["Distance (km)"])
+
+        # 📊 Display Results
         if all_stores:
             df = pd.DataFrame(all_stores)
-            st.write("Closest stores within 5 km:")
+            st.success(f"🎯 Found {len(df)} stores within {max_distance_km} km!")
             st.dataframe(df)
+
+            # 🗺️ Create Map
+            st.subheader("🗺️ Store Locations Map")
+
+            # 🌍 Initialize Map
+            m = folium.Map(location=[user_lat, user_lon], zoom_start=13)
+
+            # 🔵 Add User Location Marker
+            folium.Marker(
+                [user_lat, user_lon], 
+                popup="📍 You are here",
+                icon=folium.Icon(color="blue", icon="user")
+            ).add_to(m)
+
+            # 🛒 Add Store Markers
+            for _, row in df.iterrows():
+                folium.Marker(
+                    [row["Latitude"], row["Longitude"]],
+                    popup=f"{row['Store']} ({row['Distance (km)']} km)",
+                    tooltip=row["Store"],
+                    icon=folium.Icon(color="green", icon="shopping-cart")
+                ).add_to(m)
+
+            # 🌍 Show Map
+            folium_static(m)
+
         else:
-            st.write("No stores found within the specified range.")
+            st.warning("⚠️ No stores found within the specified range.")
