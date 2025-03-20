@@ -7,15 +7,34 @@ from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share
 from streamlit_folium import folium_static
 import folium
 
-# 🎨 Add Styling
+
 st.title("🛒 Receipt 📃")
 st.markdown("---")
 st.subheader("🔍 Closest Store Finder 📍")
 
-# ℹ️ Info message
+# ℹ Info message
 st.info("👇 Please tick the checkbox to capture your location.")
 
-# 🌍 Function to get store locations
+'''
+This function searches for a given store name near the user's location using the Photon API, 
+retrieves up to 10 possible store locations, filters them based on whether they are within the specified distance (max_distance_km), 
+and returns a list of stores with their names, addresses, coordinates, and distances from the user. 
+
+It first sends a request to the API with the store name and user's latitude and longitude, then processes the response, 
+extracts relevant store details, calculates the geographical distance using the geodesic function, and only keeps stores that fall within the given range. 
+If the API request fails or returns invalid data, the function safely handles errors and returns an empty list.
+
+geopy.distance - gets distance between two lon and lat.
+
+The Photon API-  is an OpenStreetMap-based geolocation API that allows us to search for places using natural language queries. 
+It provides latitude, longitude, address details, and other metadata for a given search term
+
+We send a GET request to https://photon.komoot.io/api/ with search parameters.
+The API matches the query (for example, "Tesco near 51.6275938,-0.7519156") to its OpenStreetMap database.
+It returns a JSON response containing a list of locations (if foond.)
+'''
+
+# Function to get store locations
 def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
     url = "https://photon.komoot.io/api/"
     params = {
@@ -31,20 +50,22 @@ def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
         return []
 
     try:
-        data = response.json()
-        places = data.get("features", [])
+        data = response.json()  # Convert response JSON into a Python dictionary
+        places = data.get("features", [])  # Extract the list of store locations (default to an empty list if not found)
     except requests.exceptions.JSONDecodeError:
         return []
 
     found_stores = []
+    #Loop through each store result returned by the API
     for place in places:
-        coords = place["geometry"]["coordinates"]
-        store_lon, store_lat = coords[0], coords[1]
-        store_address = place["properties"].get("name", "Unknown store")
+        coords = place["geometry"]["coordinates"] # Extract coordinates
+        store_lon, store_lat = coords[0], coords[1]  # Assign longitude and latitude
+        store_address = place["properties"].get("name", "Unknown store") # Extract store names; if missing turn to "Unknown store"
 
-        # Calculate distance
-        distance = geodesic((user_lat, user_lon), (store_lat, store_lon)).km
 
+        distance = geodesic((user_lat, user_lon), (store_lat, store_lon)).km # Calculate distance
+
+        # If store is within the max allowed distance, add to results
         if distance <= max_distance_km:
             found_stores.append({
                 "Store": store_name,
@@ -58,6 +79,8 @@ def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
 
 # 📍 Check user location
 if st.checkbox("✅ Check my location"):
+
+    #Custom location finder found on community forum and returns a dictionary after user approval
     loc = get_geolocation()
     if loc and "coords" in loc:
         user_lat = loc["coords"].get("latitude")
@@ -70,24 +93,24 @@ if st.checkbox("✅ Check my location"):
         max_distance_km = 5
         store_names = ["Tesco", "Sainsbury's", "Waitrose", "Asda", "Aldi"]
 
+        #Appending the found store info
         all_stores = []
         for store in store_names:
             stores = get_store_locations(store, user_lat, user_lon, max_distance_km)
             all_stores.extend(stores)
 
-        # 🔽 Sort stores by distance (nearest first)
+        # Sort stores by distance (nearest first)
         all_stores = sorted(all_stores, key=lambda x: x["Distance (km)"])
 
-        # 📊 Display Results
+        # Display Results
         if all_stores:
             df = pd.DataFrame(all_stores)
             st.success(f"🎯 Found {len(df)} stores within {max_distance_km} km!")
             st.dataframe(df)
 
-            # 🗺️ Create Map
             st.subheader("🗺️ Store Locations Map")
 
-            # 🌍 Initialize Map
+            # Initialising the Map
             m = folium.Map(location=[user_lat, user_lon], zoom_start=13)
 
             # 🔵 Add User Location Marker
