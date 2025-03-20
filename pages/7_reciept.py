@@ -5,6 +5,13 @@ from geopy.distance import geodesic
 from streamlit_geolocation import streamlit_geolocation
 from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share_link, get_geolocation
 
+st.title("Reciept 📃")
+
+st.markdown("---")
+
+st.subheader("Closest store finder 📍")
+
+
 def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
     url = "https://photon.komoot.io/api/"
     params = {
@@ -51,7 +58,9 @@ if st.checkbox("Check my location"):
     if loc and "coords" in loc:
         user_lat = loc["coords"].get("latitude")
         user_lon = loc["coords"].get("longitude")
-        st.write(f"Your coordinates are: Latitude {user_lat}, Longitude {user_lon}")
+
+        if user_lat and user_lon is not None: 
+            st.write(f"Location Captured ✅")
 
         # Define search parameters
         max_distance_km = 5
