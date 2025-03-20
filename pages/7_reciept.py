@@ -5,52 +5,35 @@ from geopy.distance import geodesic
 from streamlit_geolocation import streamlit_geolocation
 from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share_link, get_geolocation
 
-def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
-    url = "https://nominatim.openstreetmap.org/search"
+def get_store_locations_photon(store_name, user_lat, user_lon, max_distance_km):
+    url = "https://photon.komoot.io/api/"
     params = {
-        "q": f"{store_name} near {user_lat},{user_lon}",  # Search for store near user
-        "format": "json",
-        "addressdetails": 1,
-        "limit": 10,
-        "extratags": 1
+        "q": store_name,  
+        "lat": user_lat,
+        "lon": user_lon,
+        "limit": 10
     }
     
-    headers = {
-        "User-Agent": "MyStreamlitApp/1.0 (contact: your-email@example.com)"  # Required!
-    }
-
-    response = requests.get(url, params=params, headers=headers)
-
-    # Debugging: Print API response details
-    print("\n--- DEBUG INFO ---")
-    print("URL:", response.url)
-    print("Status Code:", response.status_code)
-    print("Response Text:", response.text[:500])  # First 500 characters
-    print("------------------\n")
-
+    response = requests.get(url, params=params)
+    
     if response.status_code != 200:
-        return []  # Return empty list if the API call fails
+        return []
 
     try:
         data = response.json()
-        if not data:
-            print("Error: No data returned from API")
-            return []
+        places = data.get("features", [])
     except requests.exceptions.JSONDecodeError:
-        print("Error: Unable to decode JSON response")
         return []
 
     found_stores = []
-    for place in data:
-        store_lat = float(place["lat"])
-        store_lon = float(place["lon"])
-        store_address = place.get("display_name", "Unknown address")
+    for place in places:
+        coords = place["geometry"]["coordinates"]
+        store_lon, store_lat = coords[0], coords[1]
+        store_address = place["properties"].get("name", "Unknown store")
 
         # Calculate distance
-        from geopy.distance import geodesic
         distance = geodesic((user_lat, user_lon), (store_lat, store_lon)).km
 
-        # If within range, add to list
         if distance <= max_distance_km:
             found_stores.append({
                 "Store": store_name,
