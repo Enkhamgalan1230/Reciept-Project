@@ -5,31 +5,40 @@ from geopy.distance import geodesic
 from streamlit_geolocation import streamlit_geolocation
 from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share_link, get_geolocation
 
-# Function to get store locations from OpenStreetMap (Nominatim)
 def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
     url = "https://nominatim.openstreetmap.org/search"
     params = {
-        "q": f"{store_name} near {user_lat},{user_lon}",
+        "q": f"{store_name} near {user_lat},{user_lon}",  # Search for store near user
         "format": "json",
         "addressdetails": 1,
         "limit": 10,
         "extratags": 1
     }
+    
+    headers = {
+        "User-Agent": "MyStreamlitApp/1.0 (contact: your-email@example.com)"  # Required!
+    }
 
-    response = requests.get(url, params=params)
+    response = requests.get(url, params=params, headers=headers)
 
-    # Debug: Print status code and response content
+    # Debugging: Print API response details
+    print("\n--- DEBUG INFO ---")
+    print("URL:", response.url)
     print("Status Code:", response.status_code)
-    print("Response Text:", response.text[:500])  # Print first 500 characters
+    print("Response Text:", response.text[:500])  # First 500 characters
+    print("------------------\n")
 
     if response.status_code != 200:
         return []  # Return empty list if the API call fails
 
     try:
         data = response.json()
+        if not data:
+            print("Error: No data returned from API")
+            return []
     except requests.exceptions.JSONDecodeError:
         print("Error: Unable to decode JSON response")
-        return []  # Return empty list on JSON failure
+        return []
 
     found_stores = []
     for place in data:
