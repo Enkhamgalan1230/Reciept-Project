@@ -15,7 +15,7 @@ st.subheader("🔍 Closest Store Finder 📍")
 # ℹ Info message
 st.info("👇 Please tick the checkbox to capture your location.")
 
-'''
+comment = '''
 This function searches for a given store name near the user's location using the Photon API, 
 retrieves up to 10 possible store locations, filters them based on whether they are within the specified distance (max_distance_km), 
 and returns a list of stores with their names, addresses, coordinates, and distances from the user. 
@@ -134,3 +134,4 @@ if st.checkbox("✅ Check my location"):
 
         else:
             st.warning("⚠️ No stores found within the specified range.")
+
