@@ -5,7 +5,7 @@ from geopy.distance import geodesic
 from streamlit_geolocation import streamlit_geolocation
 from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share_link, get_geolocation
 
-if st.button("Check my Location"):
+if st.checkbox("Check my location"):
     loc = get_geolocation()
     st.write(f"Your coordinates are {loc}")
    
