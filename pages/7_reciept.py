@@ -5,15 +5,62 @@ from geopy.distance import geodesic
 from streamlit_geolocation import streamlit_geolocation
 from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share_link, get_geolocation
 
+# Function to get store locations from OpenStreetMap (Nominatim)
+def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {
+        "q": f"{store_name} near {user_lat},{user_lon}",  # Search for store near user
+        "format": "json",
+        "addressdetails": 1,
+        "limit": 10,  # Limit number of results per store
+        "extratags": 1
+    }
+    
+    response = requests.get(url, params=params)
+    data = response.json()
+    
+    found_stores = []
+    for place in data:
+        store_lat = float(place["lat"])
+        store_lon = float(place["lon"])
+        store_address = place.get("display_name", "Unknown address")
+        
+        # Calculate distance
+        distance = geodesic((user_lat, user_lon), (store_lat, store_lon)).km
+        
+        # If within range, add to list
+        if distance <= max_distance_km:
+            found_stores.append({
+                "Store": store_name,
+                "Address": store_address,
+                "Distance (km)": round(distance, 2),
+                "Latitude": store_lat,
+                "Longitude": store_lon
+            })
+    
+    return found_stores
+
+# User's location (get from geolocation function)
 if st.checkbox("Check my location"):
     loc = get_geolocation()
     if loc and "coords" in loc:
-        latitude = loc["coords"].get("latitude")
-        longitude = loc["coords"].get("longitude")
-        st.write(f"Your coordinates are: Latitude {latitude}, Longitude {longitude}")
-    else:
-        st.write("Could not retrieve location data.")
+        user_lat = loc["coords"].get("latitude")
+        user_lon = loc["coords"].get("longitude")
+        st.write(f"Your coordinates are: Latitude {user_lat}, Longitude {user_lon}")
 
+        # Define search parameters
+        max_distance_km = 5
+        store_names = ["Tesco", "Sainsbury's", "Waitrose", "Asda", "Aldi"]
 
-    
-   
+        all_stores = []
+        for store in store_names:
+            stores = get_store_locations(store, user_lat, user_lon, max_distance_km)
+            all_stores.extend(stores)
+
+        # Display results
+        if all_stores:
+            df = pd.DataFrame(all_stores)
+            st.write("Closest stores within 5 km:")
+            st.dataframe(df)
+        else:
+            st.write("No stores found within the specified range.")
