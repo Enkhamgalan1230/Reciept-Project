@@ -7,5 +7,13 @@ from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share
 
 if st.checkbox("Check my location"):
     loc = get_geolocation()
-    st.write(f"Your coordinates are {loc}")
+    if loc and "coords" in loc:
+        latitude = loc["coords"].get("latitude")
+        longitude = loc["coords"].get("longitude")
+        st.write(f"Your coordinates are: Latitude {latitude}, Longitude {longitude}")
+    else:
+        st.write("Could not retrieve location data.")
+
+
+    
    
