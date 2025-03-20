@@ -53,8 +53,8 @@ def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
     return found_stores
 
 # User's location (get from geolocation function)
+st.write("👇Please tick the checkbox.")
 if st.checkbox("Check my location"):
-    st.write("👇Please tick the checkbox.")
     loc = get_geolocation()
     if loc and "coords" in loc:
         user_lat = loc["coords"].get("latitude")
