@@ -9,25 +9,38 @@ from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share
 def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
     url = "https://nominatim.openstreetmap.org/search"
     params = {
-        "q": f"{store_name} near {user_lat},{user_lon}",  # Search for store near user
+        "q": f"{store_name} near {user_lat},{user_lon}",
         "format": "json",
         "addressdetails": 1,
-        "limit": 10,  # Limit number of results per store
+        "limit": 10,
         "extratags": 1
     }
-    
+
     response = requests.get(url, params=params)
-    data = response.json()
-    
+
+    # Debug: Print status code and response content
+    print("Status Code:", response.status_code)
+    print("Response Text:", response.text[:500])  # Print first 500 characters
+
+    if response.status_code != 200:
+        return []  # Return empty list if the API call fails
+
+    try:
+        data = response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("Error: Unable to decode JSON response")
+        return []  # Return empty list on JSON failure
+
     found_stores = []
     for place in data:
         store_lat = float(place["lat"])
         store_lon = float(place["lon"])
         store_address = place.get("display_name", "Unknown address")
-        
+
         # Calculate distance
+        from geopy.distance import geodesic
         distance = geodesic((user_lat, user_lon), (store_lat, store_lon)).km
-        
+
         # If within range, add to list
         if distance <= max_distance_km:
             found_stores.append({
@@ -37,7 +50,7 @@ def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
                 "Latitude": store_lat,
                 "Longitude": store_lon
             })
-    
+
     return found_stores
 
 # User's location (get from geolocation function)
