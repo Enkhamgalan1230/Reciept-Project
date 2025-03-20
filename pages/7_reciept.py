@@ -5,7 +5,7 @@ from geopy.distance import geodesic
 from streamlit_geolocation import streamlit_geolocation
 from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share_link, get_geolocation
 
-def get_store_locations_photon(store_name, user_lat, user_lon, max_distance_km):
+def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
     url = "https://photon.komoot.io/api/"
     params = {
         "q": store_name,  
