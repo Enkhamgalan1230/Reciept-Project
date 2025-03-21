@@ -8,9 +8,9 @@ else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
     st.stop()
 
-st.title("💷 Price Inflation")
+st.title("💷 Price Inflation", anchor=False)
 st.markdown("---")
-st.subheader("Inflation Board")
+st.subheader("Inflation Board", anchor=False)
 
 # Load Subcategories from CSV
 subcategory_file = "subcategory.csv"

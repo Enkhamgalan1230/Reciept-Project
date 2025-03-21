@@ -75,7 +75,7 @@ fun_facts = [
 def get_preloaded_fun_fact():
     return random.choice(fun_facts)
 
-st.title("🛠️ Data Fetcher Tool")
+st.title("🛠️ Data Fetcher Tool", anchor=False)
 st.markdown("---")
 
 # Initialize Supabase connection

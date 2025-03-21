@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit as st
 
-st.title("Price Prediction")
+st.title("Price Prediction", anchor=False)
 
 
 # Check if df is stored in session state

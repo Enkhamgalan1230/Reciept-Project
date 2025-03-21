@@ -124,10 +124,10 @@ if "df" in st.session_state:
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
-st.title("🏷️ Price Comparison")
+st.title("🏷️ Price Comparison", anchor=False)
 st.markdown("---")
 
-st.subheader("🏆 Dashboard with 15 Popular Items")
+st.subheader("🏆 Dashboard with 15 Popular Items", anchor=False)
 
 # Filter dataset for selected products
 df_filtered = df[df["Name"].isin([name for products in product_mapping.values() for name in products.values()])]
@@ -197,7 +197,7 @@ st.caption("📌 Prices are based on the latest available scraped data.")
 
 st.markdown("---")
 
-st.subheader("🔍 Search Comparison")
+st.subheader("🔍 Search Comparison", anchor=False)
 
 # Convert date columns into a single Date column
 df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])

@@ -7,7 +7,7 @@ import supabase
 import time
 import base64
 
-st.title("Welcome to Reciept 👋")
+st.title("Welcome to Reciept 👋", anchor=False)
 
 st.markdown("---")
 

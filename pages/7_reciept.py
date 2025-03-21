@@ -8,9 +8,9 @@ from streamlit_folium import folium_static
 import folium
 
 
-st.title("🛒 Receipt 📃")
+st.title("🛒 Receipt 📃", anchor=False)
 st.markdown("---")
-st.subheader("🔍 Closest Store Finder 📍")
+st.subheader("🔍 Closest Store Finder 📍", anchor=False)
 
 # ℹ Info message
 st.info("👇 Please tick the checkbox to capture your location.")
@@ -108,7 +108,7 @@ if st.checkbox("✅ Check my location"):
             st.success(f"🎯 Found {len(df)} stores within {max_distance_km} km!")
             st.dataframe(df)
 
-            st.subheader("🗺️ Store Locations Map")
+            st.subheader("🗺️ Store Locations Map", anchor=False)
 
             # Initialising the Map
             m = folium.Map(location=[user_lat, user_lon], zoom_start=13)
