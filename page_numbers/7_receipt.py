@@ -16,6 +16,8 @@ import subprocess
 import importlib
 from streamlit.runtime.caching import cache_resource
 
+api_key = "iH4IGk3WBmaLDF5OAvlaXcmBj8akrONtXAtK0TH5"
+
 @cache_resource
 def load_spacy_model():
     return spacy.load("en_core_web_sm")
@@ -43,7 +45,7 @@ def search_open_food_facts(query):
 
 # 🇺🇸 USDA API Search
 def search_usda_foods(query):
-    api_key = st.secrets["usda_api_key"]
+    api_key = api_key
     url = "https://api.nal.usda.gov/fdc/v1/foods/search"
     params = {
         "query": query,
@@ -246,7 +248,7 @@ with container:
 
                 for phrase in phrases:
                     branded = search_open_food_facts(phrase)
-                    generic = search_usda_foods(phrase)
+                    generic = search_usda_foods(phrase, api_key)
                     combined = branded + generic
 
                     match = fuzzy_match(phrase, combined)
