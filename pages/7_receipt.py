@@ -155,7 +155,7 @@ with container:
         suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
                     "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
         maxtags=40,
-        key='product_input'
+        key='essential_input'
     )
 
     secondary_list = st_tags(
@@ -165,7 +165,7 @@ with container:
         suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
                     "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
         maxtags=40,
-        key='product_input'
+        key='extra_input'
     )
 
     st.write("Products List:",essential_list, secondary_list)
