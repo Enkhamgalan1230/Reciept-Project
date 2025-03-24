@@ -15,6 +15,7 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 from streamlit.runtime.caching import cache_resource
+from spacy.lang.en.stop_words import STOP_WORDS
 
 api_key = "iH4IGk3WBmaLDF5OAvlaXcmBj8akrONtXAtK0TH5"
 
@@ -28,8 +29,11 @@ nlp = load_spacy_model()
 # 🔍 Extract Noun Chunks from Transcribed Text
 def extract_phrases(text):
     doc = nlp(text)
-    return [chunk.text.lower() for chunk in doc.noun_chunks]
-
+    return [
+        chunk.text.lower() 
+        for chunk in doc.noun_chunks 
+        if chunk.text.lower() not in STOP_WORDS and len(chunk.text.strip()) > 1
+    ]
 # 🌍 Open Food Facts Search
 def search_open_food_facts(query):
     url = "https://world.openfoodfacts.org/cgi/search.pl"
