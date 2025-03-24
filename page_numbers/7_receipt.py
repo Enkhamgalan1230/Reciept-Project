@@ -12,8 +12,16 @@ import speech_recognition as sr
 import tempfile
 import spacy
 from fuzzywuzzy import process
+import subprocess
+import importlib
 
-nlp = spacy.load("en_core_web_sm")
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+    importlib.invalidate_caches()
+    nlp = spacy.load("en_core_web_sm")
+
 
 # 🔍 Extract Noun Chunks from Transcribed Text
 def extract_phrases(text):
