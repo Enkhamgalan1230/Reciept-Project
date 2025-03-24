@@ -142,6 +142,6 @@ container = st.container(border= True)
 container.write("How much is the budget and the duration?")
 
 day = ["A Day", "A Week", " Two Week", "Month"]
-duration = container.pills(day, selection_mode="single")
+duration = container.pills(options = day, selection_mode="single")
 budget = container.number_input("Insert the value... (£)", placeholder= "Ex : 30")
 
