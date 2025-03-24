@@ -15,12 +15,16 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
-    importlib.invalidate_caches()
-    nlp = spacy.load("en_core_web_sm")
+@st.cache_resource  # Prevents reloading every time Streamlit reruns
+def load_spacy_model():
+    try:
+        return spacy.load("en_core_web_sm")
+    except OSError:
+        subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+        importlib.invalidate_caches()
+        return spacy.load("en_core_web_sm")
+
+nlp = load_spacy_model()
 
 
 # 🔍 Extract Noun Chunks from Transcribed Text
