@@ -6,6 +6,8 @@ from streamlit_geolocation import streamlit_geolocation
 from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share_link, get_geolocation
 from streamlit_folium import folium_static
 import folium
+from streamlit_tags import st_tags
+
 
 
 st.title("🛒 Receipt 📃", anchor=False)
@@ -144,4 +146,15 @@ container.write("How much is the budget and the duration?")
 day = ["A Day", "A Week", " Two Week", "Month"]
 duration = container.pills(label = "Duration",options = day, selection_mode="single")
 budget = container.number_input("Insert the value (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
+
+product_list = st_tags(
+    label='Enter your products:',
+    text='Press enter to add more',
+    value=[],
+    suggestions=['milk', 'eggs', 'bread'],
+    maxtags=40,
+    key='product_input'
+)
+
+st.write("Products List:", product_list)
 
