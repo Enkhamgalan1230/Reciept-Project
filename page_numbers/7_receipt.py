@@ -57,17 +57,36 @@ def search_open_food_facts(query):
     return [p["product_name"] for p in response.json().get("products", []) if "product_name" in p]
 
 # 🇺🇸 USDA API Search
-def search_usda_foods(query, api_key):
-    url = "https://api.nal.usda.gov/fdc/v1/foods/search"
+def search_open_food_facts(query):
+    url = "https://world.openfoodfacts.org/cgi/search.pl"
     params = {
-        "query": query,
-        "api_key": api_key,
-        "pageSize": 5
+        "search_terms": query,
+        "search_simple": 1,
+        "json": 1,
+        "fields": "product_name,brands",
+        "page_size": 5
     }
-    response = requests.get(url, params=params)
-    if response.status_code == 200:
-        return [item["description"] for item in response.json().get("foods", []) if "description" in item]
-    return []
+
+    try:
+        response = requests.get(url, params=params, timeout=5)
+
+        # Check for bad responses
+        if response.status_code != 200 or not response.content:
+            st.warning(f"⚠️ Open Food Facts request failed for '{query}' (status: {response.status_code})")
+            return []
+
+        data = response.json()
+
+        # Parse product names if available
+        return [p["product_name"] for p in data.get("products", []) if "product_name" in p]
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"🚫 Failed to connect to Open Food Facts: {e}")
+        return []
+
+    except Exception as e:
+        st.error(f"❌ Error parsing Open Food Facts response for '{query}': {e}")
+        return []
 
 # 🤖 Fuzzy match to reduce errors
 def fuzzy_match(phrase, candidates, threshold=80):
