@@ -18,4 +18,4 @@ geopy
 streamlit_js_eval
 streamlit_folium
 folium
-streamlit_tag
+streamlit_tags
