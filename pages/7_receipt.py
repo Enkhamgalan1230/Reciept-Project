@@ -147,11 +147,12 @@ day = ["A Day", "A Week", " Two Week", "Month"]
 duration = container.pills(label = "Duration",options = day, selection_mode="single")
 budget = container.number_input("Insert the value (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
-product_list = st_tags(
+product_list = container.st_tags(
     label='Enter your products:',
     text='Press enter to add more',
     value=[],
-    suggestions=['milk', 'eggs', 'bread'],
+    suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
+                 "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
     maxtags=40,
     key='product_input'
 )
