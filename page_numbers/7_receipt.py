@@ -255,7 +255,7 @@ with container:
                 st.success(f"🗣️ You said: {text}")
 
                 # ✨ Extract meaningful phrases (e.g., "apple", "carrots")
-                phrases = extract_phrases(text)
+                phrases = clean_and_extract_keywords(text)
                 st.write("🔍 Detected phrases:", phrases)
 
                 matched_products = []
