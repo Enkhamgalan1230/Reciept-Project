@@ -7,6 +7,9 @@ from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share
 from streamlit_folium import folium_static
 import folium
 from streamlit_tags import st_tags
+from audiorecorder import audiorecorder
+import speech_recognition as sr
+import tempfile
 
 
 
@@ -170,5 +173,33 @@ with container:
 
     st.write("Products List:",essential_list, secondary_list)
 
+    # 🎤 Voice Input
+    st.markdown("### Or speak your grocery list:")
+    audio = audiorecorder("🎙️ Click to record", "Recording...")
 
+    voice_products = []
+
+    if len(audio) > 0:
+        st.audio(audio.tobytes(), format="audio/wav")
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+            f.write(audio.tobytes())
+            temp_wav_path = f.name
+
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(temp_wav_path) as source:
+            audio_data = recognizer.record(source)
+            try:
+                text = recognizer.recognize_google(audio_data)
+                st.success(f"🗣️ You said: {text}")
+                voice_products = [item.strip() for item in text.split(",")]
+                st.write("📝 Products from voice:", voice_products)
+            except sr.UnknownValueError:
+                st.error("❌ Could not understand the audio.")
+            except sr.RequestError as e:
+                st.error(f"❌ Could not request results; {e}")
+
+    # Combine all product sources
+    all_products = list(set(essential_list + secondary_list + voice_products))
+    st.write("🧾 Final Products List:", all_products)
 

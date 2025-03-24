@@ -19,3 +19,6 @@ streamlit_js_eval
 streamlit_folium
 folium
 streamlit_tags
+audiorecorder
+speech_recognition
+tempfile
