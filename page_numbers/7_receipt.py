@@ -44,8 +44,7 @@ def search_open_food_facts(query):
     return [p["product_name"] for p in response.json().get("products", []) if "product_name" in p]
 
 # 🇺🇸 USDA API Search
-def search_usda_foods(query):
-    api_key = api_key
+def search_usda_foods(query, api_key):
     url = "https://api.nal.usda.gov/fdc/v1/foods/search"
     params = {
         "query": query,
@@ -53,7 +52,9 @@ def search_usda_foods(query):
         "pageSize": 5
     }
     response = requests.get(url, params=params)
-    return [item["description"] for item in response.json().get("foods", []) if "description" in item]
+    if response.status_code == 200:
+        return [item["description"] for item in response.json().get("foods", []) if "description" in item]
+    return []
 
 # 🤖 Fuzzy match to reduce errors
 def fuzzy_match(phrase, candidates, threshold=80):
