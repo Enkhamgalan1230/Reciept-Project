@@ -7,7 +7,7 @@ from streamlit_js_eval import streamlit_js_eval, copy_to_clipboard, create_share
 from streamlit_folium import folium_static
 import folium
 from streamlit_tags import st_tags
-from audiorecorder import audiorecorder
+from audio_recorder_streamlit import audio_recorder
 import speech_recognition as sr
 import tempfile
 
@@ -175,7 +175,7 @@ with container:
 
     # 🎤 Voice Input
     st.markdown("### Or speak your grocery list:")
-    audio = audiorecorder("🎙️ Click to record", "Recording...")
+    audio = audio_recorder("🎙️ Click to record", "Recording...")
 
     voice_products = []
 

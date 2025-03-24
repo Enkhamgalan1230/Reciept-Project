@@ -19,5 +19,5 @@ streamlit_js_eval
 streamlit_folium
 folium
 streamlit_tags
-git+https://github.com/stefanrmmr/streamlit-audiorecorder.git
+audio_recorder_streamlit
 SpeechRecognition
