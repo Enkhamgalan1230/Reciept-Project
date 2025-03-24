@@ -141,21 +141,34 @@ st.subheader("Shopping List generator 📃")
 
 container = st.container(border= True)
 
-container.write("How much is the budget and the duration?")
+with container:
+    st.write("How much is the budget and the duration?")
 
-day = ["A Day", "A Week", " Two Week", "Month"]
-duration = container.pills(label = "Duration",options = day, selection_mode="single")
-budget = container.number_input("Insert the value (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
+    day = ["A Day", "A Week", " Two Week", "Month"]
+    duration = st.pills(label = "Duration",options = day, selection_mode="single")
+    budget = st.number_input("Insert the value (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
-product_list = container.st_tags(
-    label='Enter your products:',
-    text='Press enter to add more',
-    value=[],
-    suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
-                 "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
-    maxtags=40,
-    key='product_input'
-)
+    essential_list = st_tags(
+        label='Enter your essential products:',
+        text='Press enter to add more',
+        essential=[],
+        suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
+                    "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
+        maxtags=40,
+        key='product_input'
+    )
 
-st.write("Products List:", product_list)
+    secondary_list = st_tags(
+        label='Would love to buy these if we can:',
+        text='Press enter to add more',
+        secondary=[],
+        suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
+                    "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
+        maxtags=40,
+        key='product_input'
+    )
+
+    st.write("Products List:",essential_list, secondary_list)
+
+
 
