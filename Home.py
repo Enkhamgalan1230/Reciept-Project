@@ -18,7 +18,7 @@ logo = "assets/logo_longer_white.png"
 email_base64 = get_base64_image(logo)
 # Set page title and icon
 st.set_page_config(
-    page_title="Reciept",  # Set the title in the navigation bar
+    page_title="Receipt",  # Set the title in the navigation bar
     page_icon="📃",  # Set a custom icon (optional)
     layout="wide"  # Optionally, set layout to 'wide' or 'centered'
 )
@@ -61,9 +61,9 @@ price_prediction = st.Page(
     icon = "🔮"
 )
 
-reciept = st.Page(
-    page = "pages/7_reciept.py",
-    title= "Reciept",
+receipt = st.Page(
+    page = "pages/7_receipt.py",
+    title= "Receipt",
     icon = "📃"
 )
 
@@ -78,7 +78,7 @@ pg = st.navigation(
     {
         "Info": [home_page],
         "Data":[data_collection,data],
-        "Main Logics": [price_comparison,price_inflation,price_prediction, reciept],
+        "Main Logics": [price_comparison,price_inflation,price_prediction, receipt],
         "Boring Stuff": [data_fetcher]
     }
 )
