@@ -14,15 +14,11 @@ import spacy
 from fuzzywuzzy import process
 import subprocess
 import importlib
+from streamlit.runtime.caching import cache_resource
 
-@st.cache_resource  # Prevents reloading every time Streamlit reruns
+@cache_resource
 def load_spacy_model():
-    try:
-        return spacy.load("en_core_web_sm")
-    except OSError:
-        subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
-        importlib.invalidate_caches()
-        return spacy.load("en_core_web_sm")
+    return spacy.load("en_core_web_sm")
 
 nlp = load_spacy_model()
 
