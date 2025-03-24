@@ -10,8 +10,45 @@ from streamlit_tags import st_tags
 from audio_recorder_streamlit import audio_recorder
 import speech_recognition as sr
 import tempfile
+import spacy
+from fuzzywuzzy import process
 
+nlp = spacy.load("en_core_web_sm")
 
+# 🔍 Extract Noun Chunks from Transcribed Text
+def extract_phrases(text):
+    doc = nlp(text)
+    return [chunk.text.lower() for chunk in doc.noun_chunks]
+
+# 🌍 Open Food Facts Search
+def search_open_food_facts(query):
+    url = "https://world.openfoodfacts.org/cgi/search.pl"
+    params = {
+        "search_terms": query,
+        "search_simple": 1,
+        "json": 1,
+        "fields": "product_name,brands",
+        "page_size": 5
+    }
+    response = requests.get(url, params=params)
+    return [p["product_name"] for p in response.json().get("products", []) if "product_name" in p]
+
+# 🇺🇸 USDA API Search
+def search_usda_foods(query):
+    api_key = st.secrets["usda_api_key"]
+    url = "https://api.nal.usda.gov/fdc/v1/foods/search"
+    params = {
+        "query": query,
+        "api_key": api_key,
+        "pageSize": 5
+    }
+    response = requests.get(url, params=params)
+    return [item["description"] for item in response.json().get("foods", []) if "description" in item]
+
+# 🤖 Fuzzy match to reduce errors
+def fuzzy_match(phrase, candidates, threshold=80):
+    match, score = process.extractOne(phrase, candidates)
+    return match if score >= threshold else None
 
 st.title("🛒 Receipt 📃", anchor=False)
 st.markdown("---")
@@ -192,8 +229,25 @@ with container:
             try:
                 text = recognizer.recognize_google(audio_data)
                 st.success(f"🗣️ You said: {text}")
-                voice_products = [item.strip() for item in text.split(",")]
-                st.write("📝 Products from voice:", voice_products)
+
+                # ✨ Extract meaningful phrases (e.g., "apple", "carrots")
+                phrases = extract_phrases(text)
+                st.write("🔍 Detected phrases:", phrases)
+
+                matched_products = []
+
+                for phrase in phrases:
+                    branded = search_open_food_facts(phrase)
+                    generic = search_usda_foods(phrase)
+                    combined = branded + generic
+
+                    match = fuzzy_match(phrase, combined)
+                    if match:
+                        matched_products.append(match)
+
+                voice_products = matched_products
+                st.write("🛒 Products from voice (matched):", voice_products)
+
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
             except sr.RequestError as e:

@@ -21,3 +21,4 @@ folium
 streamlit_tags
 audio_recorder_streamlit
 SpeechRecognition
+spacy
