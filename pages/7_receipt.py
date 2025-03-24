@@ -135,3 +135,13 @@ if st.checkbox("✅ Check my location"):
         else:
             st.warning("⚠️ No stores found within the specified range.")
 
+st.subheader("Shopping List generator 📃")
+
+container = st.container(border= True)
+
+container.write("How much is the budget and the duration?")
+
+options = ["A Day", "A Week", " Two Week", "Month"]
+duration = container.pills(options)
+budget = container.number_input("Insert the value... (£)", placeholder= "Ex : 30")
+
