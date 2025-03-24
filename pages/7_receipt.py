@@ -151,7 +151,7 @@ with container:
     essential_list = st_tags(
         label='Enter your essential products:',
         text='Press enter to add more',
-        essential=[],
+        value=[],
         suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
                     "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
         maxtags=40,
@@ -161,7 +161,7 @@ with container:
     secondary_list = st_tags(
         label='Would love to buy these if we can:',
         text='Press enter to add more',
-        secondary=[],
+        value=[],
         suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
                     "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
         maxtags=40,
