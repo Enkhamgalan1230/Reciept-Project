@@ -27,21 +27,22 @@ nlp = load_spacy_model()
 
 
 # 🔍 Extract Noun Chunks from Transcribed Text
-def extract_phrases(text):
+def clean_and_extract_keywords(text):
     doc = nlp(text)
-    
-    # Get noun chunks
-    chunks = set(chunk.text.lower() for chunk in doc.noun_chunks)
+    product_terms = []
 
-    # Add individual nouns and proper nouns
-    keywords = set(
-        token.text.lower()
-        for token in doc
-        if token.pos_ in {"NOUN", "PROPN"} and token.text.lower() not in STOP_WORDS
-    )
+    for token in doc:
+        if (
+            token.pos_ in {"NOUN", "PROPN", "ADJ"}  # keep nouns & adjectives (e.g. "green apple")
+            and token.text.lower() not in STOP_WORDS
+            and token.is_alpha
+            and len(token.text) > 2
+        ):
+            product_terms.append(token.text.lower())
 
-    # Combine and filter
-    return list(chunks.union(keywords) - {"i", "something"})
+    return list(set(product_terms))  # remove duplicates
+
+
 # 🌍 Open Food Facts Search
 def search_open_food_facts(query):
     url = "https://world.openfoodfacts.org/cgi/search.pl"
