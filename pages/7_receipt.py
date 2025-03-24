@@ -143,5 +143,5 @@ container.write("How much is the budget and the duration?")
 
 day = ["A Day", "A Week", " Two Week", "Month"]
 duration = container.pills(label = "Duration",options = day, selection_mode="single")
-budget = container.number_input("Insert the value... (£)", placeholder= "Ex : 30")
+budget = container.number_input("Insert the value (£)", placeholder= "Ex : 30", format="%0.01f", min_value = 0)
 
