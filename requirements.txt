@@ -20,5 +20,5 @@ streamlit_folium
 folium
 streamlit_tags
 audiorecorder
-speech_recognition
+SpeechRecognition
 tempfile
