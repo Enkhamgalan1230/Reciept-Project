@@ -57,7 +57,7 @@ def search_open_food_facts(query):
     return [p["product_name"] for p in response.json().get("products", []) if "product_name" in p]
 
 # 🇺🇸 USDA API Search
-def search_open_food_facts(query):
+def search_usda_foods(query):
     url = "https://world.openfoodfacts.org/cgi/search.pl"
     params = {
         "search_terms": query,
