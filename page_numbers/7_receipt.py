@@ -181,15 +181,15 @@ with container2:
 
 
     # Friendly heading above the recorder
-    st.markdown("🎧 **Click to record your grocery list**")
+    st.subheader("🎧 **Click to record your grocery list**")
 
     # Audio recorder component
     audio = audio_recorder(
-        text="Click to Record",          # Button label
+        text="Click to Record 👉",          # Button label
         icon_name="microphone",                    
-        neutral_color="#4CAF50",         # Button color when not recording
+        neutral_color="#00FF00",         # Button color when not recording
         recording_color="#FF0000",       # Button color during recording
-        icon_size="1x",                  # Icon size (not used since icon_name is empty)
+        icon_size="2x",                  # Icon size (not used since icon_name is empty)
     )
     voice_products = []
 
