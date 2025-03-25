@@ -18,16 +18,37 @@ import importlib
 # Load spaCy English model once
 nlp = spacy.load("en_core_web_sm")
 
-def extract_useful_words(text):
+# Load food adjectives from CSV
+df_adj = pd.read_csv("food_adjectives.csv")
+hyphenated_adjs = set(df_adj["Food_Adjective"].str.lower().tolist())
+
+# Map phrases without hyphens to their hyphenated form
+phrase_map = {adj.replace("-", " "): adj for adj in hyphenated_adjs}
+
+def fix_multiword_adjectives(text):
+    """Replace non-hyphenated multi-word phrases with correct hyphenated forms."""
+    for plain, hyphenated in phrase_map.items():
+        text = text.replace(plain, hyphenated)
+    return text
+
+def extract_adj_noun_phrases(text):
     doc = nlp(text)
-    useful = []
+    phrases = []
+    i = 0
+    while i < len(doc):
+        token = doc[i]
+        # If token is an adjective and next is a noun -> form a phrase
+        if token.pos_ == "ADJ" and (i + 1) < len(doc) and doc[i + 1].pos_ == "NOUN":
+            phrase = f"{token.text.lower()} {doc[i + 1].text.lower()}"
+            phrases.append(phrase)
+            i += 2  # skip next word
+        elif token.pos_ == "NOUN" and not token.is_stop:
+            phrases.append(token.text.lower())
+            i += 1
+        else:
+            i += 1
+    return phrases
 
-    for token in doc:
-        # Keep adjectives and nouns, skip stopwords/punctuation
-        if token.pos_ in ["ADJ", "NOUN"] and not token.is_stop and token.is_alpha:
-            useful.append(token.text.lower())
-
-    return useful
 
 st.title("🛒 Receipt 📃", anchor=False)
 st.markdown("---")
@@ -218,10 +239,17 @@ with container2:
         with sr.AudioFile(temp_wav_path) as source:
             audio_data = recognizer.record(source)
             try:
+                # Step 1: recognise speech
                 text = recognizer.recognize_google(audio_data)
+
+                # Step 2: fix multi-word food adjectives like "full fat" → "full-fat"
+                text = fix_multiword_adjectives(text)
+
+                # Step 3: show and extract product terms
                 st.success(f"🗣️ You said: {text}")
-                voice_products = extract_useful_words(text)
+                voice_products = extract_adj_noun_phrases(text)
                 st.write("📝 Products from voice:", voice_products)
+
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
             except sr.RequestError as e:
