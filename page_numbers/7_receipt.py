@@ -34,16 +34,14 @@ def fix_multiword_adjectives(text):
 
 def extract_adj_noun_phrases(text):
     doc = nlp(text)
-    for token in doc:
-        st.write(f"{token.text} ({token.pos_})")
     phrases = []
     i = 0
 
     while i < len(doc) - 3:
-        t1, t2, t3, t4 = doc[i], doc[i+1], doc[i+2], doc[i+3]
+        t1, t2, t3, t4 = doc[i], doc[i + 1], doc[i + 2], doc[i + 3]
 
-        # 🧠 CASE 1: compound adjective split into 3 tokens (semi - skimmed) + noun
-        if (t1.pos_ == "ADJ" and t2.text == "-" and t3.pos_ in ["ADJ", "VERB"]) and t4.pos_ == "NOUN":
+        # 🧠 Case 1: Handles full-fat / semi-skimmed style: ADJ - * NOUN
+        if t1.pos_ == "ADJ" and t2.text == "-" and t4.pos_ == "NOUN":
             hyphenated = f"{t1.text.lower()}-{t3.text.lower()}"
             phrases.append(f"{hyphenated} {t4.text.lower()}")
             i += 4
@@ -51,30 +49,30 @@ def extract_adj_noun_phrases(text):
 
         i += 1
 
-    # ⏮️ Go back to beginning to catch simpler pairs
+    # Recheck from start for standard cases
     i = 0
     while i < len(doc) - 1:
-        t1, t2 = doc[i], doc[i+1]
+        t1, t2 = doc[i], doc[i + 1]
 
-        # ✅ CASE 2: single-token hyphenated adjective (e.g. "full-fat") + noun
+        # 🟢 Hyphenated adjective as single token + noun (e.g., "low-fat milk")
         if "-" in t1.text and t1.pos_ == "ADJ" and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
             i += 2
             continue
 
-        # ✅ CASE 3: known food adjective (e.g. low-fat) + NOUN
+        # 🟢 Match from known list
         if t1.text.lower() in hyphenated_adjs and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
             i += 2
             continue
 
-        # ✅ CASE 4: regular ADJ + NOUN
+        # 🟢 Regular ADJ + NOUN
         if t1.pos_ == "ADJ" and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
             i += 2
             continue
 
-        # ✅ CASE 5: just a NOUN
+        # 🟢 Single NOUN
         if t1.pos_ == "NOUN":
             phrases.append(t1.text.lower())
             i += 1
@@ -82,8 +80,8 @@ def extract_adj_noun_phrases(text):
 
         i += 1
 
-    # ✅ Catch final word if it's a noun
-    if i < len(doc) and doc[i].pos_ == "NOUN":
+    # 🟢 Last token catch-up
+    if i == len(doc) - 1 and doc[i].pos_ == "NOUN":
         phrases.append(doc[i].text.lower())
 
     return phrases
