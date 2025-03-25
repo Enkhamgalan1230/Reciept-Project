@@ -91,58 +91,58 @@ with container1:
     #Custom location finder found on community forum and returns a dictionary after user approval
         loc = get_geolocation()
         
-    if loc and "coords" in loc:
-        user_lat = loc["coords"].get("latitude")
-        user_lon = loc["coords"].get("longitude")
+        if loc and "coords" in loc:
+            user_lat = loc["coords"].get("latitude")
+            user_lon = loc["coords"].get("longitude")
 
-        if user_lat and user_lon is not None: 
-            st.success("📍 Location Captured!")
+            if user_lat and user_lon is not None: 
+                st.success("📍 Location Captured!")
 
-        # Define search parameters
-        max_distance_km = 5
-        store_names = ["Tesco", "Sainsbury's", "Waitrose", "Asda", "Aldi"]
+            # Define search parameters
+            max_distance_km = 5
+            store_names = ["Tesco", "Sainsbury's", "Waitrose", "Asda", "Aldi"]
 
-        #Appending the found store info
-        all_stores = []
-        for store in store_names:
-            stores = get_store_locations(store, user_lat, user_lon, max_distance_km)
-            all_stores.extend(stores)
+            #Appending the found store info
+            all_stores = []
+            for store in store_names:
+                stores = get_store_locations(store, user_lat, user_lon, max_distance_km)
+                all_stores.extend(stores)
 
-        # Sort stores by distance (nearest first)
-        all_stores = sorted(all_stores, key=lambda x: x["Distance (km)"])
+            # Sort stores by distance (nearest first)
+            all_stores = sorted(all_stores, key=lambda x: x["Distance (km)"])
 
-        # Display Results
-        if all_stores:
-            df = pd.DataFrame(all_stores)
-            st.success(f"🎯 Found {len(df)} stores within {max_distance_km} km!")
-            st.dataframe(df)
+            # Display Results
+            if all_stores:
+                df = pd.DataFrame(all_stores)
+                st.success(f"🎯 Found {len(df)} stores within {max_distance_km} km!")
+                st.dataframe(df)
 
-            st.subheader("🗺️ Store Locations Map", anchor=False)
+                st.subheader("🗺️ Store Locations Map", anchor=False)
 
-            # Initialising the Map
-            m = folium.Map(location=[user_lat, user_lon], zoom_start=13)
+                # Initialising the Map
+                m = folium.Map(location=[user_lat, user_lon], zoom_start=13)
 
-            # 🔵 Add User Location Marker
-            folium.Marker(
-                [user_lat, user_lon], 
-                popup="📍 You are here",
-                icon=folium.Icon(color="blue", icon="user")
-            ).add_to(m)
-
-            # 🛒 Add Store Markers
-            for _, row in df.iterrows():
+                # 🔵 Add User Location Marker
                 folium.Marker(
-                    [row["Latitude"], row["Longitude"]],
-                    popup=f"{row['Store']} ({row['Distance (km)']} km)",
-                    tooltip=row["Store"],
-                    icon=folium.Icon(color="green", icon="shopping-cart")
+                    [user_lat, user_lon], 
+                    popup="📍 You are here",
+                    icon=folium.Icon(color="blue", icon="user")
                 ).add_to(m)
 
-            # 🌍 Show Map
-            folium_static(m)
+                # 🛒 Add Store Markers
+                for _, row in df.iterrows():
+                    folium.Marker(
+                        [row["Latitude"], row["Longitude"]],
+                        popup=f"{row['Store']} ({row['Distance (km)']} km)",
+                        tooltip=row["Store"],
+                        icon=folium.Icon(color="green", icon="shopping-cart")
+                    ).add_to(m)
 
-        else:
-            st.warning("⚠️ No stores found within the specified range.")
+                # 🌍 Show Map
+                folium_static(m)
+
+            else:
+                st.warning("⚠️ No stores found within the specified range.")
 
 st.subheader("Shopping List generator 📃")
 
