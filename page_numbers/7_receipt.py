@@ -39,28 +39,33 @@ def extract_adj_noun_phrases(text):
     while i < len(doc):
         token = doc[i]
 
-        # If this token is an adjective and followed by a noun
-        if token.pos_ == "ADJ" and i + 1 < len(doc):
-            next_token = doc[i + 1]
-            if next_token.pos_ == "NOUN":
-                phrase = f"{token.text.lower()} {next_token.text.lower()}"
-                phrases.append(phrase)
-                i += 2
-                continue
-        
-        # If the adjective is a hyphenated compound and followed by a noun
-        if token.text in hyphenated_adjs and i + 1 < len(doc):
-            next_token = doc[i + 1]
-            if next_token.pos_ == "NOUN":
-                phrase = f"{token.text.lower()} {next_token.text.lower()}"
-                phrases.append(phrase)
+        # Check if current or previous + current = a hyphenated adjective
+        if i > 0:
+            combo = f"{doc[i - 1].text.lower()}-{token.text.lower()}"
+            if combo in hyphenated_adjs and (i + 1) < len(doc) and doc[i + 1].pos_ == "NOUN":
+                noun = doc[i + 1].lemma_.lower()
+                phrases.append(f"{combo} {noun}")
                 i += 2
                 continue
 
-        # If the token is just a noun, add it
+        # Check if current token is a known adjective (e.g., minced, frozen)
+        if token.text.lower() in hyphenated_adjs and (i + 1) < len(doc) and doc[i + 1].pos_ == "NOUN":
+            noun = doc[i + 1].lemma_.lower()
+            phrases.append(f"{token.text.lower()} {noun}")
+            i += 2
+            continue
+
+        # If a regular adjective followed by a noun
+        if token.pos_ == "ADJ" and (i + 1) < len(doc) and doc[i + 1].pos_ == "NOUN":
+            phrase = f"{token.text.lower()} {doc[i + 1].lemma_.lower()}"
+            phrases.append(phrase)
+            i += 2
+            continue
+
+        # If standalone noun (without adjective), still include it
         if token.pos_ == "NOUN" and not token.is_stop:
-            phrases.append(token.text.lower())
-        
+            phrases.append(token.lemma_.lower())
+
         i += 1
 
     return phrases
