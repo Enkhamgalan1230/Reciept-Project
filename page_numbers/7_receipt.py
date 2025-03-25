@@ -182,18 +182,10 @@ with container2:
     st.markdown("---")
     # Friendly heading above the recorder
     st.subheader("🎧 **Record your grocery list**")
-    st.markdown("""
-        <style>
-        div[data-testid="stAudioRecorder"] button span {
-            font-size: 20px !important;
-            font-weight: bold !important;
-            color: white !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    
     # Audio recorder component
     audio = audio_recorder(
-        text="Click to Record 👉",          # Button label
+        text="** Click to Record 👉**",          # Button label
         icon_name="microphone",                    
         neutral_color="#00FF00",         # Button color when not recording
         recording_color="#FF0000",       # Button color during recording
