@@ -180,7 +180,25 @@ with container2:
     st.write("Products List:",essential_list, secondary_list)
 
     st.markdown("🎧 **Click to record your grocery list**")
-    audio = audio_recorder("", "")
+
+    st.markdown("""
+        <style>
+        .stAudioRecorder button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.5em 1em;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .stAudioRecorder svg {
+            display: none;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    audio = audio_recorder("Click here to record your voice", "Recording...")
 
     voice_products = []
 
