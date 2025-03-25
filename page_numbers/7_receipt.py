@@ -35,18 +35,34 @@ def extract_adj_noun_phrases(text):
     doc = nlp(text)
     phrases = []
     i = 0
+
     while i < len(doc):
         token = doc[i]
-        # If token is an adjective and next is a noun -> form a phrase
-        if token.pos_ == "ADJ" and (i + 1) < len(doc) and doc[i + 1].pos_ == "NOUN":
-            phrase = f"{token.text.lower()} {doc[i + 1].text.lower()}"
-            phrases.append(phrase)
-            i += 2  # skip next word
-        elif token.pos_ == "NOUN" and not token.is_stop:
+
+        # If this token is an adjective and followed by a noun
+        if token.pos_ == "ADJ" and i + 1 < len(doc):
+            next_token = doc[i + 1]
+            if next_token.pos_ == "NOUN":
+                phrase = f"{token.text.lower()} {next_token.text.lower()}"
+                phrases.append(phrase)
+                i += 2
+                continue
+        
+        # If the adjective is a hyphenated compound and followed by a noun
+        if token.text in hyphenated_adjs and i + 1 < len(doc):
+            next_token = doc[i + 1]
+            if next_token.pos_ == "NOUN":
+                phrase = f"{token.text.lower()} {next_token.text.lower()}"
+                phrases.append(phrase)
+                i += 2
+                continue
+
+        # If the token is just a noun, add it
+        if token.pos_ == "NOUN" and not token.is_stop:
             phrases.append(token.text.lower())
-            i += 1
-        else:
-            i += 1
+        
+        i += 1
+
     return phrases
 
 
