@@ -151,9 +151,13 @@ container2 = st.container(border= True)
 with container2:
     st.write("How much is the budget and the duration?")
 
-    day = ["A Day", "A Week", " Two Week", "Month"]
+    day = ["a Day", "a Week", " Two Week", "a Month"]
     duration = st.pills(label = "Duration",options = day, selection_mode="single")
-    budget = st.number_input(f"Insert the budget for {day}(£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
+    # Set default duration text
+    duration_text = duration if duration else "your chosen time period"
+
+
+    budget = st.number_input(f"Insert the budget for {duration_text}(£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
     essential_list = st_tags(
         label='Enter your essential products:',
