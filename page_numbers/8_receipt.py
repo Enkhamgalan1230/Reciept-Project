@@ -91,7 +91,7 @@ st.title("🛒 Receipt 📃", anchor=False)
 st.markdown("---")
 
 st.subheader("Shopping List generator 📃")
-
+st.caption("💡 You can either write or record your list")
 container2 = st.container(border= True)
 
 with container2:
