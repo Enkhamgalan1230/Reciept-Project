@@ -179,27 +179,33 @@ with container2:
 
     st.write("Products List:",essential_list, secondary_list)
 
-    st.markdown("🎧 **Click to record your grocery list**")
-
+        # Style overrides to clean up the appearance
     st.markdown("""
         <style>
-        .stAudioRecorder button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 0.5em 1em;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+        /* Hide the SVG microphone icon */
+        div[data-testid="stAudioRecorder"] svg {
+            display: none !important;
         }
-        .stAudioRecorder svg {
-            display: none;
+
+        /* Style the audio recorder button itself */
+        div[data-testid="stAudioRecorder"] button {
+            background-color: #4CAF50 !important;
+            color: white !important;
+            padding: 0.5em 1em !important;
+            font-size: 16px !important;
+            border: none !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    audio = audio_recorder("Click here to record your voice", "Recording...")
+    # Friendly heading above the recorder
+    st.markdown("🎧 **Click to record your grocery list**")
 
+# Audio recorder component
+    audio = audio_recorder("Click here to record your voice", "Recording...")
+    
     voice_products = []
 
     if audio is not None and len(audio) > 0:
