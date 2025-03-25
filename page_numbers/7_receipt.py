@@ -182,11 +182,11 @@ with container2:
 
     voice_products = []
 
-    if len(audio) > 0:
-        st.audio(audio.tobytes(), format="audio/wav")
+    if audio is not None and len(audio) > 0:
+        st.audio(audio, format="audio/wav")
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
-            f.write(audio.tobytes())
+            f.write(audio)
             temp_wav_path = f.name
 
         recognizer = sr.Recognizer()
