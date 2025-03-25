@@ -34,37 +34,30 @@ def fix_multiword_adjectives(text):
 def extract_adj_noun_phrases(text):
     doc = nlp(text)
     phrases = []
+    tokens = [token.text.lower() for token in doc]
+    pos_tags = [token.pos_ for token in doc]
+
     i = 0
+    while i < len(tokens):
+        current = tokens[i]
+        next_token = tokens[i + 1] if i + 1 < len(tokens) else ""
+        next_pos = pos_tags[i + 1] if i + 1 < len(tokens) else ""
 
-    while i < len(doc):
-        token = doc[i]
-
-        # Check if current or previous + current = a hyphenated adjective
-        if i > 0:
-            combo = f"{doc[i - 1].text.lower()}-{token.text.lower()}"
-            if combo in hyphenated_adjs and (i + 1) < len(doc) and doc[i + 1].pos_ == "NOUN":
-                noun = doc[i + 1].lemma_.lower()
-                phrases.append(f"{combo} {noun}")
-                i += 2
-                continue
-
-        # Check if current token is a known adjective (e.g., minced, frozen)
-        if token.text.lower() in hyphenated_adjs and (i + 1) < len(doc) and doc[i + 1].pos_ == "NOUN":
-            noun = doc[i + 1].lemma_.lower()
-            phrases.append(f"{token.text.lower()} {noun}")
+        # Check if current is a known hyphenated adjective and next is a noun
+        if current in hyphenated_adjs and next_pos == "NOUN":
+            phrases.append(f"{current} {next_token}")
             i += 2
             continue
 
-        # If a regular adjective followed by a noun
-        if token.pos_ == "ADJ" and (i + 1) < len(doc) and doc[i + 1].pos_ == "NOUN":
-            phrase = f"{token.text.lower()} {doc[i + 1].lemma_.lower()}"
-            phrases.append(phrase)
+        # Handle regular ADJ + NOUN pattern
+        if pos_tags[i] == "ADJ" and next_pos == "NOUN":
+            phrases.append(f"{current} {next_token}")
             i += 2
             continue
 
-        # If standalone noun (without adjective), still include it
-        if token.pos_ == "NOUN" and not token.is_stop:
-            phrases.append(token.lemma_.lower())
+        # Standalone nouns still included
+        if pos_tags[i] == "NOUN" and current not in phrases:
+            phrases.append(current)
 
         i += 1
 
