@@ -184,7 +184,7 @@ with container2:
     st.markdown("🎧 **Click to record your grocery list**")
 
     # Audio recorder component
-    audio_bytes = audio_recorder(
+    audio = audio_recorder(
         text="Click to Record",          # Button label
         icon_name="",                    # No icon
         neutral_color="#4CAF50",         # Button color when not recording
