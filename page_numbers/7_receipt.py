@@ -34,6 +34,8 @@ def fix_multiword_adjectives(text):
 
 def extract_adj_noun_phrases(text):
     doc = nlp(text)
+    for token in doc:
+        st.write(f"{token.text} ({token.pos_})")
     phrases = []
     i = 0
 
