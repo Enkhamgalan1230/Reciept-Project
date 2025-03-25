@@ -17,78 +17,80 @@ import importlib
 
 st.title("🛒 Receipt 📃", anchor=False)
 st.markdown("---")
-st.subheader("🔍 Closest Store Finder 📍", anchor=False)
+container1 = st.container(border= True)
+with container1:
+    st.subheader("🔍 Closest Store Finder 📍", anchor=False)
 
-# ℹ Info message
-st.info("👇 Please tick the checkbox to capture your location.")
+    # ℹ Info message
+    st.info("👇 Please tick the checkbox to capture your location.")
 
-comment = '''
-This function searches for a given store name near the user's location using the Photon API, 
-retrieves up to 10 possible store locations, filters them based on whether they are within the specified distance (max_distance_km), 
-and returns a list of stores with their names, addresses, coordinates, and distances from the user. 
+    comment = '''
+    This function searches for a given store name near the user's location using the Photon API, 
+    retrieves up to 10 possible store locations, filters them based on whether they are within the specified distance (max_distance_km), 
+    and returns a list of stores with their names, addresses, coordinates, and distances from the user. 
 
-It first sends a request to the API with the store name and user's latitude and longitude, then processes the response, 
-extracts relevant store details, calculates the geographical distance using the geodesic function, and only keeps stores that fall within the given range. 
-If the API request fails or returns invalid data, the function safely handles errors and returns an empty list.
+    It first sends a request to the API with the store name and user's latitude and longitude, then processes the response, 
+    extracts relevant store details, calculates the geographical distance using the geodesic function, and only keeps stores that fall within the given range. 
+    If the API request fails or returns invalid data, the function safely handles errors and returns an empty list.
 
-geopy.distance - gets distance between two lon and lat.
+    geopy.distance - gets distance between two lon and lat.
 
-The Photon API-  is an OpenStreetMap-based geolocation API that allows us to search for places using natural language queries. 
-It provides latitude, longitude, address details, and other metadata for a given search term
+    The Photon API-  is an OpenStreetMap-based geolocation API that allows us to search for places using natural language queries. 
+    It provides latitude, longitude, address details, and other metadata for a given search term
 
-We send a GET request to https://photon.komoot.io/api/ with search parameters.
-The API matches the query (for example, "Tesco near 51.6275938,-0.7519156") to its OpenStreetMap database.
-It returns a JSON response containing a list of locations (if foond.)
-'''
+    We send a GET request to https://photon.komoot.io/api/ with search parameters.
+    The API matches the query (for example, "Tesco near 51.6275938,-0.7519156") to its OpenStreetMap database.
+    It returns a JSON response containing a list of locations (if foond.)
+    '''
 
-# Function to get store locations
-def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
-    url = "https://photon.komoot.io/api/"
-    params = {
-        "q": store_name,  
-        "lat": user_lat,
-        "lon": user_lon,
-        "limit": 10
-    }
-    
-    response = requests.get(url, params=params)
-    
-    if response.status_code != 200:
-        return []
+    # Function to get store locations
+    def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
+        url = "https://photon.komoot.io/api/"
+        params = {
+            "q": store_name,  
+            "lat": user_lat,
+            "lon": user_lon,
+            "limit": 10
+        }
+        
+        response = requests.get(url, params=params)
+        
+        if response.status_code != 200:
+            return []
 
-    try:
-        data = response.json()  # Convert response JSON into a Python dictionary
-        places = data.get("features", [])  # Extract the list of store locations (default to an empty list if not found)
-    except requests.exceptions.JSONDecodeError:
-        return []
+        try:
+            data = response.json()  # Convert response JSON into a Python dictionary
+            places = data.get("features", [])  # Extract the list of store locations (default to an empty list if not found)
+        except requests.exceptions.JSONDecodeError:
+            return []
 
-    found_stores = []
-    #Loop through each store result returned by the API
-    for place in places:
-        coords = place["geometry"]["coordinates"] # Extract coordinates
-        store_lon, store_lat = coords[0], coords[1]  # Assign longitude and latitude
-        store_address = place["properties"].get("name", "Unknown store") # Extract store names; if missing turn to "Unknown store"
+        found_stores = []
+        #Loop through each store result returned by the API
+        for place in places:
+            coords = place["geometry"]["coordinates"] # Extract coordinates
+            store_lon, store_lat = coords[0], coords[1]  # Assign longitude and latitude
+            store_address = place["properties"].get("name", "Unknown store") # Extract store names; if missing turn to "Unknown store"
 
 
-        distance = geodesic((user_lat, user_lon), (store_lat, store_lon)).km # Calculate distance
+            distance = geodesic((user_lat, user_lon), (store_lat, store_lon)).km # Calculate distance
 
-        # If store is within the max allowed distance, add to results
-        if distance <= max_distance_km:
-            found_stores.append({
-                "Store": store_name,
-                "Address": store_address,
-                "Distance (km)": round(distance, 2),
-                "Latitude": store_lat,
-                "Longitude": store_lon
-            })
+            # If store is within the max allowed distance, add to results
+            if distance <= max_distance_km:
+                found_stores.append({
+                    "Store": store_name,
+                    "Address": store_address,
+                    "Distance (km)": round(distance, 2),
+                    "Latitude": store_lat,
+                    "Longitude": store_lon
+                })
 
-    return found_stores
+        return found_stores
 
-# 📍 Check user location
-if st.checkbox("✅ Check my location"):
-
+    # 📍 Check user location
+    if st.checkbox("✅ Check my location"):
     #Custom location finder found on community forum and returns a dictionary after user approval
-    loc = get_geolocation()
+        loc = get_geolocation()
+        
     if loc and "coords" in loc:
         user_lat = loc["coords"].get("latitude")
         user_lon = loc["coords"].get("longitude")
@@ -144,14 +146,14 @@ if st.checkbox("✅ Check my location"):
 
 st.subheader("Shopping List generator 📃")
 
-container = st.container(border= True)
+container2 = st.container(border= True)
 
-with container:
+with container2:
     st.write("How much is the budget and the duration?")
 
     day = ["A Day", "A Week", " Two Week", "Month"]
     duration = st.pills(label = "Duration",options = day, selection_mode="single")
-    budget = st.number_input("Insert the value (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
+    budget = st.number_input(f"Insert the budget for {day}(£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
     essential_list = st_tags(
         label='Enter your essential products:',
@@ -175,4 +177,32 @@ with container:
 
     st.write("Products List:",essential_list, secondary_list)
 
+    st.markdown("### Or speak your grocery list:")
+    audio = audio_recorder("🎙️ Click to record", "Recording...")
+
+    voice_products = []
+
+    if len(audio) > 0:
+        st.audio(audio.tobytes(), format="audio/wav")
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+            f.write(audio.tobytes())
+            temp_wav_path = f.name
+
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(temp_wav_path) as source:
+            audio_data = recognizer.record(source)
+            try:
+                text = recognizer.recognize_google(audio_data)
+                st.success(f"🗣️ You said: {text}")
+                voice_products = [item.strip() for item in text.split(",")]
+                st.write("📝 Products from voice:", voice_products)
+            except sr.UnknownValueError:
+                st.error("❌ Could not understand the audio.")
+            except sr.RequestError as e:
+                st.error(f"❌ Could not request results; {e}")
+
+    # Combine all product sources
+    all_products = list(set(essential_list + secondary_list + voice_products))
+    st.write("🧾 Final Products List:", all_products)
 
