@@ -34,30 +34,26 @@ def fix_multiword_adjectives(text):
 def extract_adj_noun_phrases(text):
     doc = nlp(text)
     phrases = []
-    tokens = [token.text.lower() for token in doc]
-    pos_tags = [token.pos_ for token in doc]
-
     i = 0
-    while i < len(tokens):
-        current = tokens[i]
-        next_token = tokens[i + 1] if i + 1 < len(tokens) else ""
-        next_pos = pos_tags[i + 1] if i + 1 < len(tokens) else ""
+    while i < len(doc):
+        current = doc[i]
+        next_token = doc[i + 1] if i + 1 < len(doc) else None
 
-        # Check if current is a known hyphenated adjective and next is a noun
-        if current in hyphenated_adjs and next_pos == "NOUN":
-            phrases.append(f"{current} {next_token}")
+        # Case 1: compound adjectives (e.g., "semi-skimmed" + NOUN)
+        if current.text.lower() in hyphenated_adjs and next_token and next_token.pos_ == "NOUN":
+            phrases.append(f"{current.text.lower()} {next_token.text.lower()}")
             i += 2
             continue
 
-        # Handle regular ADJ + NOUN pattern
-        if pos_tags[i] == "ADJ" and next_pos == "NOUN":
-            phrases.append(f"{current} {next_token}")
+        # Case 2: regular ADJ + NOUN
+        if current.pos_ == "ADJ" and next_token and next_token.pos_ == "NOUN":
+            phrases.append(f"{current.text.lower()} {next_token.text.lower()}")
             i += 2
             continue
 
-        # Standalone nouns still included
-        if pos_tags[i] == "NOUN" and current not in phrases:
-            phrases.append(current)
+        # Case 3: standalone nouns
+        if current.pos_ == "NOUN":
+            phrases.append(current.text.lower())
 
         i += 1
 
