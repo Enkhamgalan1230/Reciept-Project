@@ -35,54 +35,59 @@ def fix_multiword_adjectives(text):
 def extract_adj_noun_phrases(text):
     doc = nlp(text)
     phrases = []
-    i = 0
+    used_indices = set()
 
+    # Phase 1: Handle 4-token hyphenated adjectives: full - fat + milk
+    i = 0
     while i < len(doc) - 3:
         t1, t2, t3, t4 = doc[i], doc[i + 1], doc[i + 2], doc[i + 3]
 
-        # 🧠 Case 1: Handles full-fat / semi-skimmed style: ADJ - * NOUN
         if t1.pos_ == "ADJ" and t2.text == "-" and t4.pos_ == "NOUN":
             hyphenated = f"{t1.text.lower()}-{t3.text.lower()}"
             phrases.append(f"{hyphenated} {t4.text.lower()}")
+            used_indices.update({i, i + 1, i + 2, i + 3})
             i += 4
             continue
 
         i += 1
 
-    # Recheck from start for standard cases
+    # Phase 2: Simple 2-token patterns (hyphenated, ADJ+NOUN, etc.)
     i = 0
     while i < len(doc) - 1:
+        if i in used_indices or i + 1 in used_indices:
+            i += 1
+            continue
+
         t1, t2 = doc[i], doc[i + 1]
 
-        # 🟢 Hyphenated adjective as single token + noun (e.g., "low-fat milk")
+        # Case: hyphenated word already joined
         if "-" in t1.text and t1.pos_ == "ADJ" and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
+            used_indices.update({i, i + 1})
             i += 2
             continue
 
-        # 🟢 Match from known list
+        # Case: known food adjective
         if t1.text.lower() in hyphenated_adjs and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
+            used_indices.update({i, i + 1})
             i += 2
             continue
 
-        # 🟢 Regular ADJ + NOUN
+        # Case: generic ADJ + NOUN
         if t1.pos_ == "ADJ" and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
+            used_indices.update({i, i + 1})
             i += 2
-            continue
-
-        # 🟢 Single NOUN
-        if t1.pos_ == "NOUN":
-            phrases.append(t1.text.lower())
-            i += 1
             continue
 
         i += 1
 
-    # 🟢 Last token catch-up
-    if i == len(doc) - 1 and doc[i].pos_ == "NOUN":
-        phrases.append(doc[i].text.lower())
+    # Phase 3: Catch remaining standalone NOUNs
+    for i, token in enumerate(doc):
+        if i not in used_indices and token.pos_ == "NOUN":
+            phrases.append(token.text.lower())
+            used_indices.add(i)
 
     return phrases
 
