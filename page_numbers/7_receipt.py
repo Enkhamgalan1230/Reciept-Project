@@ -34,40 +34,40 @@ def fix_multiword_adjectives(text):
 
 def extract_adj_noun_phrases(text):
     doc = nlp(text)
-    for token in doc:
-        st.write(f"{token.text} ({token.pos_})")
     phrases = []
     i = 0
+    while i < len(doc) - 3:
+        t1, t2, t3, t4 = doc[i], doc[i+1], doc[i+2], doc[i+3]
 
-    while i < len(doc) - 1:
-        current_token = doc[i]
-        next_token = doc[i + 1]
+        # 🧠 CASE 1: compound adjective with hyphen split into 3 tokens, followed by noun
+        if (t1.pos_ == "ADJ" and t2.text == "-" and t3.pos_ in ["ADJ", "VERB"]) and t4.pos_ == "NOUN":
+            hyphenated = f"{t1.text.lower()}-{t3.text.lower()}"
+            phrases.append(f"{hyphenated} {t4.text.lower()}")
+            i += 4
+            continue
 
-        current_text = current_token.text.lower()
-        next_text = next_token.text.lower()
-
-        # ✅ CASE 1: full adjective in your known set (e.g., "semi-skimmed") + NOUN
-        if current_text in hyphenated_adjs and next_token.pos_ == "NOUN":
-            phrases.append(f"{current_text} {next_text}")
+        # ✅ CASE 2: known full hyphenated adjective (e.g., "low-fat") + NOUN
+        if t1.text.lower() in hyphenated_adjs and t2.pos_ == "NOUN":
+            phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
             i += 2
             continue
 
-        # ✅ CASE 2: regular ADJ + NOUN (e.g., "green apples")
-        if current_token.pos_ == "ADJ" and next_token.pos_ == "NOUN":
-            phrases.append(f"{current_text} {next_text}")
+        # ✅ CASE 3: regular ADJ + NOUN (e.g., green apples)
+        if t1.pos_ == "ADJ" and t2.pos_ == "NOUN":
+            phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
             i += 2
             continue
 
-        # ✅ CASE 3: just a NOUN
-        if current_token.pos_ == "NOUN":
-            phrases.append(current_text)
+        # ✅ CASE 4: standalone NOUN
+        if t1.pos_ == "NOUN":
+            phrases.append(t1.text.lower())
             i += 1
             continue
 
         i += 1
 
-    # Last token catch-up (in case final token is NOUN and not handled)
-    if i == len(doc) - 1 and doc[i].pos_ == "NOUN":
+    # Catch any final noun not yet captured
+    if i < len(doc) and doc[i].pos_ == "NOUN":
         phrases.append(doc[i].text.lower())
 
     return phrases
