@@ -185,11 +185,11 @@ with container2:
     
     # Audio recorder component
     audio = audio_recorder(
-        text="** Click to Record 👉**",          # Button label
+        text="Click to Record 👉",          # Button label
         icon_name="microphone",                    
         neutral_color="#00FF00",         # Button color when not recording
         recording_color="#FF0000",       # Button color during recording
-        icon_size="1x",                  # Icon size (not used since icon_name is empty)
+        icon_size="1.5x",                  # Icon size (not used since icon_name is empty)
     )
     voice_products = []
 
