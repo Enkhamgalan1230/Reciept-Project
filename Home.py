@@ -60,9 +60,14 @@ price_prediction = st.Page(
     title= "Price Prediction",
     icon = "🔮"
 )
+store = st.Page(
+    page = "page_numbers/7_store.py",
+    title= "Store Finder",
+    icon = "📍"
+)
 
 receipt = st.Page(
-    page = "page_numbers/7_receipt.py",
+    page = "page_numbers/8_receipt.py",
     title= "Receipt",
     icon = "📃"
 )
@@ -78,7 +83,7 @@ pg = st.navigation(
     {
         "Info": [home_page],
         "Data":[data_collection,data],
-        "Main Logics": [price_comparison,price_inflation,price_prediction, receipt],
+        "Main Logics": [price_comparison,price_inflation,price_prediction,store, receipt],
         "Boring Stuff": [data_fetcher]
     }
 )
