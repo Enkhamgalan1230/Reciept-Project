@@ -215,5 +215,7 @@ with container2:
 
     # Combine all product sources
     all_products = list(set(essential_list + secondary_list + voice_products))
-    st.write("🧾 Final Products List:", all_products)
+    
+    if all_products is not None:
+        st.write("🧾 Final Products List:", all_products)
 
