@@ -179,10 +179,18 @@ with container2:
 
     st.write("Products List:",essential_list, secondary_list)
 
-
+    st.markdown("---")
     # Friendly heading above the recorder
     st.subheader("🎧 **Record your grocery list**")
-
+    st.markdown("""
+        <style>
+        div[data-testid="stAudioRecorder"] button span {
+            font-size: 20px !important;
+            font-weight: bold !important;
+            color: white !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
     # Audio recorder component
     audio = audio_recorder(
         text="Click to Record 👉",          # Button label
