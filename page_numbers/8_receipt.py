@@ -96,6 +96,9 @@ container2 = st.container(border= True)
 
 with container2:
 
+    st.subheader("✏️ **Write your grocery list**")
+    
+
     budget = st.number_input(f"Insert the budget (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
     essential_list = st_tags(
