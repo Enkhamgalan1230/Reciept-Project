@@ -157,7 +157,7 @@ with container2:
     duration_text = duration if duration else "your chosen time period"
 
 
-    budget = st.number_input(f"Insert the budget for {duration_text}(£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
+    budget = st.number_input(f"Insert the budget for {duration_text} (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
     essential_list = st_tags(
         label='Enter your essential products:',
