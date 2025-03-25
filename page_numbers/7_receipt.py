@@ -226,11 +226,6 @@ st.subheader("Shopping List generator 📃")
 container2 = st.container(border= True)
 
 with container2:
-    st.write("How much is the budget and the duration?")
-
-    day = ["a Day", "a Week", " Two Week", "a Month"]
-    duration = st.pills(label = "Duration",options = day, selection_mode="single")
-    # Set default duration text
 
     budget = st.number_input(f"Insert the budget (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
