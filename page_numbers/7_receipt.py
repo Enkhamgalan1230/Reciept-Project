@@ -186,7 +186,7 @@ with container2:
     # Audio recorder component
     audio = audio_recorder(
         text="Click to Record",          # Button label
-        icon_name="",                    # No icon
+        icon_name="microphone",                    
         neutral_color="#4CAF50",         # Button color when not recording
         recording_color="#FF0000",       # Button color during recording
         icon_size="1x",                  # Icon size (not used since icon_name is empty)
