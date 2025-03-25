@@ -15,6 +15,20 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 
+# Load spaCy English model once
+nlp = spacy.load("en_core_web_sm")
+
+def extract_useful_words(text):
+    doc = nlp(text)
+    useful = []
+
+    for token in doc:
+        # Keep adjectives and nouns, skip stopwords/punctuation
+        if token.pos_ in ["ADJ", "NOUN"] and not token.is_stop and token.is_alpha:
+            useful.append(token.text.lower())
+
+    return useful
+
 st.title("🛒 Receipt 📃", anchor=False)
 st.markdown("---")
 container1 = st.container(border= True)
@@ -206,7 +220,7 @@ with container2:
             try:
                 text = recognizer.recognize_google(audio_data)
                 st.success(f"🗣️ You said: {text}")
-                voice_products = [item.strip() for item in text.split(",")]
+                voice_products = extract_useful_words(text)
                 st.write("📝 Products from voice:", voice_products)
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
@@ -215,7 +229,7 @@ with container2:
 
     # Combine all product sources
     all_products = list(set(essential_list + secondary_list + voice_products))
-    
+
     if all_products is not None:
         st.write("🧾 Final Products List:", all_products)
 
