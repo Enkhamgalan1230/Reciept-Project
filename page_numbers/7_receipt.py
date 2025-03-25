@@ -179,8 +179,8 @@ with container2:
 
     st.write("Products List:",essential_list, secondary_list)
 
-    st.markdown("### Or speak your grocery list:")
-    audio = audio_recorder("🎙️ Click to record", "Recording...")
+    st.markdown("🎧 **Click to record your grocery list**")
+    audio = audio_recorder("", "")
 
     voice_products = []
 
