@@ -171,7 +171,7 @@ if "df" in st.session_state and all_products and budget > 0:
     df = st.session_state.df.copy()
     
     # Ensure required columns exist
-    if {"Store", "Name", "Price", "Year", "Month", "Day"}.issubset(df.columns):
+    if {"Store_Name", "Name", "Price", "Year", "Month", "Day"}.issubset(df.columns):
         df["date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
         
         # Get latest date for each store
