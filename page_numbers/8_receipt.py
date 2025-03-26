@@ -109,16 +109,6 @@ with container2:
         key='essential_input'
     )
 
-    secondary_list = st_tags(
-        label='Would love to buy these if we can:',
-        text='Press enter to add more',
-        value=[],
-        suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
-                    "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
-        maxtags=40,
-        key='extra_input'
-    )
-
     st.markdown("---")
     # Friendly heading above the recorder
     st.subheader("🎧 **Record your grocery list**")
@@ -166,9 +156,8 @@ with container2:
 container3 = st.container(border=True)
 
 with container3:
-    if all_products is not None or secondary_list is not None:
+    if all_products is not None:
         st.subheader("Product list 🧾")
-        st.write("Essential Products List:", all_products)
-        st.write("Secondary Products List:", secondary_list)
+        st.write("Products List:", all_products)
 
 
