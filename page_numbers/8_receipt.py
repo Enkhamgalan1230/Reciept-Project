@@ -117,9 +117,8 @@ with container2:
     updated_essentials = st_tags(
         label='Enter your essential products:',
         text='Press enter to add more',
-        value=st.session_state.essential_list,
-        suggestions=["Milk", "Bread", "Eggs", "Potatoes", "Bananas", "Bacon", "Butter", "Juice", "Biscuits",
-                    "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola"],
+        value=st.session_state.essential_list,  # now contains updated list
+        suggestions=[...],
         maxtags=40,
         key='essential_input'
     )
