@@ -163,8 +163,10 @@ with container2:
     # Combine all product sources
     all_products = list(set(essential_list + voice_products))
 
+container3 = st.container(border=True)
+
+with container3:
     if all_products is not None or secondary_list is not None:
-        st.markdown("---")
         st.subheader("Product list 🧾")
         st.write("Essential Products List:", all_products)
         st.write("Secondary Products List:", secondary_list)
