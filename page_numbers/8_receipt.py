@@ -208,7 +208,7 @@ if "df" in st.session_state and all_products and budget > 0:
                 if debug:
                     st.markdown(f"🔍 Matching `{prod}` → `{best_match}` in `{store}` (score: {score})")
 
-                if score >= 75:  # lowered threshold for flexibility
+                if score >= 75:
                     row = product_map.loc[best_match]
                     price = row["Price"]
                     total_price += price
