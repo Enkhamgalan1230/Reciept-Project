@@ -114,19 +114,20 @@ with container2:
 
     budget = st.number_input(f"Insert the budget (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
-    updated_essentials = st_tags(
-        label='Enter your essential products:',
-        text='Press enter to add more',
-        value=st.session_state.essential_list,  # now contains updated list
-        suggestions=[...],
-        maxtags=40,
-        key='essential_input'
-    )
+    # Input field for a single item
+    new_item = st.text_input("Add an essential item", key="new_essential")
 
-    # Update session if changed
-    if updated_essentials != st.session_state.essential_list:
-        st.session_state.essential_list = updated_essentials
-        st.session_state.finalised = False
+    # Button to add the item to the list
+    if st.button("➕ Add Item"):
+        if new_item and new_item.strip():
+            clean_item = new_item.strip().lower()
+            if clean_item not in st.session_state.essential_list:
+                st.session_state.essential_list.append(clean_item)
+                st.success(f"Added '{clean_item}' to your list!")
+            else:
+                st.warning("Item already in the list.")
+            st.session_state.new_essential = ""  # Clear the input box
+            #st.rerun()
 
     st.markdown("---")
     # Friendly heading above the recorder
