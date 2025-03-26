@@ -178,5 +178,5 @@ container3 = st.container(border=True)
 st.session_state.all_products = st.session_state.essential_list + st.session_state.voice_products
 
 with container3:
-    st.write()
+    st.write(st.session_state.all_products)
     
