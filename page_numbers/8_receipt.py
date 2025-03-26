@@ -178,21 +178,26 @@ container3 = st.container(border=True)
 with container3:
     st.subheader("🧾 Product List")
 
-    # REBUILD combined list fresh every time
+    # Always rebuild current all_products
     st.session_state.all_products = st.session_state.essential_list + st.session_state.voice_products
+    all_products = st.session_state.all_products
 
-    if st.session_state.all_products:
+    if all_products:
         st.markdown("Here are your selected items (tick to delete):")
 
         items_to_delete = []
-        for idx, product in enumerate(st.session_state.all_products):
+
+        for idx, product in enumerate(all_products):
             if st.checkbox(f"{idx + 1}. {product}", key=f"delete_{idx}"):
                 items_to_delete.append(product)
 
+        # Store in session state for debugging
+        st.session_state.items_to_delete = items_to_delete
+
         if st.button("🗑️ Delete Selected", use_container_width=True):
             to_delete = [item.strip().lower().strip("'\"") for item in items_to_delete]
+            st.session_state.to_delete = to_delete  # Save for debug
 
-            # Remove from both lists
             st.session_state.essential_list = [
                 e for e in st.session_state.essential_list if e.strip().lower().strip("'\"") not in to_delete
             ]
@@ -200,20 +205,21 @@ with container3:
                 v for v in st.session_state.voice_products if v.strip().lower().strip("'\"") not in to_delete
             ]
 
-            # Also update prev_products to match new state
-            st.session_state.prev_products = st.session_state.essential_list + st.session_state.voice_products
+            st.session_state.prev_products = (
+                st.session_state.essential_list + st.session_state.voice_products
+            )
             st.session_state.finalised = False
 
             st.success("Selected items deleted.")
-            #st.rerun()  # Optional: rerun to refresh the checkbox state
+            st.rerun()
 
     else:
         st.info("No products selected.")
 
-    # Rebuild list again to check if it still exists for finalise
+    # Rebuild after deletion (optional)
     st.session_state.all_products = st.session_state.essential_list + st.session_state.voice_products
 
-    # Finalise button logic
+    # Finalise button
     if not st.session_state.finalised and st.session_state.all_products:
         if st.button("✅ Finalise List", use_container_width=True):
             st.session_state.finalised = True
@@ -221,10 +227,11 @@ with container3:
     elif st.session_state.finalised:
         st.success("✅ This list has already been finalised.")
 
-# Debug output
+# Debug
 st.write("Essentials:", [repr(i) for i in st.session_state.essential_list])
 st.write("Voice:", [repr(i) for i in st.session_state.voice_products])
-st.write("To delete:", [repr(i) for i in items_to_delete])
+st.write("To delete:", st.session_state.get("to_delete", []))
+st.write("Checked for deletion:", st.session_state.get("items_to_delete", []))
 
 if "df" in st.session_state and st.session_state.all_products and budget > 0:
     pass
