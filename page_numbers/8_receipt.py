@@ -9,6 +9,9 @@ import spacy
 from fuzzywuzzy import process
 import subprocess
 import importlib
+from streamlit.runtime.scriptrunner import RerunException
+import streamlit.runtime.scriptrunner.script_run_context as stc
+
 
 # Check if df is stored in session state
 if "df" in st.session_state:
@@ -210,15 +213,14 @@ with container3:
                 item for item in st.session_state.voice_products if item not in items_to_delete
             ]
 
-            # Rebuild the product list and reset flags
+            # Rebuild product list
             all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
             st.session_state.prev_products = all_products.copy()
             st.session_state.finalised = False
             st.session_state.delete_flags = [False] * len(all_products)
 
-            # Trigger rerun for immediate visual update
             st.success("Selected items deleted.")
-            st.experimental_rerun()
+            raise RerunException(stc.get_script_run_ctx())
     else:
         st.info("No products selected.")
 
