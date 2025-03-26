@@ -8,11 +8,12 @@ import requests
 import pandas as pd
 
 st.header("Closest Store Finder 📍")
+st.caption("💡 You can either write or record your list")
 
 container1 = st.container(border= True)
 with container1:
     # ℹ Info message
-    st.info("👇 Please tick the checkbox to capture your location.")
+    st.success("👇 Please tick the checkbox to capture your location.")
 
     comment = '''
     This function searches for a given store name near the user's location using the Photon API, 
@@ -87,6 +88,18 @@ with container1:
 
             if user_lat and user_lon is not None: 
                 st.success("📍 Location Captured!")
+
+                 # Store location in session state for deletion logic
+                st.session_state["user_lat"] = user_lat
+                st.session_state["user_lon"] = user_lon
+
+                #  Minimal delete button for privacy
+                st.markdown("<div style='margin-top: -15px; margin-bottom: 15px;'>", unsafe_allow_html=True)
+                if st.button("🧹 Forget my location", use_container_width=True):
+                    st.session_state.pop("user_lat", None)
+                    st.session_state.pop("user_lon", None)
+                    st.toast("📍 Your location has been removed from this session.", icon="🗑️")
+                st.markdown("</div>", unsafe_allow_html=True)
 
             # Define search parameters
             max_distance_km = 5
