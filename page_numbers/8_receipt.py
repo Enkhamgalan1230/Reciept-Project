@@ -10,33 +10,24 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 
-# Check if df is stored in session state
+# ========== SESSION STATE SETUP ==========
 if "df" in st.session_state:
     df = st.session_state.df
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
-if "essential_list" not in st.session_state:
-    st.session_state.essential_list = []
+for key in ["essential_list", "voice_products", "all_products"]:
+    if key not in st.session_state:
+        st.session_state[key] = []
 
-if "voice_products" not in st.session_state:
-    st.session_state.voice_products = []
-
-if "all_products" not in st.session_state:
-    st.session_state.all_products =[]
-
-# Load spaCy English model once
+# ========== LOAD MODELS AND DATA ==========
 nlp = spacy.load("en_core_web_sm")
-
-# Load food adjectives from CSV
 df_adj = pd.read_csv("food_adjectives.csv")
 hyphenated_adjs = set(df_adj["Food_Adjective"].str.lower().tolist())
-
-# Map phrases without hyphens to their hyphenated form
 phrase_map = {adj.replace("-", " "): adj for adj in hyphenated_adjs}
 
+# ========== TEXT PROCESSING HELPERS ==========
 def fix_multiword_adjectives(text):
-    """Replace non-hyphenated multi-word phrases with correct hyphenated forms."""
     for plain, hyphenated in phrase_map.items():
         if plain in text:
             text = text.replace(plain, hyphenated)
@@ -47,53 +38,35 @@ def extract_adj_noun_phrases(text):
     phrases = []
     used_indices = set()
 
-    # Phase 1: Handle 4-token hyphenated adjectives: full - fat + milk
     i = 0
     while i < len(doc) - 3:
-        t1, t2, t3, t4 = doc[i], doc[i + 1], doc[i + 2], doc[i + 3]
-
+        t1, t2, t3, t4 = doc[i], doc[i+1], doc[i+2], doc[i+3]
         if t1.pos_ == "ADJ" and t2.text == "-" and t4.pos_ == "NOUN":
             hyphenated = f"{t1.text.lower()}-{t3.text.lower()}"
             phrases.append(f"{hyphenated} {t4.text.lower()}")
-            used_indices.update({i, i + 1, i + 2, i + 3})
+            used_indices.update({i, i+1, i+2, i+3})
             i += 4
             continue
-
         i += 1
 
-    # Phase 2: Simple 2-token patterns (hyphenated, ADJ+NOUN, etc.)
     i = 0
     while i < len(doc) - 1:
-        if i in used_indices or i + 1 in used_indices:
+        if i in used_indices or i+1 in used_indices:
             i += 1
             continue
-
-        t1, t2 = doc[i], doc[i + 1]
-
-        # Case: hyphenated word already joined
+        t1, t2 = doc[i], doc[i+1]
         if "-" in t1.text and t1.pos_ == "ADJ" and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
-            used_indices.update({i, i + 1})
-            i += 2
-            continue
-
-        # Case: known food adjective
-        if t1.text.lower() in hyphenated_adjs and t2.pos_ == "NOUN":
+        elif t1.text.lower() in hyphenated_adjs and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
-            used_indices.update({i, i + 1})
-            i += 2
-            continue
-
-        # Case: generic ADJ + NOUN
-        if t1.pos_ == "ADJ" and t2.pos_ == "NOUN":
+        elif t1.pos_ == "ADJ" and t2.pos_ == "NOUN":
             phrases.append(f"{t1.text.lower()} {t2.text.lower()}")
-            used_indices.update({i, i + 1})
-            i += 2
+        else:
+            i += 1
             continue
+        used_indices.update({i, i+1})
+        i += 2
 
-        i += 1
-
-    # Phase 3: Catch remaining standalone NOUNs
     for i, token in enumerate(doc):
         if i not in used_indices and token.pos_ == "NOUN":
             phrases.append(token.text.lower())
@@ -101,105 +74,90 @@ def extract_adj_noun_phrases(text):
 
     return phrases
 
-
+# ========== UI ==========
 st.title("Shopping List generator 📃", anchor=False)
-st.markdown("---")
 st.caption("💡 You can either write or record your list")
-container2 = st.container(border= True)
+st.markdown("---")
 
-with container2:
+# ========== MANUAL ENTRY ==========
+st.subheader("✏️ **Write your grocery list**")
+budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
-    st.subheader("✏️ **Write your grocery list**")
-    
+with st.form("add_item_form"):
+    new_item = st.text_input("Add an essential item")
+    submitted = st.form_submit_button("➕ Add Item")
+    if submitted:
+        clean_item = new_item.strip().lower()
+        if clean_item and clean_item not in st.session_state.essential_list:
+            st.session_state.essential_list.append(clean_item)
+            st.success(f"Added '{clean_item}'")
+            st.rerun()
+        elif clean_item:
+            st.warning("Item already in the list.")
 
-    budget = st.number_input(f"Insert the budget (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
+# ========== VOICE INPUT ==========
+st.markdown("---")
+st.subheader("🎧 **Record your grocery list**")
 
-    # Input field for a single item
-    new_item = st.text_input("Add an essential item", key="new_essential")
+audio = audio_recorder(
+    text="Click to Record 👉",
+    icon_name="microphone",
+    neutral_color="#00FF00",
+    recording_color="#FF0000",
+    icon_size="1.5x"
+)
 
-    # Button to add the item to the list
-    if st.button("➕ Add Item"):
-        if new_item and new_item.strip():
-            clean_item = new_item.strip().lower()
-            if clean_item not in st.session_state.essential_list:
-                st.session_state.essential_list.append(clean_item)
-                st.success(f"Added '{clean_item}' to your list!")
-            else:
-                st.warning("Item already in the list.")
-            st.session_state.new_essential = ""  # Clear the input box
-            #st.rerun()
+if audio is not None and len(audio) > 0:
+    st.audio(audio, format="audio/wav")
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+        f.write(audio)
+        temp_wav_path = f.name
 
-    st.markdown("---")
-    # Friendly heading above the recorder
-    st.subheader("🎧 **Record your grocery list**")
-    
-    # Audio recorder component
-    audio = audio_recorder(
-        text="Click to Record 👉",          # Button label
-        icon_name="microphone",                    
-        neutral_color="#00FF00",         # Button color when not recording
-        recording_color="#FF0000",       # Button color during recording
-        icon_size="1.5x",                  # Icon size (not used since icon_name is empty)
-    )
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(temp_wav_path) as source:
+        audio_data = recognizer.record(source)
+        try:
+            text = recognizer.recognize_google(audio_data)
+            text = fix_multiword_adjectives(text)
+            st.success(f"🗣️ You said: {text}")
+            new_voice_products = extract_adj_noun_phrases(text)
+            for item in new_voice_products:
+                clean_item = item.strip("'\"").strip().lower()
+                if clean_item not in st.session_state.voice_products:
+                    st.session_state.voice_products.append(clean_item)
+        except sr.UnknownValueError:
+            st.error("❌ Could not understand the audio.")
+        except sr.RequestError as e:
+            st.error(f"❌ Could not request results; {e}")
 
+# ========== COMBINED PRODUCT LIST ==========
+st.session_state.all_products = (
+    st.session_state.essential_list + st.session_state.voice_products
+)
 
-    if audio is not None and len(audio) > 0:
-        st.audio(audio, format="audio/wav")
+st.markdown("---")
+st.subheader("🧾 **Combined Grocery List**")
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
-            f.write(audio)
-            temp_wav_path = f.name
-
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(temp_wav_path) as source:
-            audio_data = recognizer.record(source)
-            try:
-                # Step 1: recognise speech
-                text = recognizer.recognize_google(audio_data)
-
-                # Step 2: fix multi-word food adjectives like "full fat" → "full-fat"
-                text = fix_multiword_adjectives(text)
-
-                # Step 3: show and extract product terms
-                st.success(f"🗣️ You said: {text}")
-                new_voice_products = extract_adj_noun_phrases(text)
-                for item in new_voice_products:
-                    clean_item = item.strip("'\"").strip()
-                    if clean_item not in st.session_state.voice_products:
-                        st.session_state.voice_products.append(clean_item)
-
-            except sr.UnknownValueError:
-                st.error("❌ Could not understand the audio.")
-            except sr.RequestError as e:
-                st.error(f"❌ Could not request results; {e}")
-
-container3 = st.container(border=True)
-
-st.session_state.all_products = st.session_state.essential_list + st.session_state.voice_products
-
-with container3:
-    st.write("🛒 **Combined Grocery List**")
-    st.write(st.session_state.all_products)
-
-    # Deletion input
+if st.session_state.all_products:
     items_to_delete = st.multiselect(
         "Select items to delete from your list:",
-        options=st.session_state.all_products
+        options=st.session_state.all_products,
+        key="delete_select"
     )
 
     if st.button("🗑️ Delete Selected Items"):
-        st.session_state.all_products = [
-            item for item in st.session_state.all_products if item not in items_to_delete
-        ]
-
-        # Also delete from essential/voice lists if present
         st.session_state.essential_list = [
             item for item in st.session_state.essential_list if item not in items_to_delete
         ]
         st.session_state.voice_products = [
             item for item in st.session_state.voice_products if item not in items_to_delete
         ]
-
-        st.success("Selected item(s) deleted!")
+        st.session_state.all_products = [
+            item for item in st.session_state.all_products if item not in items_to_delete
+        ]
+        st.success("Selected item(s) deleted.")
         st.rerun()
-    
+
+    st.write(st.session_state.all_products)
+else:
+    st.info("Your list is currently empty.")
