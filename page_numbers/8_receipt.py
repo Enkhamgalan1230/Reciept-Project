@@ -156,8 +156,6 @@ with container2:
                     if item not in st.session_state.voice_products:
                         st.session_state.voice_products.append(item)
 
-                st.write("📝 Products from voice:", st.session_state.voice_products)
-
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
             except sr.RequestError as e:
