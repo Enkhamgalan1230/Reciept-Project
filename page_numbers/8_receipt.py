@@ -184,7 +184,7 @@ if "df" in st.session_state and all_products and budget > 0:
         
         # Try to build best combo per store
         best_combos = []
-        for store, group in filtered_df.groupby("Store"):
+        for store, group in filtered_df.groupby("Store_Name"):
             product_map = group.set_index("name_lower")
             
             matched_items = []
@@ -198,7 +198,7 @@ if "df" in st.session_state and all_products and budget > 0:
                     matched_items.append((row["Name"], price))
             
             if len(matched_items) == len(all_products) and total_price <= budget * 1.1:
-                best_combos.append({"Store": store, "Items": matched_items, "Total": total_price})
+                best_combos.append({"Store_Name": store, "Items": matched_items, "Total": total_price})
         
         # Sort by total price and show the best
         best_combos = sorted(best_combos, key=lambda x: x["Total"])
@@ -208,7 +208,7 @@ if "df" in st.session_state and all_products and budget > 0:
 
         if best_combos:
             best = best_combos[0]
-            container3.success(f"🏪 **Store:** {best['Store']} — 🧾 **Total: £{best['Total']:.2f}**")
+            container3.success(f"🏪 **Store:** {best['Store_Name']} — 🧾 **Total: £{best['Total']:.2f}**")
             for item, price in best["Items"]:
                 container3.markdown(f"- {item}: £{price:.2f}")
         else:
