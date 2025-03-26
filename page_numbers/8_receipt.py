@@ -16,9 +16,11 @@ if "df" in st.session_state:
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
-# Save essential list into session state
 if "essential_list" not in st.session_state:
     st.session_state.essential_list = []
+
+if "voice_products" not in st.session_state:
+    st.session_state.voice_products = []
 
 # Load spaCy English model once
 nlp = spacy.load("en_core_web_sm")
@@ -118,7 +120,8 @@ with container2:
         maxtags=40,
         key='essential_input'
     )
-    # Update only if different
+
+    # Update session if changed
     if updated_essentials != st.session_state.essential_list:
         st.session_state.essential_list = updated_essentials
         st.session_state.finalised = False
@@ -136,8 +139,6 @@ with container2:
         icon_size="1.5x",                  # Icon size (not used since icon_name is empty)
     )
 
-    if "voice_products" not in st.session_state:
-        st.session_state.voice_products = []
 
     if audio is not None and len(audio) > 0:
         st.audio(audio, format="audio/wav")
@@ -194,19 +195,14 @@ with container3:
                 items_to_delete.append(product)
 
         if st.button("🗑️ Delete Selected", use_container_width=True):
-            # Clean from both sources
+            # Remove items from essential and voice product sources
             st.session_state.essential_list = [
                 item for item in st.session_state.essential_list if item not in items_to_delete
             ]
             st.session_state.voice_products = [
                 item for item in st.session_state.voice_products if item not in items_to_delete
             ]
-
-            # Rebuild
-            all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
-            st.session_state.prev_products = all_products
             st.session_state.finalised = False
-
             st.success("Selected items deleted.")
     else:
         st.info("No products selected.")
