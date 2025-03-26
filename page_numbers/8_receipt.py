@@ -96,9 +96,6 @@ container2 = st.container(border= True)
 container3 = st.container(border= True)
 
 with container1:
-    
-    st.markdown('<div class="custom-container">', unsafe_allow_html=True)
-
     st.subheader("✏️ Write your grocery list")
     budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
@@ -114,11 +111,9 @@ with container1:
             elif clean_item:
                 st.warning("Item already in the list.")
 
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== VOICE INPUT ==========
 with container2:
-    st.markdown('<div class="custom-container">', unsafe_allow_html=True)
     st.subheader("🗣️ **Speak your grocery list**")
     st.markdown("---")
     audio = audio_recorder(
@@ -151,7 +146,6 @@ with container2:
                 st.error("❌ Could not understand the audio.")
             except sr.RequestError as e:
                 st.error(f"❌ Could not request results; {e}")
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== COMBINED PRODUCT LIST ==========
 st.session_state.all_products = (
@@ -188,6 +182,17 @@ with container3:
         st.info("Your list is currently empty.")
 st.caption("📌 Selected items can be deleted from the list")
 
+st.markdown("""
+    <style>
+        [data-testid="stVerticalBlock"] > div:nth-of-type(2) {
+            background-color: #2c2f36;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 final_list = list(dict.fromkeys(st.session_state.all_products))
 
