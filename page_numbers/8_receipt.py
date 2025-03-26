@@ -109,15 +109,19 @@ with container2:
 
     budget = st.number_input(f"Insert the budget (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
-    st.session_state.essential_list = st_tags(
+    updated_essentials = st_tags(
         label='Enter your essential products:',
         text='Press enter to add more',
-        value=[],
-        suggestions=["Milk","Bread","Eggs","Potatoes","Bananas","Bacon","Butter","Juice","Biscuits"
-                    "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola", ],
+        value=st.session_state.essential_list,
+        suggestions=["Milk", "Bread", "Eggs", "Potatoes", "Bananas", "Bacon", "Butter", "Juice", "Biscuits",
+                    "Strawberries", "Cola", "Canned Tuna", "Blueberries", "Granola"],
         maxtags=40,
         key='essential_input'
     )
+    # Update only if different
+    if updated_essentials != st.session_state.essential_list:
+        st.session_state.essential_list = updated_essentials
+        st.session_state.finalised = False
 
     st.markdown("---")
     # Friendly heading above the recorder
@@ -184,14 +188,13 @@ with container3:
     if all_products:
         st.markdown("Here are your selected items (tick to delete):")
 
-        # Build checkbox states dynamically
         items_to_delete = []
         for idx, product in enumerate(all_products):
             if st.checkbox(f"{idx + 1}. {product}", key=f"delete_{product}"):
                 items_to_delete.append(product)
 
         if st.button("🗑️ Delete Selected", use_container_width=True):
-            # Remove from essential and voice lists if present
+            # Clean from both sources
             st.session_state.essential_list = [
                 item for item in st.session_state.essential_list if item not in items_to_delete
             ]
@@ -199,9 +202,11 @@ with container3:
                 item for item in st.session_state.voice_products if item not in items_to_delete
             ]
 
-            # Rebuild and reset
-            st.session_state.prev_products = st.session_state.essential_list + st.session_state.voice_products
+            # Rebuild
+            all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
+            st.session_state.prev_products = all_products
             st.session_state.finalised = False
+
             st.success("Selected items deleted.")
     else:
         st.info("No products selected.")
