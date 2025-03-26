@@ -83,9 +83,8 @@ st.markdown("---")
 container1 = st.container(border= True)
 container2 = st.container(border= True)
 container3 = st.container(border= True)
-col1, col2 = st.columns(2)
 
-with col1:
+with container1:
     
     st.subheader("✏️ **Write your grocery list**")
     st.markdown("---")
@@ -104,7 +103,7 @@ with col1:
                 st.warning("Item already in the list.")
 
 # ========== VOICE INPUT ==========
-with col2:
+with container2:
     st.subheader("🗣️ **Speak your grocery list**")
     st.markdown("---")
     audio = audio_recorder(
