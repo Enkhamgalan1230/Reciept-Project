@@ -16,6 +16,10 @@ if "df" in st.session_state:
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
+# Save essential list into session state
+if "essential_list" not in st.session_state:
+    st.session_state.essential_list = []
+
 # Load spaCy English model once
 nlp = spacy.load("en_core_web_sm")
 
@@ -105,7 +109,7 @@ with container2:
 
     budget = st.number_input(f"Insert the budget (£)", placeholder= "Ex : 30", format="%0.2f", min_value = 0.0)
 
-    essential_list = st_tags(
+    st.session_state.essential_list = st_tags(
         label='Enter your essential products:',
         text='Press enter to add more',
         value=[],
@@ -162,7 +166,7 @@ with container2:
                 st.error(f"❌ Could not request results; {e}")
 
     # Combine all product sources
-    all_products = list(set(essential_list + st.session_state.voice_products))
+    all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
 
 container3 = st.container(border=True)
 
@@ -192,30 +196,27 @@ with container3:
                 value=st.session_state.delete_flags[idx]
             )
 
-        # Delete button
         if st.button("🗑️ Delete Selected", use_container_width=True):
             items_to_delete = [
                 product for idx, product in enumerate(all_products)
                 if st.session_state.delete_flags[idx]
             ]
 
-            # Remove from both sources (voice + essential)
+            # Remove from session-stored essential and voice lists
+            st.session_state.essential_list = [
+                item for item in st.session_state.essential_list if item not in items_to_delete
+            ]
             st.session_state.voice_products = [
                 item for item in st.session_state.voice_products if item not in items_to_delete
             ]
-            essential_list = [
-                item for item in essential_list if item not in items_to_delete
-            ]
 
             # Rebuild product list
-            all_products = list(set(essential_list + st.session_state.voice_products))
+            all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
             st.session_state.prev_products = all_products.copy()
             st.session_state.finalised = False
-            st.success("Selected items deleted.")
-
-            # Reset checkbox flags
             st.session_state.delete_flags = [False] * len(all_products)
 
+            st.success("Selected items deleted.")
     else:
         st.info("No products selected.")
 
