@@ -167,6 +167,9 @@ with container3:
         st.write("Products List:", all_products)
 
 
+# Debug toggle at top
+debug = st.checkbox("Show matching details 🔍")
+
 if "df" in st.session_state and all_products and budget > 0:
     df = st.session_state.df.copy()
 
@@ -179,6 +182,13 @@ if "df" in st.session_state and all_products and budget > 0:
         # Only keep latest scraped data
         latest_df = df[df["date"] == latest_date].copy()
         latest_df["name_lower"] = latest_df["Name"].str.lower()
+
+        # Show store inventories if debug is on
+        if debug:
+            for store in latest_df["Store_Name"].unique():
+                st.markdown(f"**🛒 {store} has:**")
+                store_items = latest_df[latest_df["Store_Name"] == store]["Name"].tolist()
+                st.write(store_items[:25])  # show first 25 items per store
 
         # User product names lowercased for matching
         user_products_lower = [p.lower() for p in all_products]
@@ -195,7 +205,10 @@ if "df" in st.session_state and all_products and budget > 0:
                 choices = product_map.index.tolist()
                 best_match, score = process.extractOne(prod, choices)
 
-                if score >= 85:
+                if debug:
+                    st.markdown(f"🔍 Matching `{prod}` → `{best_match}` in `{store}` (score: {score})")
+
+                if score >= 75:  # lowered threshold for flexibility
                     row = product_map.loc[best_match]
                     price = row["Price"]
                     total_price += price
@@ -205,7 +218,6 @@ if "df" in st.session_state and all_products and budget > 0:
             # Count missing items
             missing_count = len(user_products_lower) - len(matched_items)
 
-            # ✅ Allow stores missing up to 1 item
             if missing_count <= 1 and total_price <= budget * 1.1:
                 best_combos.append({
                     "Store_Name": store,
