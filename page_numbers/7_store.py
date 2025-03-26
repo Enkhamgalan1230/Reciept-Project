@@ -77,7 +77,13 @@ with container1:
 
         return found_stores
 
-    # Checkbox with key
+    # -- STEP 1: Handle forget location trigger first (BEFORE rendering checkbox)
+    if st.session_state.get("reset_checkbox"):
+        st.session_state["check_location"] = False  # Reset the checkbox
+        del st.session_state["reset_checkbox"]      # Remove the flag
+        st.rerun()  # Force rerun with updated state
+
+    # -- STEP 2: Now render checkbox with key
     st.checkbox("✅ Check my location", key="check_location")
 
     # Check if checkbox is ticked
@@ -91,18 +97,18 @@ with container1:
             if user_lat and user_lon is not None: 
                 st.success("📍 Location Captured!")
 
-                # Save to session state
                 st.session_state["user_lat"] = user_lat
                 st.session_state["user_lon"] = user_lon
 
-                # 🧹 Add forget button
-                st.markdown("<div style='margin-top: -15px; margin-bottom: 15px;'>", unsafe_allow_html=True)
+                # Forget location button
                 if st.button("🧹 Forget my location", use_container_width=True):
                     st.session_state.pop("user_lat", None)
                     st.session_state.pop("user_lon", None)
-                    st.session_state["check_location"] = False  # ✅ Uncheck the checkbox
+
+                    # ✅ Set flag for next rerun to reset checkbox
+                    st.session_state["reset_checkbox"] = True
                     st.toast("📍 Your location has been removed from this session.", icon="🗑️")
-                    st.experimental_rerun()  # 🔁 Important to force UI update
+                    st.rerun()
                 st.markdown("</div>", unsafe_allow_html=True)
 
             # --- Store Finder Logic ---
