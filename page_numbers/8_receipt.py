@@ -208,7 +208,7 @@ with container3:
 
             st.session_state.finalised = False
             st.success("Selected items deleted.")
-            st.rerun()
+            #st.rerun()
     else:
         st.info("No products selected.")
 
