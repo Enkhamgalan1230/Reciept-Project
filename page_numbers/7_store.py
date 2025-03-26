@@ -77,11 +77,13 @@ with container1:
 
         return found_stores
 
-    # 📍 Check user location
-    if st.checkbox("✅ Check my location"):
-    #Custom location finder found on community forum and returns a dictionary after user approval
+    # Checkbox with key
+    st.checkbox("✅ Check my location", key="check_location")
+
+    # Check if checkbox is ticked
+    if st.session_state.get("check_location"):
         loc = get_geolocation()
-        
+
         if loc and "coords" in loc:
             user_lat = loc["coords"].get("latitude")
             user_lon = loc["coords"].get("longitude")
@@ -89,56 +91,45 @@ with container1:
             if user_lat and user_lon is not None: 
                 st.success("📍 Location Captured!")
 
-                 # Store location in session state for deletion logic
+                # Save to session state
                 st.session_state["user_lat"] = user_lat
                 st.session_state["user_lon"] = user_lon
 
-                #  Minimal delete button for privacy
+                # 🧹 Add forget button
                 st.markdown("<div style='margin-top: -15px; margin-bottom: 15px;'>", unsafe_allow_html=True)
                 if st.button("🧹 Forget my location", use_container_width=True):
-                    # Remove location coordinates from session
                     st.session_state.pop("user_lat", None)
                     st.session_state.pop("user_lon", None)
-                    
-                    # Uncheck the checkbox by resetting its state
-                    st.session_state["Check my location"] = False
-
-                    # Toast message
+                    st.session_state["check_location"] = False  # ✅ Uncheck the checkbox
                     st.toast("📍 Your location has been removed from this session.", icon="🗑️")
+                    st.experimental_rerun()  # 🔁 Important to force UI update
                 st.markdown("</div>", unsafe_allow_html=True)
 
-            # Define search parameters
+            # --- Store Finder Logic ---
             max_distance_km = 5
             store_names = ["Tesco", "Sainsbury's", "Waitrose", "Asda", "Aldi"]
-
-            #Appending the found store info
             all_stores = []
+
             for store in store_names:
                 stores = get_store_locations(store, user_lat, user_lon, max_distance_km)
                 all_stores.extend(stores)
 
-            # Sort stores by distance (nearest first)
             all_stores = sorted(all_stores, key=lambda x: x["Distance (km)"])
 
-            # Display Results
             if all_stores:
                 df = pd.DataFrame(all_stores)
                 st.success(f"🎯 Found {len(df)} stores within {max_distance_km} km!")
                 st.dataframe(df)
 
                 st.subheader("🗺️ Store Locations Map", anchor=False)
-
-                # Initialising the Map
                 m = folium.Map(location=[user_lat, user_lon], zoom_start=13)
 
-                # 🔵 Add User Location Marker
                 folium.Marker(
                     [user_lat, user_lon], 
                     popup="📍 You are here",
                     icon=folium.Icon(color="blue", icon="user")
                 ).add_to(m)
 
-                # 🛒 Add Store Markers
                 for _, row in df.iterrows():
                     folium.Marker(
                         [row["Latitude"], row["Longitude"]],
@@ -147,7 +138,6 @@ with container1:
                         icon=folium.Icon(color="green", icon="shopping-cart")
                     ).add_to(m)
 
-                # 🌍 Show Map
                 folium_static(m)
 
             else:
