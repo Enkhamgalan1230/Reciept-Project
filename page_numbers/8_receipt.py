@@ -187,6 +187,8 @@ if "prev_products" not in st.session_state:
 if set(all_products) != set(st.session_state.prev_products):
     st.session_state.finalised = False
     st.session_state.prev_products = all_products.copy()
+
+
 with container3:
     st.subheader("🧾 Product List")
 
@@ -195,7 +197,8 @@ with container3:
 
         items_to_delete = []
         for idx, product in enumerate(all_products):
-            if st.checkbox(f"{idx + 1}. {product}", key=f"delete_{product}"):
+            checked = st.checkbox(f"{idx + 1}. {product}", key=f"delete_{product}")
+            if checked:
                 items_to_delete.append(product)
 
         if st.button("🗑️ Delete Selected", use_container_width=True):
