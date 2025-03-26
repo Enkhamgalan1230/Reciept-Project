@@ -127,7 +127,9 @@ with container2:
         recording_color="#FF0000",       # Button color during recording
         icon_size="1.5x",                  # Icon size (not used since icon_name is empty)
     )
-    voice_products = []
+
+    if "voice_products" not in st.session_state:
+        st.session_state.voice_products = []
 
     if audio is not None and len(audio) > 0:
         st.audio(audio, format="audio/wav")
@@ -148,8 +150,13 @@ with container2:
 
                 # Step 3: show and extract product terms
                 st.success(f"🗣️ You said: {text}")
-                voice_products = extract_adj_noun_phrases(text)
-                st.write("📝 Products from voice:", voice_products)
+                new_voice_products = extract_adj_noun_phrases(text)
+                # Avoid duplicates and add only new items
+                for item in new_voice_products:
+                    if item not in st.session_state.voice_products:
+                        st.session_state.voice_products.append(item)
+
+                st.write("📝 Products from voice:", st.session_state.voice_products)
 
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
@@ -157,7 +164,7 @@ with container2:
                 st.error(f"❌ Could not request results; {e}")
 
     # Combine all product sources
-    all_products = list(set(essential_list + voice_products))
+    all_products = list(set(essential_list + st.session_state.voice_products))
 
 container3 = st.container(border=True)
 
