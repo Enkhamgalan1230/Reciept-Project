@@ -89,7 +89,7 @@ with container1:
     budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
     with st.form("add_item_form"):
-        new_item = st.text_input("Add an essential item")
+        new_item = st.text_input("Add an item to the list")
         submitted = st.form_submit_button("➕ Add Item")
         if submitted:
             clean_item = new_item.strip().lower()
@@ -143,11 +143,7 @@ st.session_state.all_products = (
 
 with container3:
     st.subheader("🧾 **Combined Grocery List**")
-    st.markdown("---")
     if st.session_state.all_products:
-
-        st.markdown("#### ✅ Tick items to delete")
-        st.caption("Then press the delete button below")
 
         to_delete_flags = {}
 
@@ -173,6 +169,8 @@ with container3:
             st.rerun()
     else:
         st.info("Your list is currently empty.")
+st.caption("📌 Selected items can be deleted from the list")
+
 
 final_list = list(dict.fromkeys(st.session_state.all_products))
 
