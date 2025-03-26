@@ -174,26 +174,58 @@ if "prev_products" not in st.session_state:
 if set(all_products) != set(st.session_state.prev_products):
     st.session_state.finalised = False
     st.session_state.prev_products = all_products.copy()
-
 with container3:
     st.subheader("🧾 Product List")
 
-    # Show products as a numbered list
     if all_products:
-        st.markdown("Here are your selected items:")
-        for idx, product in enumerate(all_products, 1):
-            st.markdown(f"{idx}. {product}")
+        st.markdown("Here are your selected items (tick to delete):")
+        
+        # Initialise checkbox states if not done already
+        if "delete_flags" not in st.session_state or len(st.session_state.delete_flags) != len(all_products):
+            st.session_state.delete_flags = [False] * len(all_products)
+
+        # Display with checkboxes
+        for idx, product in enumerate(all_products):
+            st.session_state.delete_flags[idx] = st.checkbox(
+                label=f"{idx + 1}. {product}",
+                key=f"delete_{idx}",
+                value=st.session_state.delete_flags[idx]
+            )
+
+        # Delete button
+        if st.button("🗑️ Delete Selected", use_container_width=True):
+            items_to_delete = [
+                product for idx, product in enumerate(all_products)
+                if st.session_state.delete_flags[idx]
+            ]
+
+            # Remove from both sources (voice + essential)
+            st.session_state.voice_products = [
+                item for item in st.session_state.voice_products if item not in items_to_delete
+            ]
+            essential_list = [
+                item for item in essential_list if item not in items_to_delete
+            ]
+
+            # Rebuild product list
+            all_products = list(set(essential_list + st.session_state.voice_products))
+            st.session_state.prev_products = all_products.copy()
+            st.session_state.finalised = False
+            st.success("Selected items deleted.")
+
+            # Reset checkbox flags
+            st.session_state.delete_flags = [False] * len(all_products)
+
     else:
         st.info("No products selected.")
 
     # Finalise button logic
-    if not st.session_state.finalised:
+    if not st.session_state.finalised and all_products:
         if st.button("✅ Finalise List", use_container_width=True):
             st.session_state.finalised = True
             st.success("List has been finalised.")
-    else:
+    elif st.session_state.finalised:
         st.success("✅ This list has already been finalised.")
-
 
 
 if "df" in st.session_state and all_products and budget > 0:
