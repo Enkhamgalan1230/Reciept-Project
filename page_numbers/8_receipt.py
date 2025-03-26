@@ -197,8 +197,7 @@ with container3:
 
         items_to_delete = []
         for idx, product in enumerate(all_products):
-            checked = st.checkbox(f"{idx + 1}. {product}", key=f"delete_{product}")
-            if checked:
+            if st.checkbox(f"{idx + 1}. {product}", key=f"delete_{idx}"):
                 items_to_delete.append(product)
 
         if st.button("🗑️ Delete Selected", use_container_width=True):
