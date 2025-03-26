@@ -191,8 +191,11 @@ if "df" in st.session_state and all_products and budget > 0:
             total_price = 0
             
             for prod in user_products_lower:
-                if prod in product_map.index:
-                    row = product_map.loc[prod]
+                choices = product_map.index.tolist()
+                best_match, score = process.extractOne(prod, choices)
+
+                if score >= 85:  # You can tweak this threshold
+                    row = product_map.loc[best_match]
                     price = row["Price"]
                     total_price += price
                     matched_items.append((row["Name"], price))
