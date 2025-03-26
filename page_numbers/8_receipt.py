@@ -221,10 +221,6 @@ with container3:
         st.success("✅ This list has already been finalised.")
 
 
-st.write("🛠️ Items to delete:", to_delete)
-st.write("🔍 Essentials:", st.session_state.essential_list)
-st.write("🔍 Voices:", st.session_state.voice_products)
-
 if "df" in st.session_state and all_products and budget > 0:
     pass
 
