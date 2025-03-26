@@ -182,17 +182,5 @@ with container3:
         st.info("Your list is currently empty.")
 st.caption("📌 Selected items can be deleted from the list")
 
-st.markdown("""
-    <style>
-        [data-testid="stVerticalBlock"] > div:nth-of-type(2) {
-            background-color: #2c2f36;
-            border: 1px solid #444;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 final_list = list(dict.fromkeys(st.session_state.all_products))
 
