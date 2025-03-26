@@ -171,11 +171,8 @@ with container2:
                 st.error(f"❌ Could not request results; {e}")
 
     # Combine all product sources
-    all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
+    all_products = st.session_state.essential_list + st.session_state.voice_products
 
-    st.write("📦 Essentials:", st.session_state.essential_list)
-    st.write("🎙️ Voice products:", st.session_state.voice_products)
-    st.write("🧾 Combined:", all_products)
 
 container3 = st.container(border=True)
 
@@ -201,16 +198,17 @@ with container3:
                 items_to_delete.append(product)
 
         if st.button("🗑️ Delete Selected", use_container_width=True):
-            # Remove items from essential and voice product sources
-            st.session_state.essential_list = [
-                item for item in st.session_state.essential_list if item not in items_to_delete
-            ]
-            st.session_state.voice_products = [
-                item for item in st.session_state.voice_products if item not in items_to_delete
-            ]
+            essentials = st.session_state.essential_list
+            voices = st.session_state.voice_products
+
+            # Normalize all for matching
+            to_delete = [item.lower().strip() for item in items_to_delete]
+            st.session_state.essential_list = [e for e in essentials if e.lower().strip() not in to_delete]
+            st.session_state.voice_products = [v for v in voices if v.lower().strip() not in to_delete]
+
             st.session_state.finalised = False
             st.success("Selected items deleted.")
-            st.rerun() 
+            st.rerun()
     else:
         st.info("No products selected.")
 
@@ -222,6 +220,10 @@ with container3:
     elif st.session_state.finalised:
         st.success("✅ This list has already been finalised.")
 
+
+st.write("🛠️ Items to delete:", to_delete)
+st.write("🔍 Essentials:", st.session_state.essential_list)
+st.write("🔍 Voices:", st.session_state.voice_products)
 
 if "df" in st.session_state and all_products and budget > 0:
     pass
