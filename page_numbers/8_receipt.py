@@ -175,7 +175,7 @@ if "df" in st.session_state and all_products and budget > 0:
         df["date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
         
         # Get latest date for each store
-        latest_df = df.sort_values("date").groupby("Store").tail(1)
+        latest_df = df.sort_values("date").groupby("Store_Name").tail(1)
         
         # Filter for required products only
         user_products_lower = [p.lower() for p in all_products]
