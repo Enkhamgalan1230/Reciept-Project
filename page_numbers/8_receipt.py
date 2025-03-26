@@ -101,7 +101,7 @@ with container1:
 
 # ========== VOICE INPUT ==========
 st.markdown("---")
-st.subheader("🎧 **Record your grocery list**")
+st.subheader("🗣️ **Speak your grocery list**")
 with container2:
     audio = audio_recorder(
         text="Click to Record 👉",
