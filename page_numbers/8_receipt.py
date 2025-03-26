@@ -9,9 +9,6 @@ import spacy
 from fuzzywuzzy import process
 import subprocess
 import importlib
-from streamlit.runtime.scriptrunner import RerunException
-import streamlit.runtime.scriptrunner.script_run_context as stc
-
 
 # Check if df is stored in session state
 if "df" in st.session_state:
