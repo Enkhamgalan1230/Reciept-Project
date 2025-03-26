@@ -220,6 +220,9 @@ with container3:
     elif st.session_state.finalised:
         st.success("✅ This list has already been finalised.")
 
+st.write("Essentials:", [repr(i) for i in st.session_state.essential_list])
+st.write("Voice:", [repr(i) for i in st.session_state.voice_products])
+st.write("To delete:", [repr(i) for i in items_to_delete])
 
 if "df" in st.session_state and all_products and budget > 0:
     pass
