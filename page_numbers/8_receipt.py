@@ -83,58 +83,61 @@ st.markdown("---")
 container1 = st.container(border= True)
 container2 = st.container(border= True)
 container3 = st.container(border= True)
-with container1:
-    st.subheader("✏️ **Write your grocery list**")
-    st.markdown("---")
-    budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
+col1, col2 = st.columns(2)
 
-    with st.form("add_item_form"):
-        new_item = st.text_input("Add an item to the list")
-        submitted = st.form_submit_button("➕ Add Item")
-        if submitted:
-            clean_item = new_item.strip().lower()
-            if clean_item and clean_item not in st.session_state.essential_list:
-                st.session_state.essential_list.append(clean_item)
-                st.success(f"Added '{clean_item}'")
-                st.rerun()
-            elif clean_item:
-                st.warning("Item already in the list.")
+with col1:
+    with container1:
+        st.subheader("✏️ **Write your grocery list**")
+        st.markdown("---")
+        budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
+
+        with st.form("add_item_form"):
+            new_item = st.text_input("Add an item to the list")
+            submitted = st.form_submit_button("➕ Add Item")
+            if submitted:
+                clean_item = new_item.strip().lower()
+                if clean_item and clean_item not in st.session_state.essential_list:
+                    st.session_state.essential_list.append(clean_item)
+                    st.success(f"Added '{clean_item}'")
+                    st.rerun()
+                elif clean_item:
+                    st.warning("Item already in the list.")
 
 # ========== VOICE INPUT ==========
+with col2:
+    with container2:
+        st.subheader("🗣️ **Speak your grocery list**")
+        st.markdown("---")
+        audio = audio_recorder(
+            text="Click to Record 👉",
+            icon_name="microphone",
+            neutral_color="#00FF00",
+            recording_color="#FF0000",
+            icon_size="1.5x"
+        )
 
-with container2:
-    st.subheader("🗣️ **Speak your grocery list**")
-    st.markdown("---")
-    audio = audio_recorder(
-        text="Click to Record 👉",
-        icon_name="microphone",
-        neutral_color="#00FF00",
-        recording_color="#FF0000",
-        icon_size="1.5x"
-    )
+        if audio is not None and len(audio) > 0:
+            st.audio(audio, format="audio/wav")
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+                f.write(audio)
+                temp_wav_path = f.name
 
-    if audio is not None and len(audio) > 0:
-        st.audio(audio, format="audio/wav")
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
-            f.write(audio)
-            temp_wav_path = f.name
-
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(temp_wav_path) as source:
-            audio_data = recognizer.record(source)
-            try:
-                text = recognizer.recognize_google(audio_data)
-                text = fix_multiword_adjectives(text)
-                st.success(f"🗣️ You said: {text}")
-                new_voice_products = extract_adj_noun_phrases(text)
-                for item in new_voice_products:
-                    clean_item = item.strip("'\"").strip().lower()
-                    if clean_item not in st.session_state.voice_products:
-                        st.session_state.voice_products.append(clean_item)
-            except sr.UnknownValueError:
-                st.error("❌ Could not understand the audio.")
-            except sr.RequestError as e:
-                st.error(f"❌ Could not request results; {e}")
+            recognizer = sr.Recognizer()
+            with sr.AudioFile(temp_wav_path) as source:
+                audio_data = recognizer.record(source)
+                try:
+                    text = recognizer.recognize_google(audio_data)
+                    text = fix_multiword_adjectives(text)
+                    st.success(f"🗣️ You said: {text}")
+                    new_voice_products = extract_adj_noun_phrases(text)
+                    for item in new_voice_products:
+                        clean_item = item.strip("'\"").strip().lower()
+                        if clean_item not in st.session_state.voice_products:
+                            st.session_state.voice_products.append(clean_item)
+                except sr.UnknownValueError:
+                    st.error("❌ Could not understand the audio.")
+                except sr.RequestError as e:
+                    st.error(f"❌ Could not request results; {e}")
 
 # ========== COMBINED PRODUCT LIST ==========
 st.session_state.all_products = (
