@@ -160,10 +160,10 @@ with container2:
                 # Step 3: show and extract product terms
                 st.success(f"🗣️ You said: {text}")
                 new_voice_products = extract_adj_noun_phrases(text)
-                # Avoid duplicates and add only new items
                 for item in new_voice_products:
-                    if item not in st.session_state.voice_products:
-                        st.session_state.voice_products.append(item)
+                    clean_item = item.strip("'\"").strip()
+                    if clean_item not in st.session_state.voice_products:
+                        st.session_state.voice_products.append(clean_item)
 
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
@@ -202,9 +202,9 @@ with container3:
             voices = st.session_state.voice_products
 
             # Normalize all for matching
-            to_delete = [item.lower().strip() for item in items_to_delete]
-            st.session_state.essential_list = [e for e in essentials if e.lower().strip() not in to_delete]
-            st.session_state.voice_products = [v for v in voices if v.lower().strip() not in to_delete]
+            to_delete = [item.strip().lower().strip("'\"") for item in items_to_delete]
+            st.session_state.essential_list = [e for e in st.session_state.essential_list if e.strip().lower().strip("'\"") not in to_delete]
+            st.session_state.voice_products = [v for v in st.session_state.voice_products if v.strip().lower().strip("'\"") not in to_delete]
 
             st.session_state.finalised = False
             st.success("Selected items deleted.")
