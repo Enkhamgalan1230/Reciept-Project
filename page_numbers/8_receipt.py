@@ -186,26 +186,15 @@ with container3:
 
     if all_products:
         st.markdown("Here are your selected items (tick to delete):")
-        
-        # Initialise checkbox states if not done already
-        if "delete_flags" not in st.session_state or len(st.session_state.delete_flags) != len(all_products):
-            st.session_state.delete_flags = [False] * len(all_products)
 
-        # Display with checkboxes
+        # Build checkbox states dynamically
+        items_to_delete = []
         for idx, product in enumerate(all_products):
-            st.session_state.delete_flags[idx] = st.checkbox(
-                label=f"{idx + 1}. {product}",
-                key=f"delete_{idx}",
-                value=st.session_state.delete_flags[idx]
-            )
+            if st.checkbox(f"{idx + 1}. {product}", key=f"delete_{product}"):
+                items_to_delete.append(product)
 
         if st.button("🗑️ Delete Selected", use_container_width=True):
-            items_to_delete = [
-                product for idx, product in enumerate(all_products)
-                if st.session_state.delete_flags[idx]
-            ]
-
-            # Remove from both essential and voice lists
+            # Remove from essential and voice lists if present
             st.session_state.essential_list = [
                 item for item in st.session_state.essential_list if item not in items_to_delete
             ]
@@ -213,14 +202,10 @@ with container3:
                 item for item in st.session_state.voice_products if item not in items_to_delete
             ]
 
-            # Rebuild product list
-            all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
-            st.session_state.prev_products = all_products.copy()
+            # Rebuild and reset
+            st.session_state.prev_products = st.session_state.essential_list + st.session_state.voice_products
             st.session_state.finalised = False
-            st.session_state.delete_flags = [False] * len(all_products)
-
             st.success("Selected items deleted.")
-            raise RerunException(stc.get_script_run_ctx())
     else:
         st.info("No products selected.")
 
