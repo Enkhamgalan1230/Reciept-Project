@@ -170,24 +170,21 @@ with container2:
             except sr.RequestError as e:
                 st.error(f"❌ Could not request results; {e}")
 
-    # Combine all product sources
-    all_products = st.session_state.essential_list + st.session_state.voice_products
-
 
 container3 = st.container(border=True)
 
-# Keep previous product list for comparison
-if "prev_products" not in st.session_state:
-    st.session_state.prev_products = []
-
-# Check if the product list has changed
-if set(all_products) != set(st.session_state.prev_products):
-    st.session_state.finalised = False
-    st.session_state.prev_products = all_products.copy()
-
-
 with container3:
     st.subheader("🧾 Product List")
+
+    # ✅ Only define `all_products` now, so it’s fresh
+    all_products = st.session_state.essential_list + st.session_state.voice_products
+
+    if "prev_products" not in st.session_state:
+        st.session_state.prev_products = []
+
+    if set(all_products) != set(st.session_state.prev_products):
+        st.session_state.finalised = False
+        st.session_state.prev_products = all_products.copy()
 
     if all_products:
         st.markdown("Here are your selected items (tick to delete):")
@@ -198,13 +195,14 @@ with container3:
                 items_to_delete.append(product)
 
         if st.button("🗑️ Delete Selected", use_container_width=True):
-            essentials = st.session_state.essential_list
-            voices = st.session_state.voice_products
-
-            # Normalize all for matching
             to_delete = [item.strip().lower().strip("'\"") for item in items_to_delete]
-            st.session_state.essential_list = [e for e in st.session_state.essential_list if e.strip().lower().strip("'\"") not in to_delete]
-            st.session_state.voice_products = [v for v in st.session_state.voice_products if v.strip().lower().strip("'\"") not in to_delete]
+
+            st.session_state.essential_list = [
+                e for e in st.session_state.essential_list if e.strip().lower().strip("'\"") not in to_delete
+            ]
+            st.session_state.voice_products = [
+                v for v in st.session_state.voice_products if v.strip().lower().strip("'\"") not in to_delete
+            ]
 
             st.session_state.finalised = False
             st.success("Selected items deleted.")
