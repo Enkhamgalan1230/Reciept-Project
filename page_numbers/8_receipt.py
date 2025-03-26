@@ -202,7 +202,7 @@ with container3:
                 if st.session_state.delete_flags[idx]
             ]
 
-            # Remove from session-stored essential and voice lists
+            # Remove from both essential and voice lists
             st.session_state.essential_list = [
                 item for item in st.session_state.essential_list if item not in items_to_delete
             ]
@@ -210,13 +210,15 @@ with container3:
                 item for item in st.session_state.voice_products if item not in items_to_delete
             ]
 
-            # Rebuild product list
+            # Rebuild the product list and reset flags
             all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
             st.session_state.prev_products = all_products.copy()
             st.session_state.finalised = False
             st.session_state.delete_flags = [False] * len(all_products)
 
+            # Trigger rerun for immediate visual update
             st.success("Selected items deleted.")
+            st.experimental_rerun()
     else:
         st.info("No products selected.")
 
