@@ -166,20 +166,20 @@ if "finalised" not in st.session_state:
     st.session_state.finalised = False
 
 
-with container3:
+with st.container():
     st.subheader("🧾 Product List")
-    
-    # Visual display using markdown for bullet points
+
+    # Show products as a numbered list
     if all_products:
         st.markdown("Here are your selected items:")
-        for product in all_products:
-            st.markdown(f"- {product}")
+        for idx, product in enumerate(all_products, 1):  # Start counting from 1
+            st.markdown(f"{idx}. {product}")
     else:
         st.info("No products selected.")
 
     # Finalise button logic
     if not st.session_state.finalised:
-        if st.button("✅ Finalise List"):
+        if st.button("✅ Finalise List", use_container_width=True):
             st.session_state.finalised = True
             st.success("List has been finalised.")
     else:
