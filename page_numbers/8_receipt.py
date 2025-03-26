@@ -161,18 +161,22 @@ with container2:
 
 container3 = st.container(border=True)
 
-# Initialize the session state for finalisation
-if "finalised" not in st.session_state:
+# Keep previous product list for comparison
+if "prev_products" not in st.session_state:
+    st.session_state.prev_products = []
+
+# Check if the product list has changed
+if set(all_products) != set(st.session_state.prev_products):
     st.session_state.finalised = False
+    st.session_state.prev_products = all_products.copy()
 
-
-with st.container():
+with container3:
     st.subheader("🧾 Product List")
 
     # Show products as a numbered list
     if all_products:
         st.markdown("Here are your selected items:")
-        for idx, product in enumerate(all_products, 1):  # Start counting from 1
+        for idx, product in enumerate(all_products, 1):
             st.markdown(f"{idx}. {product}")
     else:
         st.info("No products selected.")
@@ -184,8 +188,6 @@ with st.container():
             st.success("List has been finalised.")
     else:
         st.success("✅ This list has already been finalised.")
-
-
 
 
 
