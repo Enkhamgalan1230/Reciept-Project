@@ -178,5 +178,28 @@ container3 = st.container(border=True)
 st.session_state.all_products = st.session_state.essential_list + st.session_state.voice_products
 
 with container3:
+    st.write("🛒 **Combined Grocery List**")
     st.write(st.session_state.all_products)
+
+    # Deletion input
+    items_to_delete = st.multiselect(
+        "Select items to delete from your list:",
+        options=st.session_state.all_products
+    )
+
+    if st.button("🗑️ Delete Selected Items"):
+        st.session_state.all_products = [
+            item for item in st.session_state.all_products if item not in items_to_delete
+        ]
+
+        # Also delete from essential/voice lists if present
+        st.session_state.essential_list = [
+            item for item in st.session_state.essential_list if item not in items_to_delete
+        ]
+        st.session_state.voice_products = [
+            item for item in st.session_state.voice_products if item not in items_to_delete
+        ]
+
+        st.success("Selected item(s) deleted!")
+        st.rerun()
     
