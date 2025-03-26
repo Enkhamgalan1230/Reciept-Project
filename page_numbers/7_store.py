@@ -96,8 +96,14 @@ with container1:
                 #  Minimal delete button for privacy
                 st.markdown("<div style='margin-top: -15px; margin-bottom: 15px;'>", unsafe_allow_html=True)
                 if st.button("🧹 Forget my location", use_container_width=True):
+                    # Remove location coordinates from session
                     st.session_state.pop("user_lat", None)
                     st.session_state.pop("user_lon", None)
+                    
+                    # Uncheck the checkbox by resetting its state
+                    st.session_state["Check my location"] = False
+
+                    # Toast message
                     st.toast("📍 Your location has been removed from this session.", icon="🗑️")
                 st.markdown("</div>", unsafe_allow_html=True)
 
