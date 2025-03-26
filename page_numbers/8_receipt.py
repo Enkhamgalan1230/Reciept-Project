@@ -10,6 +10,12 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 
+# Check if df is stored in session state
+if "df" in st.session_state:
+    df = st.session_state.df
+else:
+    st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
+
 # Load spaCy English model once
 nlp = spacy.load("en_core_web_sm")
 
@@ -161,3 +167,53 @@ with container3:
         st.write("Products List:", all_products)
 
 
+if "df" in st.session_state and all_products and budget > 0:
+    df = st.session_state.df.copy()
+    
+    # Ensure required columns exist
+    if {"Store", "Name", "Price", "Year", "Month", "Day"}.issubset(df.columns):
+        df["date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
+        
+        # Get latest date for each store
+        latest_df = df.sort_values("date").groupby("Store").tail(1)
+        
+        # Filter for required products only
+        user_products_lower = [p.lower() for p in all_products]
+        latest_df["name_lower"] = latest_df["Name"].str.lower()
+        filtered_df = latest_df[latest_df["name_lower"].isin(user_products_lower)]
+        
+        # Try to build best combo per store
+        best_combos = []
+        for store, group in filtered_df.groupby("Store"):
+            product_map = group.set_index("name_lower")
+            
+            matched_items = []
+            total_price = 0
+            
+            for prod in user_products_lower:
+                if prod in product_map.index:
+                    row = product_map.loc[prod]
+                    price = row["Price"]
+                    total_price += price
+                    matched_items.append((row["Name"], price))
+            
+            if len(matched_items) == len(all_products) and total_price <= budget * 1.1:
+                best_combos.append({"Store": store, "Items": matched_items, "Total": total_price})
+        
+        # Sort by total price and show the best
+        best_combos = sorted(best_combos, key=lambda x: x["Total"])
+        
+        container3.markdown("---")
+        container3.subheader("Best deal found 🛍️")
+
+        if best_combos:
+            best = best_combos[0]
+            container3.success(f"🏪 **Store:** {best['Store']} — 🧾 **Total: £{best['Total']:.2f}**")
+            for item, price in best["Items"]:
+                container3.markdown(f"- {item}: £{price:.2f}")
+        else:
+            container3.warning("⚠️ No single store has *all* the requested items within your budget.")
+    else:
+        container3.error("❌ Dataset is missing required columns.")
+else:
+    st.info("📌 Please make sure data is loaded, products are entered, and budget is set.")
