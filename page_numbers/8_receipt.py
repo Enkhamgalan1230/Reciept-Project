@@ -138,26 +138,25 @@ st.session_state.all_products = (
 st.markdown("---")
 st.subheader("🧾 **Combined Grocery List**")
 
+
 if st.session_state.all_products:
 
     st.markdown("#### ✅ Tick items to delete")
-    st.markdown("*Then press the delete button below*")
+    st.caption("Then press the delete button below")
 
-    # Store checkbox states per item
     to_delete_flags = {}
 
     with st.container():
         for idx, item in enumerate(st.session_state.all_products, start=1):
-            col1, col2 = st.columns([0.1, 0.9])
-            with col1:
+            # Create a row for checkbox and label
+            cols = st.columns([0.1, 0.9])
+            with cols[0]:
                 to_delete_flags[item] = st.checkbox("", key=f"delete_{item}")
-            with col2:
-                st.markdown(f"**{idx}. {item.title()}**")
-            st.markdown("<hr style='margin: 5px 0;'>", unsafe_allow_html=True)
+            with cols[1]:
+                st.write(f"**{idx}. {item.title()}**")
 
-    # Stylish delete button
     st.markdown(" ")
-    delete_col = st.columns([0.4, 0.2, 0.4])[1]  # centre the button
+    delete_col = st.columns([0.4, 0.2, 0.4])[1]
     with delete_col:
         if st.button("🗑️ Delete Selected Items", use_container_width=True):
             selected_to_delete = [item for item, selected in to_delete_flags.items() if selected]
