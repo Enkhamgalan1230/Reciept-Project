@@ -161,12 +161,31 @@ with container2:
 
 container3 = st.container(border=True)
 
-with container3:
-    if all_products is not None:
-        st.subheader("Product list 🧾")
-        st.write("Products List:", all_products)
+# Initialize the session state for finalisation
+if "finalised" not in st.session_state:
+    st.session_state.finalised = False
 
-        
+
+with container3:
+    st.subheader("🧾 Product List")
+    
+    # Visual display using markdown for bullet points
+    if all_products:
+        st.markdown("Here are your selected items:")
+        for product in all_products:
+            st.markdown(f"- {product}")
+    else:
+        st.info("No products selected.")
+
+    # Finalise button logic
+    if not st.session_state.finalised:
+        if st.button("✅ Finalise List"):
+            st.session_state.finalised = True
+            st.success("List has been finalised.")
+    else:
+        st.success("✅ This list has already been finalised.")
+
+
 
 
 
