@@ -169,57 +169,64 @@ with container3:
 
 if "df" in st.session_state and all_products and budget > 0:
     df = st.session_state.df.copy()
-    
-    # Ensure required columns exist
-    if {"Store_Name", "Name", "Price", "Year", "Month", "Day"}.issubset(df.columns):
+
+    required_cols = {"Store_Name", "Name", "Price", "Year", "Month", "Day"}
+    if required_cols.issubset(df.columns):
+        # Combine date columns
         df["date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
-        
-        df["name_lower"] = df["Name"].str.lower()
-        latest_df = (
-            df.sort_values("date")
-                .groupby(["Store_Name", "name_lower"])
-                .tail(1)
-        )
-        
-        # Filter for required products only
-        user_products_lower = [p.lower() for p in all_products]
+        latest_date = df["date"].max()
+
+        # Only keep latest scraped data
+        latest_df = df[df["date"] == latest_date].copy()
         latest_df["name_lower"] = latest_df["Name"].str.lower()
-        filtered_df = latest_df[latest_df["name_lower"].isin(user_products_lower)]
-        
-        # Try to build best combo per store
+
+        # User product names lowercased for matching
+        user_products_lower = [p.lower() for p in all_products]
+
         best_combos = []
-        for store, group in filtered_df.groupby("Store_Name"):
+
+        for store, group in latest_df.groupby("Store_Name"):
             product_map = group.set_index("name_lower")
-            
             matched_items = []
+            matched_names = set()
             total_price = 0
-            
+
             for prod in user_products_lower:
                 choices = product_map.index.tolist()
                 best_match, score = process.extractOne(prod, choices)
 
-                if score >= 85:  # You can tweak this threshold
+                if score >= 85:
                     row = product_map.loc[best_match]
                     price = row["Price"]
                     total_price += price
                     matched_items.append((row["Name"], price))
-            
-            if len(matched_items) == len(all_products) and total_price <= budget * 1.1:
-                best_combos.append({"Store_Name": store, "Items": matched_items, "Total": total_price})
-        
-        # Sort by total price and show the best
+                    matched_names.add(prod)
+
+            # Count missing items
+            missing_count = len(user_products_lower) - len(matched_items)
+
+            # ✅ Allow stores missing up to 1 item
+            if missing_count <= 1 and total_price <= budget * 1.1:
+                best_combos.append({
+                    "Store_Name": store,
+                    "Items": matched_items,
+                    "Total": total_price,
+                    "Missing": [p for p in user_products_lower if p not in matched_names]
+                })
+
         best_combos = sorted(best_combos, key=lambda x: x["Total"])
-        
+
         container3.markdown("---")
         container3.subheader("Best deal found 🛍️")
 
         if best_combos:
             best = best_combos[0]
-            container3.success(f"🏪 **Store:** {best['Store_Name']} — 🧾 **Total: £{best['Total']:.2f}**")
+            note = f" ⚠️ Missing item(s): {', '.join(best['Missing'])}" if best["Missing"] else ""
+            container3.success(f"🏪 **Store:** {best['Store_Name']} — 🧾 **Total: £{best['Total']:.2f}**{note}")
             for item, price in best["Items"]:
                 container3.markdown(f"- {item}: £{price:.2f}")
         else:
-            container3.warning("⚠️ No single store has *all* the requested items within your budget.")
+            container3.warning("⚠️ No store has enough of the requested items within your budget.")
     else:
         container3.error("❌ Dataset is missing required columns.")
 else:
