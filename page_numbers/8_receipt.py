@@ -22,6 +22,9 @@ if "essential_list" not in st.session_state:
 if "voice_products" not in st.session_state:
     st.session_state.voice_products = []
 
+if "all_products" not in st.session_state:
+    st.session_state.all_products =[]
+
 # Load spaCy English model once
 nlp = spacy.load("en_core_web_sm")
 
@@ -170,30 +173,19 @@ with container2:
             except sr.RequestError as e:
                 st.error(f"❌ Could not request results; {e}")
 
-
-# ✅ Only define `all_products` now, so it’s fresh
-    all_products = st.session_state.essential_list + st.session_state.voice_products
-
-    if "prev_products" not in st.session_state:
-        st.session_state.prev_products = []
-
-    if set(all_products) != set(st.session_state.prev_products):
-        st.session_state.finalised = False
-        st.session_state.prev_products = all_products.copy()
-
 container3 = st.container(border=True)
 
 with container3:
     st.subheader("🧾 Product List")
 
     # REBUILD combined list fresh every time
-    all_products = st.session_state.essential_list + st.session_state.voice_products
+    st.session_state.all_products = st.session_state.essential_list + st.session_state.voice_products
 
-    if all_products:
+    if st.session_state.all_products:
         st.markdown("Here are your selected items (tick to delete):")
 
         items_to_delete = []
-        for idx, product in enumerate(all_products):
+        for idx, product in enumerate(st.session_state.all_products):
             if st.checkbox(f"{idx + 1}. {product}", key=f"delete_{idx}"):
                 items_to_delete.append(product)
 
@@ -213,16 +205,16 @@ with container3:
             st.session_state.finalised = False
 
             st.success("Selected items deleted.")
-            st.rerun()  # Optional: rerun to refresh the checkbox state
+            #st.rerun()  # Optional: rerun to refresh the checkbox state
 
     else:
         st.info("No products selected.")
 
     # Rebuild list again to check if it still exists for finalise
-    all_products = st.session_state.essential_list + st.session_state.voice_products
+    st.session_state.all_products = st.session_state.essential_list + st.session_state.voice_products
 
     # Finalise button logic
-    if not st.session_state.finalised and all_products:
+    if not st.session_state.finalised and st.session_state.all_products:
         if st.button("✅ Finalise List", use_container_width=True):
             st.session_state.finalised = True
             st.success("List has been finalised.")
@@ -233,7 +225,8 @@ with container3:
 st.write("Essentials:", [repr(i) for i in st.session_state.essential_list])
 st.write("Voice:", [repr(i) for i in st.session_state.voice_products])
 st.write("To delete:", [repr(i) for i in items_to_delete])
-if "df" in st.session_state and all_products and budget > 0:
+
+if "df" in st.session_state and st.session_state.all_products and budget > 0:
     pass
 
     
