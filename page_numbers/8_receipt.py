@@ -80,11 +80,12 @@ st.caption("💡 You can either write or record your list")
 st.markdown("---")
 
 # ========== MANUAL ENTRY ==========
-st.subheader("✏️ **Write your grocery list**")
 container1 = st.container(border= True)
 container2 = st.container(border= True)
 container3 = st.container(border= True)
 with container1:
+    st.subheader("✏️ **Write your grocery list**")
+    st.markdown("---")
     budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
     with st.form("add_item_form"):
@@ -100,9 +101,10 @@ with container1:
                 st.warning("Item already in the list.")
 
 # ========== VOICE INPUT ==========
-st.markdown("---")
-st.subheader("🗣️ **Speak your grocery list**")
+
 with container2:
+    st.subheader("🗣️ **Speak your grocery list**")
+    st.markdown("---")
     audio = audio_recorder(
         text="Click to Record 👉",
         icon_name="microphone",
@@ -139,9 +141,9 @@ st.session_state.all_products = (
     st.session_state.essential_list + st.session_state.voice_products
 )
 
-st.markdown("---")
-st.subheader("🧾 **Combined Grocery List**")
 with container3:
+    st.subheader("🧾 **Combined Grocery List**")
+    st.markdown("---")
     if st.session_state.all_products:
 
         st.markdown("#### ✅ Tick items to delete")
