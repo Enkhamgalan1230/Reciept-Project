@@ -79,6 +79,24 @@ st.title("Shopping List generator 📃", anchor=False)
 st.caption("💡 You can either write or record your list")
 st.markdown("---")
 
+st.markdown("""
+    <style>
+        .section-card {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #444;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # ========== MANUAL ENTRY ==========
 container1 = st.container(border= True)
 container2 = st.container(border= True)
@@ -86,8 +104,9 @@ container3 = st.container(border= True)
 
 with container1:
     
-    st.subheader("✏️ **Write your grocery list**")
-    st.markdown("---")
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">📝 Write your grocery list</div>', unsafe_allow_html=True)
+
     budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
     with st.form("add_item_form"):
@@ -101,11 +120,13 @@ with container1:
                 st.rerun()
             elif clean_item:
                 st.warning("Item already in the list.")
+    st.markdown('</div>', unsafe_allow_html=True)  # Close card
 
 # ========== VOICE INPUT ==========
 with container2:
-    st.subheader("🗣️ **Speak your grocery list**")
-    st.markdown("---")
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">🎙️ Speak your grocery list</div>', unsafe_allow_html=True)
+
     audio = audio_recorder(
         text="Click to Record 👉",
         icon_name="microphone",
@@ -136,6 +157,7 @@ with container2:
                 st.error("❌ Could not understand the audio.")
             except sr.RequestError as e:
                 st.error(f"❌ Could not request results; {e}")
+    st.markdown('</div>', unsafe_allow_html=True)  # Close card
 
 # ========== COMBINED PRODUCT LIST ==========
 st.session_state.all_products = (
