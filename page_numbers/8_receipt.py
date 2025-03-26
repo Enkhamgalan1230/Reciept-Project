@@ -173,6 +173,10 @@ with container2:
     # Combine all product sources
     all_products = list(set(st.session_state.essential_list + st.session_state.voice_products))
 
+    st.write("📦 Essentials:", st.session_state.essential_list)
+    st.write("🎙️ Voice products:", st.session_state.voice_products)
+    st.write("🧾 Combined:", all_products)
+
 container3 = st.container(border=True)
 
 # Keep previous product list for comparison
