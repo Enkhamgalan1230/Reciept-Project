@@ -87,10 +87,8 @@ def extract_adj_noun_phrases(text):
     return phrases
 
 
-st.title("🛒 Receipt 📃", anchor=False)
+st.title("Shopping List generator 📃", anchor=False)
 st.markdown("---")
-
-st.subheader("Shopping List generator 📃")
 st.caption("💡 You can either write or record your list")
 container2 = st.container(border= True)
 
