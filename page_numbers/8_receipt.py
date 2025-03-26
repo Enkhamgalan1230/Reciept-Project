@@ -119,8 +119,6 @@ with container2:
         key='extra_input'
     )
 
-    st.write("Products List:",essential_list, secondary_list)
-
     st.markdown("---")
     # Friendly heading above the recorder
     st.subheader("🎧 **Record your grocery list**")
@@ -163,8 +161,10 @@ with container2:
                 st.error(f"❌ Could not request results; {e}")
 
     # Combine all product sources
-    all_products = list(set(essential_list + secondary_list + voice_products))
+    all_products = list(set(essential_list + voice_products))
 
-    if all_products is not None:
-        st.write("🧾 Final Products List:", all_products)
+    if all_products is not None or secondary_list is not None:
+        st.write("🧾 Essential Products List:", all_products)
+        st.write("Secondary Products List:", secondary_list)
+
 
