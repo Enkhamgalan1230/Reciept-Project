@@ -146,32 +146,25 @@ if st.session_state.all_products:
 
     to_delete_flags = {}
 
-    with st.container():
-        for idx, item in enumerate(st.session_state.all_products, start=1):
-            # Create a row for checkbox and label
-            cols = st.columns([0.1, 0.9])
-            with cols[0]:
-                to_delete_flags[item] = st.checkbox("", key=f"delete_{item}")
-            with cols[1]:
-                st.write(f"**{idx}. {item.title()}**")
+    for idx, item in enumerate(st.session_state.all_products, start=1):
+        label = f"{idx}. {item.title()}"
+        to_delete_flags[item] = st.checkbox(label, key=f"delete_{item}")
 
     st.markdown(" ")
-    delete_col = st.columns([0.4, 0.2, 0.4])[1]
-    with delete_col:
-        if st.button("🗑️ Delete Selected Items", use_container_width=True):
-            selected_to_delete = [item for item, selected in to_delete_flags.items() if selected]
+    if st.button("🗑️ Delete Selected Items", use_container_width=True):
+        selected_to_delete = [item for item, selected in to_delete_flags.items() if selected]
 
-            st.session_state.essential_list = [
-                item for item in st.session_state.essential_list if item not in selected_to_delete
-            ]
-            st.session_state.voice_products = [
-                item for item in st.session_state.voice_products if item not in selected_to_delete
-            ]
-            st.session_state.all_products = [
-                item for item in st.session_state.all_products if item not in selected_to_delete
-            ]
+        st.session_state.essential_list = [
+            item for item in st.session_state.essential_list if item not in selected_to_delete
+        ]
+        st.session_state.voice_products = [
+            item for item in st.session_state.voice_products if item not in selected_to_delete
+        ]
+        st.session_state.all_products = [
+            item for item in st.session_state.all_products if item not in selected_to_delete
+        ]
 
-            st.success("Selected item(s) deleted.")
-            st.rerun()
+        st.success("Selected item(s) deleted.")
+        st.rerun()
 else:
     st.info("Your list is currently empty.")
