@@ -8,7 +8,7 @@ import requests
 import pandas as pd
 
 st.header("Closest Store Finder 📍")
-st.caption("💡 You can either write or record your list")
+st.caption("💡 For security reasons you can erase your location from the session.")
 
 container1 = st.container(border= True)
 with container1:
@@ -95,7 +95,7 @@ with container1:
             user_lon = loc["coords"].get("longitude")
 
             if user_lat and user_lon is not None: 
-                st.success("📍 Location Captured!")
+                st.toast("📍 Your location has been captured.", icon="✅")
 
                 st.session_state["user_lat"] = user_lat
                 st.session_state["user_lon"] = user_lon
