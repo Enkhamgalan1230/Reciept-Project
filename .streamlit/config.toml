@@ -1,2 +1,5 @@
+[server]
+runOnSave = false
+
 [theme]
 base="dark"
