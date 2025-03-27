@@ -70,22 +70,9 @@ def extract_adj_noun_phrases(text):
     return phrases
 
 # ========== UI ==========
-
-st.title("Shopping List generator 📃", anchor=False)
+st.title("Shopping List generator 📃")
 st.caption("💡 You can either write or record your list")
 st.markdown("---")
-
-# ========== STYLING ==========
-st.markdown("""
-    <style>
-        .custom-container {
-            background-color: #2b2b2b;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-    </style>
-""", unsafe_allow_html=True)
 
 # ========== MANUAL ENTRY ==========
 container1 = st.container(border=True)
@@ -93,7 +80,7 @@ container2 = st.container(border=True)
 container3 = st.container(border=True)
 
 with container1:
-    st.subheader("✏️ Write your grocery list")
+    st.subheader("✏️ **Write your grocery list**")
     budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
     with st.form("add_item_form"):
@@ -111,7 +98,6 @@ with container1:
 # ========== VOICE INPUT ==========
 with container2:
     st.subheader("🗣️ **Speak your grocery list**")
-    st.markdown("---")
     audio = audio_recorder(
         text="Click to Record 👉",
         icon_name="microphone",
@@ -144,27 +130,29 @@ with container2:
             except sr.RequestError as e:
                 st.error(f"❌ Could not request results; {e}")
 
-# ========== COMBINED LIST + DELETE ==========
+# ========== COMBINED LIST ==========
+# ✅ Rebuild all_products on every rerun
+all_products = st.session_state.essential_list + st.session_state.voice_products
+
 with container3:
     st.subheader("🧾 **Combined Grocery List**")
 
-    all_products = st.session_state.essential_list + st.session_state.voice_products
-
     if all_products:
-        to_delete = []
+        st.caption("✅ Tick items to delete then press the button below")
+        to_delete_flags = {}
 
-        for idx, item in enumerate(all_products):
-            if st.checkbox(item.title(), key=f"delete_{item}_{idx}"):
-                to_delete.append(item)
+        for idx, item in enumerate(all_products, start=1):
+            label = f"{idx}. {item.title()}"
+            to_delete_flags[item] = st.checkbox(label, key=f"delete_{item}")
 
         if st.button("🗑️ Delete Selected Items", use_container_width=True):
-            selected_to_delete = [item.lower() for item in to_delete]
+            selected_to_delete = [item for item, selected in to_delete_flags.items() if selected]
 
             st.session_state.essential_list = [
-                item for item in st.session_state.essential_list if item.lower() not in selected_to_delete
+                item for item in st.session_state.essential_list if item not in selected_to_delete
             ]
             st.session_state.voice_products = [
-                item for item in st.session_state.voice_products if item.lower() not in selected_to_delete
+                item for item in st.session_state.voice_products if item not in selected_to_delete
             ]
 
             st.success("Selected item(s) deleted.")
@@ -172,9 +160,4 @@ with container3:
     else:
         st.info("Your list is currently empty.")
 
-st.caption("📌 Selected items can be deleted from the list")
-
-# ========== FINAL LIST ==========
-final_list = list(dict.fromkeys(st.session_state.essential_list + st.session_state.voice_products))
-
-
+final_list = list(dict.fromkeys(all_products))
