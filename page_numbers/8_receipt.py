@@ -152,26 +152,22 @@ with container2:
 with container3:
     st.subheader("🧾 **Combined Grocery List**")
 
-    # Rebuild combined list before showing
-    st.session_state.all_products = (
-        st.session_state.essential_list + st.session_state.voice_products
-    )
+    all_products = st.session_state.essential_list + st.session_state.voice_products
+
     st.write("🔍 Debug - Essential List:", st.session_state.essential_list)
     st.write("🔍 Debug - Voice Products:", st.session_state.voice_products)
-    st.write("🔍 Debug - All Products:", st.session_state.all_products)
+    st.write("🔍 Debug - All Products:", all_products)
 
-    if st.session_state.all_products:
-
+    if all_products:
         to_delete_flags = []
 
-        for idx, item in enumerate(st.session_state.all_products):
+        for idx, item in enumerate(all_products):
             label = f"{item.title()}"
             if st.checkbox(label, key=f"del_{idx}"):
                 to_delete_flags.append(item)
 
         st.markdown(" ")
         if st.button("🗑️ Delete Selected Items", use_container_width=True):
-            # Ensure all comparison is lowercase
             selected_to_delete = [item.lower() for item in to_delete_flags]
             st.write("🧨 Items selected for deletion:", selected_to_delete)
 
@@ -181,7 +177,7 @@ with container3:
             st.session_state.voice_products = [
                 item for item in st.session_state.voice_products if item.lower() not in selected_to_delete
             ]
-            # No need to update all_products here — it will rebuild on rerun
+
             st.success("Selected item(s) deleted.")
             st.rerun()
     else:
