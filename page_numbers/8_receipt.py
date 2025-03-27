@@ -177,7 +177,7 @@ with container3:
             ]
 
             st.success("Selected item(s) deleted.")
-            st.rerun()
+            #st.rerun()
     else:
         st.info("Your list is currently empty.")
 st.caption("📌 Selected items can be deleted from the list")
