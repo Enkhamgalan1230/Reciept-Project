@@ -15,6 +15,9 @@ for key in ["essential_list", "voice_products"]:
     if key not in st.session_state:
         st.session_state[key] = []
 
+if "audio_processed" not in st.session_state:
+    st.session_state.audio_processed = False
+
 # ========== LOAD MODELS AND DATA ==========
 nlp = spacy.load("en_core_web_sm")
 df_adj = pd.read_csv("food_adjectives.csv")
@@ -106,7 +109,7 @@ with container2:
         icon_size="1.5x"
     )
 
-    if audio is not None and len(audio) > 0:
+    if audio is not None and len(audio) > 0 and not st.session_state.audio_processed:
         st.audio(audio, format="audio/wav")
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
             f.write(audio)
@@ -124,6 +127,8 @@ with container2:
                     clean_item = item.strip("'\"").strip().lower()
                     if clean_item not in st.session_state.voice_products:
                         st.session_state.voice_products.append(clean_item)
+
+                st.session_state.audio_processed = True  # Prevent infinite rerun loop
                 st.rerun()
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
