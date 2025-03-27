@@ -159,15 +159,17 @@ with container3:
 
     if st.session_state.all_products:
 
-        to_delete_flags = {}
+        to_delete_flags = []
 
-        for idx, item in enumerate(st.session_state.all_products, start=1):
-            label = f"{idx}. {item.title()}"
-            to_delete_flags[item] = st.checkbox(label, key=f"delete_{idx}")
+        for idx, item in enumerate(st.session_state.all_products):
+            label = f"{item.title()}"
+            if st.checkbox(label, key=f"del_{idx}"):
+                to_delete_flags.append(item)
 
         st.markdown(" ")
         if st.button("🗑️ Delete Selected Items", use_container_width=True):
-            selected_to_delete = [item.lower() for item, selected in to_delete_flags.items() if selected]
+            # Ensure all comparison is lowercase
+            selected_to_delete = [item.lower() for item in to_delete_flags]
 
             st.session_state.essential_list = [
                 item for item in st.session_state.essential_list if item.lower() not in selected_to_delete
@@ -175,10 +177,7 @@ with container3:
             st.session_state.voice_products = [
                 item for item in st.session_state.voice_products if item.lower() not in selected_to_delete
             ]
-            st.session_state.all_products = [
-                item for item in st.session_state.all_products if item.lower() not in selected_to_delete
-            ]
-
+            # No need to update all_products here — it will rebuild on rerun
             st.success("Selected item(s) deleted.")
             st.rerun()
     else:
