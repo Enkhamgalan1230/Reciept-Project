@@ -1,5 +1,5 @@
 [server]
-runOnSave = false
+fileWatcherType = "poll"
 
 [theme]
 base="dark"
