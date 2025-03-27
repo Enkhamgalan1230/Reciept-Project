@@ -18,6 +18,9 @@ for key in ["essential_list", "voice_products"]:
 if "audio_processed" not in st.session_state:
     st.session_state.audio_processed = False
 
+if "transcribed_text" not in st.session_state:
+    st.session_state.transcribed_text = ""
+
 # ========== LOAD MODELS AND DATA ==========
 nlp = spacy.load("en_core_web_sm")
 df_adj = pd.read_csv("food_adjectives.csv")
@@ -99,6 +102,7 @@ with container1:
                 st.warning("Item already in the list.")
 
 # ========== VOICE INPUT ==========
+# In the VOICE INPUT section:
 with container2:
     st.subheader("🗣️ **Speak your grocery list**")
 
@@ -110,12 +114,12 @@ with container2:
         icon_size="1.5x"
     )
 
-    # Reset the flag when new recording is expected
-    if audio is None:
-        st.session_state.audio_processed = False
+    # Show the last thing the user said
+    if st.session_state.transcribed_text:
+        st.success(f"🗣️ You said: {st.session_state.transcribed_text}")
 
-    # Only process once per recording
-    if audio is not None and len(audio) > 0 and not st.session_state.audio_processed:
+    # If new audio comes in, reset the flag to allow reprocessing
+    if audio is not None and not st.session_state.audio_processed:
         st.audio(audio, format="audio/wav")
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
             f.write(audio)
@@ -127,19 +131,24 @@ with container2:
             try:
                 text = recognizer.recognize_google(audio_data)
                 text = fix_multiword_adjectives(text)
-                st.success(f"🗣️ You said: {text}")
+                st.session_state.transcribed_text = text  # ✅ Save text for display
+
                 new_voice_products = extract_adj_noun_phrases(text)
                 for item in new_voice_products:
                     clean_item = item.strip("'\"").strip().lower()
                     if clean_item not in st.session_state.voice_products:
                         st.session_state.voice_products.append(clean_item)
 
-                st.session_state.audio_processed = True
+                st.session_state.audio_processed = True  # ✅ prevent immediate reprocessing
                 st.rerun()
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
             except sr.RequestError as e:
                 st.error(f"❌ Could not request results; {e}")
+
+    # Reset flag only if new recording happens
+    if audio is None:
+        st.session_state.audio_processed = False
 
 # ========== COMBINED LIST ==========
 # ✅ Rebuild all_products on every rerun
