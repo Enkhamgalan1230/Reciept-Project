@@ -163,7 +163,7 @@ with container3:
 
         for idx, item in enumerate(all_products):
             label = f"{item.title()}"
-            if st.checkbox(label, key=f"del_{idx}"):
+            if st.checkbox(label, key=f"del_{item}"):
                 to_delete_flags.append(item)
 
         st.markdown(" ")
