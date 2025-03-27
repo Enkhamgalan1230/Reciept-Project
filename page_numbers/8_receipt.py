@@ -101,6 +101,7 @@ with container1:
 # ========== VOICE INPUT ==========
 with container2:
     st.subheader("🗣️ **Speak your grocery list**")
+
     audio = audio_recorder(
         text="Click to Record 👉",
         icon_name="microphone",
@@ -109,6 +110,11 @@ with container2:
         icon_size="1.5x"
     )
 
+    # Reset the flag when new recording is expected
+    if audio is None:
+        st.session_state.audio_processed = False
+
+    # Only process once per recording
     if audio is not None and len(audio) > 0 and not st.session_state.audio_processed:
         st.audio(audio, format="audio/wav")
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
@@ -128,7 +134,7 @@ with container2:
                     if clean_item not in st.session_state.voice_products:
                         st.session_state.voice_products.append(clean_item)
 
-                st.session_state.audio_processed = True  # Prevent infinite rerun loop
+                st.session_state.audio_processed = True
                 st.rerun()
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
