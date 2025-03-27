@@ -156,6 +156,9 @@ with container3:
     st.session_state.all_products = (
         st.session_state.essential_list + st.session_state.voice_products
     )
+    st.write("🔍 Debug - Essential List:", st.session_state.essential_list)
+    st.write("🔍 Debug - Voice Products:", st.session_state.voice_products)
+    st.write("🔍 Debug - All Products:", st.session_state.all_products)
 
     if st.session_state.all_products:
 
