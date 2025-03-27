@@ -173,6 +173,7 @@ with container3:
         if st.button("🗑️ Delete Selected Items", use_container_width=True):
             # Ensure all comparison is lowercase
             selected_to_delete = [item.lower() for item in to_delete_flags]
+            st.write("🧨 Items selected for deletion:", selected_to_delete)
 
             st.session_state.essential_list = [
                 item for item in st.session_state.essential_list if item.lower() not in selected_to_delete
