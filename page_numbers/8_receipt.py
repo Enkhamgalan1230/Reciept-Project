@@ -160,7 +160,7 @@ with container3:
 
         for idx, item in enumerate(st.session_state.all_products, start=1):
             label = f"{idx}. {item.title()}"
-            to_delete_flags[item] = st.checkbox(label, key=f"delete_{item}")
+            to_delete_flags[item] = st.checkbox(label, key=f"delete_{idx}")
 
         st.markdown(" ")
         if st.button("🗑️ Delete Selected Items", use_container_width=True):
