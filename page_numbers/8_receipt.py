@@ -147,13 +147,16 @@ with container2:
             except sr.RequestError as e:
                 st.error(f"❌ Could not request results; {e}")
 
-# ========== COMBINED PRODUCT LIST ==========
-st.session_state.all_products = (
-    st.session_state.essential_list + st.session_state.voice_products
-)
+
 
 with container3:
     st.subheader("🧾 **Combined Grocery List**")
+
+    # Rebuild combined list before showing
+    st.session_state.all_products = (
+        st.session_state.essential_list + st.session_state.voice_products
+    )
+
     if st.session_state.all_products:
 
         to_delete_flags = {}
@@ -172,12 +175,14 @@ with container3:
             st.session_state.voice_products = [
                 item for item in st.session_state.voice_products if item not in selected_to_delete
             ]
-            st.session_state.all_products = [
-                item for item in st.session_state.all_products if item not in selected_to_delete
-            ]
+
+            # REBUILD all_products after deletion
+            st.session_state.all_products = (
+                st.session_state.essential_list + st.session_state.voice_products
+            )
 
             st.success("Selected item(s) deleted.")
-            #st.rerun()
+            st.rerun()
     else:
         st.info("Your list is currently empty.")
 st.caption("📌 Selected items can be deleted from the list")
