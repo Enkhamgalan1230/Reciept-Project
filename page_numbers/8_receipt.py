@@ -11,12 +11,7 @@ import subprocess
 import importlib
 
 # ========== SESSION STATE SETUP ==========
-if "df" in st.session_state:
-    df = st.session_state.df
-else:
-    st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
-
-for key in ["essential_list", "voice_products", "all_products"]:
+for key in ["essential_list", "voice_products"]:
     if key not in st.session_state:
         st.session_state[key] = []
 
@@ -75,10 +70,12 @@ def extract_adj_noun_phrases(text):
     return phrases
 
 # ========== UI ==========
+
 st.title("Shopping List generator 📃", anchor=False)
 st.caption("💡 You can either write or record your list")
 st.markdown("---")
 
+# ========== STYLING ==========
 st.markdown("""
     <style>
         .custom-container {
@@ -91,9 +88,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ========== MANUAL ENTRY ==========
-container1 = st.container(border= True)
-container2 = st.container(border= True)
-container3 = st.container(border= True)
+container1 = st.container(border=True)
+container2 = st.container(border=True)
+container3 = st.container(border=True)
 
 with container1:
     st.subheader("✏️ Write your grocery list")
@@ -110,7 +107,6 @@ with container1:
                 st.rerun()
             elif clean_item:
                 st.warning("Item already in the list.")
-
 
 # ========== VOICE INPUT ==========
 with container2:
@@ -142,34 +138,27 @@ with container2:
                     clean_item = item.strip("'\"").strip().lower()
                     if clean_item not in st.session_state.voice_products:
                         st.session_state.voice_products.append(clean_item)
+                st.rerun()
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
             except sr.RequestError as e:
                 st.error(f"❌ Could not request results; {e}")
 
-
-
+# ========== COMBINED LIST + DELETE ==========
 with container3:
     st.subheader("🧾 **Combined Grocery List**")
 
     all_products = st.session_state.essential_list + st.session_state.voice_products
 
-    st.write("🔍 Debug - Essential List:", st.session_state.essential_list)
-    st.write("🔍 Debug - Voice Products:", st.session_state.voice_products)
-    st.write("🔍 Debug - All Products:", all_products)
-
     if all_products:
-        to_delete_flags = []
+        to_delete = []
 
         for idx, item in enumerate(all_products):
-            label = f"{item.title()}"
-            if st.checkbox(label, key=f"del_{item}"):
-                to_delete_flags.append(item)
+            if st.checkbox(item.title(), key=f"delete_{item}_{idx}"):
+                to_delete.append(item)
 
-        st.markdown(" ")
         if st.button("🗑️ Delete Selected Items", use_container_width=True):
-            selected_to_delete = [item.lower() for item in to_delete_flags]
-            st.write("🧨 Items selected for deletion:", selected_to_delete)
+            selected_to_delete = [item.lower() for item in to_delete]
 
             st.session_state.essential_list = [
                 item for item in st.session_state.essential_list if item.lower() not in selected_to_delete
@@ -182,7 +171,10 @@ with container3:
             st.rerun()
     else:
         st.info("Your list is currently empty.")
+
 st.caption("📌 Selected items can be deleted from the list")
 
-final_list = list(dict.fromkeys(st.session_state.all_products))
+# ========== FINAL LIST ==========
+final_list = list(dict.fromkeys(st.session_state.essential_list + st.session_state.voice_products))
+
 
