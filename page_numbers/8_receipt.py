@@ -167,19 +167,17 @@ with container3:
 
         st.markdown(" ")
         if st.button("🗑️ Delete Selected Items", use_container_width=True):
-            selected_to_delete = [item for item, selected in to_delete_flags.items() if selected]
+            selected_to_delete = [item.lower() for item, selected in to_delete_flags.items() if selected]
 
             st.session_state.essential_list = [
-                item for item in st.session_state.essential_list if item not in selected_to_delete
+                item for item in st.session_state.essential_list if item.lower() not in selected_to_delete
             ]
             st.session_state.voice_products = [
-                item for item in st.session_state.voice_products if item not in selected_to_delete
+                item for item in st.session_state.voice_products if item.lower() not in selected_to_delete
             ]
-
-            # REBUILD all_products after deletion
-            st.session_state.all_products = (
-                st.session_state.essential_list + st.session_state.voice_products
-            )
+            st.session_state.all_products = [
+                item for item in st.session_state.all_products if item.lower() not in selected_to_delete
+            ]
 
             st.success("Selected item(s) deleted.")
             st.rerun()
