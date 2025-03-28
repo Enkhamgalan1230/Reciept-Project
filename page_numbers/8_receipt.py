@@ -126,7 +126,7 @@ with container2:
 
     # If new audio comes in, reset the flag to allow reprocessing
     if audio is not None:
-    current_hash = get_audio_hash(audio)
+        current_hash = get_audio_hash(audio)
 
     if st.session_state.get("last_audio_hash") != current_hash:
         st.session_state.last_audio_hash = current_hash
