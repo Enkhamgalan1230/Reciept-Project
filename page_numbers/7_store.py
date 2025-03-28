@@ -45,7 +45,7 @@ with container1:
     user_lat = user_lon = None
 
     # ========== OPTION 1: Current Geolocation ==========
-    if st.session_state["location_mode"] == "Use my current location":
+    if st.session_state["location_mode"] == "📍 Use my current location":
         if st.session_state.get("reset_checkbox"):
             st.session_state["check_location"] = False
             del st.session_state["reset_checkbox"]
@@ -71,7 +71,7 @@ with container1:
                         st.rerun()
 
     # ========== OPTION 2: Manual Postcode ==========
-    elif st.session_state["location_mode"] == "Enter postcode":
+    elif st.session_state["location_mode"] == "🏡 Enter postcode manually":
         postcode = st.text_input("Enter your UK postcode (e.g., W1A 1AA)")
         if postcode:
             geo_url = "https://nominatim.openstreetmap.org/search"
