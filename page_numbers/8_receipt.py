@@ -9,6 +9,8 @@ import spacy
 from fuzzywuzzy import process
 import subprocess
 import importlib
+import hashlib
+
 
 # ========== SESSION STATE SETUP ==========
 for key in ["essential_list", "voice_products"]:
@@ -103,6 +105,10 @@ with container1:
 
 # ========== VOICE INPUT ==========
 # In the VOICE INPUT section:
+
+def get_audio_hash(audio_bytes):
+    return hashlib.md5(audio_bytes).hexdigest()
+
 with container2:
     st.subheader("🗣️ **Speak your grocery list**")
 
@@ -119,7 +125,11 @@ with container2:
         st.success(f"🗣️ You said: {st.session_state.transcribed_text}")
 
     # If new audio comes in, reset the flag to allow reprocessing
-    if audio is not None and not st.session_state.audio_processed:
+    if audio is not None:
+    current_hash = get_audio_hash(audio)
+
+    if st.session_state.get("last_audio_hash") != current_hash:
+        st.session_state.last_audio_hash = current_hash
         st.audio(audio, format="audio/wav")
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
             f.write(audio)
@@ -131,7 +141,7 @@ with container2:
             try:
                 text = recognizer.recognize_google(audio_data)
                 text = fix_multiword_adjectives(text)
-                st.session_state.transcribed_text = text  # ✅ Save text for display
+                st.session_state.transcribed_text = text
 
                 new_voice_products = extract_adj_noun_phrases(text)
                 for item in new_voice_products:
@@ -139,7 +149,6 @@ with container2:
                     if clean_item not in st.session_state.voice_products:
                         st.session_state.voice_products.append(clean_item)
 
-                st.session_state.audio_processed = True  # ✅ prevent immediate reprocessing
                 st.rerun()
             except sr.UnknownValueError:
                 st.error("❌ Could not understand the audio.")
