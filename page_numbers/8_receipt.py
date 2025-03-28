@@ -128,45 +128,46 @@ with container2:
         icon_size="1.5x"
     )
 
-    # Temporary variable to hold immediate display
-latest_transcript = st.session_state.transcribed_text
+    # Placeholder to show transcript *immediately after mic button*
+    latest_transcript = st.session_state.transcribed_text
+    transcript_placeholder = st.empty()  # Reserve the space for text
 
-if audio:
-    current_hash = get_audio_hash(audio)
+    if audio:
+        current_hash = get_audio_hash(audio)
 
-    if st.session_state.get("last_audio_hash") != current_hash:
-        st.session_state.last_audio_hash = current_hash
-        st.audio(audio, format="audio/wav")
+        if st.session_state.get("last_audio_hash") != current_hash:
+            st.session_state.last_audio_hash = current_hash
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
-            f.write(audio)
-            temp_path = f.name
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+                f.write(audio)
+                temp_path = f.name
 
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(temp_path) as source:
-            audio_data = recognizer.record(source)
-            try:
-                text = recognizer.recognize_google(audio_data)
-                text = fix_multiword_adjectives(text)
+            recognizer = sr.Recognizer()
+            with sr.AudioFile(temp_path) as source:
+                audio_data = recognizer.record(source)
+                try:
+                    text = recognizer.recognize_google(audio_data)
+                    text = fix_multiword_adjectives(text)
 
-                # ✅ Update session and immediate variable
-                st.session_state.transcribed_text = text
-                latest_transcript = text
+                    st.session_state.transcribed_text = text
+                    latest_transcript = text  # ✅ Update immediately
 
-                new_items = extract_adj_noun_phrases(text)
-                for item in new_items:
-                    clean = item.strip("'\"").strip().lower()
-                    if clean not in st.session_state.voice_products:
-                        st.session_state.voice_products.append(clean)
+                    new_items = extract_adj_noun_phrases(text)
+                    for item in new_items:
+                        clean = item.strip("'\"").strip().lower()
+                        if clean not in st.session_state.voice_products:
+                            st.session_state.voice_products.append(clean)
 
-            except sr.UnknownValueError:
-                st.error("❌ Could not understand the audio.")
-            except sr.RequestError as e:
-                st.error(f"❌ Could not request results; {e}")
+                except sr.UnknownValueError:
+                    transcript_placeholder.error("❌ Could not understand the audio.")
+                except sr.RequestError as e:
+                    transcript_placeholder.error(f"❌ Could not request results; {e}")
 
-# Show updated text instantly
-if latest_transcript:
-    st.success(f"🗣️ You said: {latest_transcript}")
+            st.audio(audio, format="audio/wav")  # 👈 Still show the player after processing
+
+    # Always display latest transcript just under mic
+    if latest_transcript:
+        transcript_placeholder.success(f"🗣️ You said: {latest_transcript}")
 
 # Optional: Reset flags if no audio
 if audio is None:
