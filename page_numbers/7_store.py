@@ -35,8 +35,7 @@ with container1:
     st.success("👇 Please choose how you'd like to find your location.")
 
     # ========== Location Mode Selection ==========
-    st.write("📍 Location mode:")
-    st.radio(["Use my current location", "Enter postcode"], key="location_mode")
+    st.radio("📍 Location mode:", ["Use my current location", "Enter postcode"], key="location_mode")
 
     user_lat = user_lon = None
 
