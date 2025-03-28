@@ -24,10 +24,18 @@ if "transcribed_text" not in st.session_state:
     st.session_state.transcribed_text = ""
 
 # ========== LOAD MODELS AND DATA ==========
-nlp = spacy.load("en_core_web_sm")
-df_adj = pd.read_csv("food_adjectives.csv")
-hyphenated_adjs = set(df_adj["Food_Adjective"].str.lower().tolist())
-phrase_map = {adj.replace("-", " "): adj for adj in hyphenated_adjs}
+@st.cache_resource
+def load_nlp_model():
+    return spacy.load("en_core_web_sm")
+
+@st.cache_data
+def load_adjectives():
+    df = pd.read_csv("food_adjectives.csv")
+    hyphens = set(df["Food_Adjective"].str.lower().tolist())
+    return hyphens, {adj.replace("-", " "): adj for adj in hyphens}
+
+nlp = load_nlp_model()
+hyphenated_adjs, phrase_map = load_adjectives()
 
 # ========== TEXT PROCESSING HELPERS ==========
 def fix_multiword_adjectives(text):
@@ -124,43 +132,44 @@ with container2:
     if st.session_state.transcribed_text:
         st.success(f"🗣️ You said: {st.session_state.transcribed_text}")
 
-    # If new audio comes in, reset the flag to allow reprocessing
-    if audio is not None:
+    # Process new audio input
+    if audio:
         current_hash = get_audio_hash(audio)
 
-    if st.session_state.get("last_audio_hash") != current_hash:
-        st.session_state.last_audio_hash = current_hash
-        st.audio(audio, format="audio/wav")
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
-            f.write(audio)
-            temp_wav_path = f.name
+        # Only process if the audio is new
+        if st.session_state.get("last_audio_hash") != current_hash:
+            st.session_state.last_audio_hash = current_hash
+            st.audio(audio, format="audio/wav")
 
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(temp_wav_path) as source:
-            audio_data = recognizer.record(source)
-            try:
-                text = recognizer.recognize_google(audio_data)
-                text = fix_multiword_adjectives(text)
-                st.session_state.transcribed_text = text
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+                f.write(audio)
+                temp_path = f.name
 
-                new_voice_products = extract_adj_noun_phrases(text)
-                for item in new_voice_products:
-                    clean_item = item.strip("'\"").strip().lower()
-                    if clean_item not in st.session_state.voice_products:
-                        st.session_state.voice_products.append(clean_item)
+            recognizer = sr.Recognizer()
+            with sr.AudioFile(temp_path) as source:
+                audio_data = recognizer.record(source)
+                try:
+                    text = recognizer.recognize_google(audio_data)
+                    text = fix_multiword_adjectives(text)
+                    st.session_state.transcribed_text = text
 
-                st.rerun()
-            except sr.UnknownValueError:
-                st.error("❌ Could not understand the audio.")
-            except sr.RequestError as e:
-                st.error(f"❌ Could not request results; {e}")
+                    new_items = extract_adj_noun_phrases(text)
+                    for item in new_items:
+                        clean = item.strip("'\"").strip().lower()
+                        if clean not in st.session_state.voice_products:
+                            st.session_state.voice_products.append(clean)
 
-    # Reset flag only if new recording happens
-    if audio is None:
-        st.session_state.audio_processed = False
+                    # ✅ No rerun needed
+                except sr.UnknownValueError:
+                    st.error("❌ Could not understand the audio.")
+                except sr.RequestError as e:
+                    st.error(f"❌ Could not request results; {e}")
+
+# Optional: Reset flags if no audio
+if audio is None:
+    st.session_state.audio_processed = False
 
 # ========== COMBINED LIST ==========
-# ✅ Rebuild all_products on every rerun
 all_products = st.session_state.essential_list + st.session_state.voice_products
 
 with container3:
@@ -184,7 +193,7 @@ with container3:
                 item for item in st.session_state.voice_products if item not in selected_to_delete
             ]
 
-            st.success("Selected item(s) deleted.")
+            st.toast("✅ Selected item(s) deleted.")
             st.rerun()
     else:
         st.info("Your list is currently empty.")
