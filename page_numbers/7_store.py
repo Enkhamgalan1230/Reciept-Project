@@ -32,9 +32,10 @@ comment = '''
 
 container1 = st.container(border=True)
 with container1:
-    st.markdown("### 🌍 Choose how you'd like to find your location")
+    st.markdown("### 🌍 Choose how you'd like to use your location")
     st.caption("You can either use your real-time location or enter a UK postcode.")
 
+    st.markdown("---")
     # ========== Location Mode Selection ==========
     location_mode = st.radio(
             "📌 Location Mode",
@@ -43,6 +44,8 @@ with container1:
             label_visibility="collapsed"  # Hide label to rely on markdown title above
         )
     user_lat = user_lon = None
+
+    st.markdown("---")
 
     # ========== OPTION 1: Current Geolocation ==========
     if st.session_state["location_mode"] == "📍 Use my current location":
