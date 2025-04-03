@@ -224,22 +224,26 @@ df_latest = df_latest.drop(columns=["Year", "Month", "Day", "Unit_each", "Unit_k
 file_path = "subcategory.csv"
 subcategories_df = pd.read_csv(file_path)
 
-# Create mapping: "soft_drink" → "Soft Drink"
+# Load and clean subcategory names
 subcategory_list = subcategories_df["Subcategory"].unique().tolist()
 subcategory_display_map = {sc: sc.replace("_", " ").title() for sc in subcategory_list}
 subcategory_display_reverse_map = {v: k for k, v in subcategory_display_map.items()}  # For mapping back
 
-# Use display names in UI
-selected_subcategories_display = st.pills("Choose product subcategories:", list(subcategory_display_map.values()), selection_mode="multi")
-
-# Convert selected display names back to actual values
-selected_subcategories = [subcategory_display_reverse_map[disp] for disp in selected_subcategories_display]
-# Allow multiple subcategory selections using st.pills with selection_mode="multi"
-with st.container(border=True, height=180):
-    selected_subcategories = st.pills("Choose product subcategories:", subcategory_list, selection_mode="multi")
-
-# Allow multiple store selections using st.pills
+# Store display names
 store_list = ["Tesco", "Asda", "Aldi", "Waitrose", "Sainsburys"]
+
+# UI: Subcategory pills (clean display names)
+with st.container(border=True, height=180):
+    selected_subcategories_display = st.pills(
+        "Choose product subcategories:",
+        options=list(subcategory_display_map.values()),
+        selection_mode="multi"
+    )
+
+# Convert selected display names back to actual values for filtering
+selected_subcategories = [subcategory_display_reverse_map[disp] for disp in selected_subcategories_display]
+
+# UI: Store pills
 with st.container(border=True, height=100):
     selected_stores = st.pills("Choose stores to compare:", store_list, selection_mode="multi")
 
@@ -249,34 +253,39 @@ if selected_subcategories:
 else:
     df_filtered = df_latest  # If nothing is selected, show all data
 
-# Further filter by selected stores
+# Filter further by selected stores
 if selected_stores:
     df_filtered = df_filtered[df_filtered["Store_Name"].isin(selected_stores)]
 
-# User input for keyword
+# Keyword input from user
 keyword = st.text_input("Enter a product name", placeholder="Ex: Chicken breast 400g")
 
+# Keyword strict match logic
 def find_strict_match_products(df, keyword):
-    """ Returns products that contain all keywords in the input query """
-    keywords = keyword.lower().split()  # Split input into words
+    """Returns products that contain all keywords in the input query"""
+    keywords = keyword.lower().split()
     df["match_score"] = df["Name"].apply(
-        lambda x: sum(kw in x.lower() for kw in keywords)  # Count how many keywords match
+        lambda x: sum(kw in x.lower() for kw in keywords)
     )
-    return df[df["match_score"] == len(keywords)].drop(columns=["match_score"])  # Keep only full matches
+    return df[df["match_score"] == len(keywords)].drop(columns=["match_score"])
 
+# Apply search and show results
 if keyword:
     filtered_df = find_strict_match_products(df_filtered, keyword)
 
-    # Ensure "Unit" exists in the filtered data
+    # Check if unit column is missing
     if "Unit" not in filtered_df.columns:
-        st.write("⚠️ 'Unit' column is missing from the filtered data. Displaying available columns.")
+        st.warning("⚠️ 'Unit' column is missing from the filtered data. Displaying available columns.")
         st.dataframe(filtered_df)
     else:
-        # Display results in ascending order of price
+        # Show in ascending order by price
         filtered_df = filtered_df.sort_values(by="Price", ascending=True)
 
-        # Display table with horizontal scroll and limit height
+        # Show table with important columns
         st.dataframe(
-            filtered_df[["Store_Name", "Price", "Discount price", "Subcategory", "Name", "Standardised price per unit", "Unit", "Category"]],
+            filtered_df[[
+                "Store_Name", "Price", "Discount price", "Subcategory", 
+                "Name", "Standardised price per unit", "Unit", "Category"
+            ]],
             height=400
         )
