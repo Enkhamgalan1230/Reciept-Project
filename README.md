@@ -1,6 +1,6 @@
 # Reciept-Project
 
-👉 https://reciept-entwan.streamlit.app/ 👈
+👉 https://receipt-entwan.streamlit.app/ 👈
 
 ### Project Overview: Smart Budgeting and Price Prediction App for University Students
 
