@@ -13,7 +13,7 @@ import hashlib
 
 
 # ========== SESSION STATE SETUP ==========
-for key in ["essential_list", "voice_products"]:
+for key in ["essential_list", "voice_products", "secondary_list"]:
     if key not in st.session_state:
         st.session_state[key] = []
 
@@ -111,6 +111,18 @@ with container1:
             elif clean_item:
                 st.warning("Item already in the list.")
 
+    with st.form("add_secondary_form"):
+        new_item = st.text_input("I would love to include this if we can..")
+        submitted = st.form_submit_button("➕ Add Item")
+        if submitted:
+            clean_item = new_item.strip().lower()
+            if clean_item and clean_item not in st.session_state.secondary_list:
+                st.session_state.secondary_list.append(clean_item)
+                st.success(f"Added '{clean_item}'")
+                st.rerun()
+            elif clean_item:
+                st.warning("Item already in the list.")
+
 # ========== VOICE INPUT ==========
 # In the VOICE INPUT section:
 
@@ -179,15 +191,16 @@ all_products = st.session_state.essential_list + st.session_state.voice_products
 with container3:
     st.subheader("🧾 **Combined Grocery List**")
 
+    # Essential + Voice Products
     if all_products:
-        st.caption("✅ Tick items to delete then press the button below")
+        st.caption("✅ Tick items to delete from your primary list")
         to_delete_flags = {}
 
         for idx, item in enumerate(all_products, start=1):
             label = f"{idx}. {item.title()}"
             to_delete_flags[item] = st.checkbox(label, key=f"delete_{item}")
 
-        if st.button("🗑️ Delete Selected Items", use_container_width=True):
+        if st.button("🗑️ Delete Selected Primary Items", key="delete_primary", use_container_width=True):
             selected_to_delete = [item for item, selected in to_delete_flags.items() if selected]
 
             st.session_state.essential_list = [
@@ -197,9 +210,32 @@ with container3:
                 item for item in st.session_state.voice_products if item not in selected_to_delete
             ]
 
-            st.toast("✅ Selected item(s) deleted.")
+            st.toast("✅ Selected primary item(s) deleted.")
             st.rerun()
     else:
-        st.info("Your list is currently empty.")
+        st.info("Your primary list is currently empty.")
 
-final_list = list(dict.fromkeys(all_products))
+    st.markdown("---")
+
+    # Secondary List
+    st.subheader("✨ Optional Extras (Secondary List)")
+
+    if st.session_state.secondary_list:
+        st.caption("These are the items you'd like to include *if budget allows*. You can also remove them below.")
+        to_delete_secondary = {}
+
+        for idx, item in enumerate(st.session_state.secondary_list, start=1):
+            label = f"{idx}. {item.title()}"
+            to_delete_secondary[item] = st.checkbox(label, key=f"delete_secondary_{item}")
+
+        if st.button("🗑️ Delete Selected Secondary Items", key="delete_secondary", use_container_width=True):
+            selected_to_delete = [item for item, selected in to_delete_secondary.items() if selected]
+
+            st.session_state.secondary_list = [
+                item for item in st.session_state.secondary_list if item not in selected_to_delete
+            ]
+
+            st.toast("✅ Selected secondary item(s) deleted.")
+            st.rerun()
+    else:
+        st.info("No secondary items added yet.")
