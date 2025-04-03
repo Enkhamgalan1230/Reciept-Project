@@ -223,8 +223,17 @@ df_latest = df_latest.drop(columns=["Year", "Month", "Day", "Unit_each", "Unit_k
 # Load subcategories from CSV
 file_path = "subcategory.csv"
 subcategories_df = pd.read_csv(file_path)
-subcategory_list = subcategories_df["Subcategory"].unique().tolist()
 
+# Create mapping: "soft_drink" → "Soft Drink"
+subcategory_list = subcategories_df["Subcategory"].unique().tolist()
+subcategory_display_map = {sc: sc.replace("_", " ").title() for sc in subcategory_list}
+subcategory_display_reverse_map = {v: k for k, v in subcategory_display_map.items()}  # For mapping back
+
+# Use display names in UI
+selected_subcategories_display = st.pills("Choose product subcategories:", list(subcategory_display_map.values()), selection_mode="multi")
+
+# Convert selected display names back to actual values
+selected_subcategories = [subcategory_display_reverse_map[disp] for disp in selected_subcategories_display]
 # Allow multiple subcategory selections using st.pills with selection_mode="multi"
 with st.container(border=True, height=180):
     selected_subcategories = st.pills("Choose product subcategories:", subcategory_list, selection_mode="multi")
