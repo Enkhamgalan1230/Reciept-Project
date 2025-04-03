@@ -187,6 +187,8 @@ if audio is None:
 
 # ========== COMBINED LIST ==========
 all_products = st.session_state.essential_list + st.session_state.voice_products
+secondary_products = st.session_state.secondary_list
+
 
 with container3:
     st.subheader("🧾 **Combined Grocery List**")
@@ -220,11 +222,11 @@ with container3:
     # Secondary List
     st.subheader("✨ Optional Extras (Secondary List)")
 
-    if st.session_state.secondary_list:
+    if secondary_products:
         st.caption("These are the items you'd like to include *if budget allows*. You can also remove them below.")
         to_delete_secondary = {}
 
-        for idx, item in enumerate(st.session_state.secondary_list, start=1):
+        for idx, item in enumerate(secondary_products, start=1):
             label = f"{idx}. {item.title()}"
             to_delete_secondary[item] = st.checkbox(label, key=f"delete_secondary_{item}")
 
@@ -239,3 +241,4 @@ with container3:
             st.rerun()
     else:
         st.info("No secondary items added yet.")
+

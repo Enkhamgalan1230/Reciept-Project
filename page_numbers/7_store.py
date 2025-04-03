@@ -42,6 +42,7 @@ with container1:
             ["📍 Use my current location", "🏡 Enter postcode manually"],
             key="location_mode",
             label_visibility="collapsed"  # Hide label to rely on markdown title above
+
         )
     user_lat = user_lon = None
 
