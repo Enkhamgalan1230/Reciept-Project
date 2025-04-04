@@ -8,19 +8,23 @@ import time
 import os
 from datetime import datetime
 from undetected_chromedriver import Chrome
+import undetected_chromedriver as uc
 
 def create_undetected_headless_driver():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--blink-settings=imagesEnabled=false")
+    options = uc.ChromeOptions()
+    options.add_argument('--blink-settings=imagesEnabled=false')
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
-    #options.add_argument("--headless")
+    # options.add_argument("--headless")
     options.add_argument("--window-size=1920,1200")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-dev-shm-usage")
 
-    driver = Chrome(options=options)
+    # explicitly set version_main to 134
+    driver = uc.Chrome(version_main=134, options=options)
+    driver.maximize_window()
+
     return driver
 
 # Initialize driver

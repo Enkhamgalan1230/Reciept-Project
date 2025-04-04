@@ -43,62 +43,67 @@ driver = create_undetected_headless_driver()
 category_urls = {
     
     "fresh_food": {
-    "fruits" : "https://groceries.aldi.co.uk/en-GB/fresh-food/fruit?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-fruit&clickedon=fresh-fruit",
-    "vegetables": "https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-vegetables?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-vegetables&clickedon=fresh-vegetables",
-    "fresh_food_vegan": "https://groceries.aldi.co.uk/en-GB/fresh-food?&fn1=Lifestyle&fv1=Vegetarian%7CVegan",
-    "milk_butter_eggs": "https://groceries.aldi.co.uk/en-GB/chilled-food?&fn1=CategoryLevel2_Facet&fv1=L2DA",
-    "cheese": "https://groceries.aldi.co.uk/en-GB/chilled-food/cheese?origin=dropdown&c1=groceries&c2=chilled-food&c3=cheese&clickedon=cheese",
-    "yogurts": "https://groceries.aldi.co.uk/en-GB/chilled-food/yogurts?origin=dropdown&c1=groceries&c2=chilled-food&c3=yogurts&clickedon=yogurts",
-    "meat_poultry": "https://groceries.aldi.co.uk/en-GB/fresh-food/meat-poultry?origin=dropdown&c1=groceries&c2=fresh-food&c3=meat-poultry&clickedon=meat-poultry",
-    "seafood": "https://groceries.aldi.co.uk/en-GB/fresh-food/fresh-fish-seafood?origin=dropdown&c1=groceries&c2=fresh-food&c3=fresh-fish-seafood&clickedon=fresh-fish-seafood",
-    "party_food_salads_dips": "https://groceries.aldi.co.uk/en-GB/chilled-food?&fn1=CategoryLevel2_Facet&fv1=L2DJ",
-    "chilled_desserts": "https://groceries.aldi.co.uk/en-GB/chilled-food?&fn1=CategoryLevel2_Facet&fv1=L2DD",
-    "pizza_pasta_gbread": "https://groceries.aldi.co.uk/en-GB/chilled-food/pizza-pasta-garlic-bread?origin=dropdown&c1=groceries&c2=chilled-food&c3=pizza-pasta-garlic-bread&clickedon=pizza-pasta-garlic-bread",
-    "chilled_meats": "https://groceries.aldi.co.uk/en-GB/chilled-food/chilled-meats?origin=dropdown&c1=groceries&c2=chilled-food&c3=chilled-meats&clickedon=chilled-meats",
+    "fruits" : "https://www.aldi.co.uk/products/fresh-food/fruit/k/1588161416978050001",
+    "vegetables": "https://www.aldi.co.uk/products/fresh-food/vegetables/k/1588161416978050002",
+    "fresh_food_vegan": "https://www.aldi.co.uk/products/vegetarian-plant-based/chilled-vegetarian/k/1588161421881163002",
+    "fresh_food_vegan": "https://www.aldi.co.uk/products/vegetarian-plant-based/chilled-vegan/k/1588161421881163004",
+    "milk_butter_eggs": "https://www.aldi.co.uk/products/chilled-food/milk/k/1588161416978051001",
+    "milk_butter_eggs": "https://www.aldi.co.uk/products/chilled-food/eggs/k/1588161416978051003",
+    "milk_butter_eggs": "https://www.aldi.co.uk/results?q=Butter",
+    "cheese": "https://www.aldi.co.uk/products/chilled-food/cheese/k/1588161416978051004",
+    "yogurts": "https://www.aldi.co.uk/results?q=Yogurt",
+    "meat_poultry": "https://www.aldi.co.uk/results?q=Meat",
+
+    "seafood": "https://www.aldi.co.uk/products/fresh-food/fish/k/1588161416978050011",
+    "party_food_salads_dips": "https://www.aldi.co.uk/products/chilled-food/party-food-pies-salads/k/1588161416978051012",
+    "chilled_desserts": "https://www.aldi.co.uk/products/chilled-food/chilled-desserts/k/1588161416978051006",
+    "pizza_pasta_gbread": "https://www.aldi.co.uk/products/frozen-food/pizzas-garlic-bread/k/1588161416978056006",
+    "chilled_meats": "https://www.aldi.co.uk/products/chilled-food/chilled-meats/k/1588161416978051011",
     },
 
     "bakery": {
-    "bakery" : "https://groceries.aldi.co.uk/en-GB/bakery?origin=dropdown&c1=groceries&c2=bakery&clickedon=bakery",
+    "bakery" : "https://www.aldi.co.uk/products/bakery/k/1588161416978049",
     },
 
     "frozen":{ 
-    "frozen_vegetarian": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GF",
-    "frozen_vegtables": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GE",
-    "chips_related": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GA",
-    "frozen_meat_poultry": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GC",
-    "frozen_seafood": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GB",
-    "frozen_pizza": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GI",
-    "frozen_desserts_icecream": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GG",
-    "frozen_fruit": "https://groceries.aldi.co.uk/en-GB/frozen?&fn1=CategoryLevel2_Facet&fv1=L2GH",
+    "frozen_vegetarian": "https://www.aldi.co.uk/products/vegetarian-plant-based/frozen-vegetarian/k/1588161421881163003",
+    "frozen_vegtables": "https://www.aldi.co.uk/products/frozen-food/vegetables-sides/k/1588161416978056004",
+    "chips_related": "https://www.aldi.co.uk/products/frozen-food/chips-potato/k/1588161416978056003",
+    "frozen_meat_poultry": "https://www.aldi.co.uk/products/frozen-food/meat-poultry/k/1588161416978056001",
+    "frozen_seafood": "https://www.aldi.co.uk/products/frozen-food/fish-seafood/k/1588161416978056002",
+    "frozen_pizza": "https://www.aldi.co.uk/products/frozen-food/pizzas-garlic-bread/k/1588161416978056006",
+    "frozen_desserts_icecream": "https://www.aldi.co.uk/products/frozen-food/ice-cream-desserts/k/1588161416978056009",
+    "frozen_fruit": "https://www.aldi.co.uk/products/frozen-food/fruit-smoothies/k/1588161416978056008",
     },
 
     "cupboard": {
-    "treats": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EC",
-    "snacks": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2ED",
-    "seed_nuts": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EE",
-    "cereals": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EB",
-    "canned": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EG",
-    "carbs": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EH",
-    "sauce": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EF",
-    "spread_jam": "https://groceries.aldi.co.uk/en-GB/food-cupboard?&fn1=CategoryLevel2_Facet&fv1=L2EJ",
+    "treats": "https://www.aldi.co.uk/products/food-cupboard/chocolate-sweets/k/1588161416978053003",
+    "snacks": "https://www.aldi.co.uk/products/food-cupboard/crisps-snacks/k/1588161416978053004",
+    "seed_nuts": "https://www.aldi.co.uk/products/food-cupboard/seeds-nuts-dried-fruits/k/1588161416978053009",
+    "cereals": "https://www.aldi.co.uk/results?q=Cereal",
+    "canned": "https://www.aldi.co.uk/results?q=Canned",
+    "carbs": "https://www.aldi.co.uk/results?q=Rice",
+    "carbs": "https://www.aldi.co.uk/results?q=Pasta",
+    "sauce": "https://www.aldi.co.uk/results?q=Sauce",
+    "spread_jam": "https://www.aldi.co.uk/products/food-cupboard/jams-spreads-syrups/k/1588161416978053006",
     },
     "drinks": {
-    "soft_drink": "https://groceries.aldi.co.uk/en-GB/drinks/soft-drinks-juices?origin=dropdown&c1=groceries&c2=drinks&c3=soft-drinks-juices&clickedon=soft-drinks-juices",
-    "water": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FG",
-    "milk": "https://groceries.aldi.co.uk/en-GB/chilled-food/milk-dairy-eggs?&fn1=CategoryLevel3_Facet&fv1=L3DAF",
-    "tea": "https://groceries.aldi.co.uk/en-GB/drinks/tea?origin=dropdown&c1=groceries&c2=drinks&c3=tea&clickedon=tea",
-    "coffee": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FB",
-    "beer_cider": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FA",
-    "spirit": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FE",
-    "wine": "https://groceries.aldi.co.uk/en-GB/drinks?&fn1=CategoryLevel2_Facet&fv1=L2FF"
+    "soft_drink": "https://www.aldi.co.uk/products/drinks/soft-drinks-juices/k/1588161416978054004",
+    "water": "https://www.aldi.co.uk/results?q=Water",
+    "milk": "https://www.aldi.co.uk/results?q=Milk",
+    "tea": "https://www.aldi.co.uk/results?q=Tea",
+    "coffee": "https://www.aldi.co.uk/products/drinks/coffee/k/1588161416978054002",
+    "beer_cider": "https://www.aldi.co.uk/products/alcohol/beers-ciders/k/1588161416978055001",
+    "spirit": "https://www.aldi.co.uk/products/alcohol/spirits-liqueurs/k/1588161416978055002",
+    "wine": "https://www.aldi.co.uk/results?q=Wine"
     }
 }
 
-product_box_CSS = '#vueSearchResults > div > div'
-product_name_CSS = 'div[class*="product-tile-text"][class*="text-center"][class*="px-3"][class*="mb-3"] > a'
-product_price_CSS = 'div[class*="d-flex"][class*="flex-column"][class*="flex-grow-1"][class*="justify-content-end"][class*="px-3"] div[class*="product-tile-price"][class*="text-center"] > div > span > span'
-product_price_per_unit_CSS = 'div[class*="d-flex"][class*="flex-column"][class*="flex-grow-1"][class*="justify-content-end"][class*="px-3"] div[class*="product-tile-price"][class*="text-center"] > div > div > p > small > span'
-next_button_CSS = 'ul > li.page-item.next.ml-2'
+product_box_CSS = 'div.product-listing-viewer__product-list-content [id^="product-tile-"]'
+product_name_CSS = '[id^="product-tile-"] > div > a > div.product-tile__name > p'
+product_price_CSS = '[id^="product-tile-"] > div > a > div.base-price.product-tile__price > div > span.base-price__regular > span'
+product_price_per_unit_CSS = '[id^="product-tile-"] > div > a > div.base-price.product-tile__price > div > span.base-price__comparison-price'
+next_button_CSS = 'a.base-pagination__arrow[aria-label="Next"]'
 
 # List to hold all product data
 all_products = []
@@ -126,33 +131,36 @@ for main_category, subcategories in category_urls.items():
                     price_per_unit = price_per_unit_elements[0].text if price_per_unit_elements else 'null'
 
                     all_products.append({
-                        "Name": product_name, 
-                        "Price": price, 
+                        "Name": product_name,
+                        "Price": price,
                         "Price per Unit": price_per_unit,
                         "Category": main_category,
                         "Subcategory": subcategory,
                         "Date": current_date
                     })
-                
+
                 except Exception as e:
                     print(f"Skipping product due to error: {e}")
                     continue  # Move to next product safely
 
             # Handle pagination safely
             try:
-                next_button = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, next_button_CSS))
-                )
-                if "disabled" in next_button.get_attribute("class"):
-                    print(f"Last page reached for category: {main_category} - {subcategory}")
+                # Check if the disabled 'Next' button span is present
+                driver.find_element(By.CSS_SELECTOR, 'span.base-pagination__arrow[aria-label="Next"]')
+                print(f"Last page reached for category: {main_category} - {subcategory}")
+                break  # Exit while loop if next page is disabled
+
+            except:
+                try:
+                    # Click active 'Next' pagination link
+                    next_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.base-pagination__arrow[aria-label="Next"]'))
+                    )
+                    next_button.click()
+                    time.sleep(5)  # Wait for the new products to load
+                except Exception as e:
+                    print(f"Error while clicking next button: {e}")
                     break
-
-                next_button.click()
-                time.sleep(5)  # Allow time for new products to load
-
-            except Exception as e:
-                print(f"Error while clicking next button: {e}")
-                break
 
 # Create DataFrame from the list
 df_products = pd.DataFrame(all_products)
