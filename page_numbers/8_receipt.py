@@ -10,7 +10,7 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 import hashlib
-import openai as OpenAI
+from openai import OpenAI
 
 # Check if df is stored in session state
 if "df" in st.session_state:
