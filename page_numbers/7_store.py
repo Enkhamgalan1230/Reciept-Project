@@ -48,6 +48,15 @@ with container1:
 
     st.markdown("---")
 
+    max_distance_km = st.number_input(
+            "📏 Enter maximum distance (in km) to search for nearby stores:",
+            min_value=1.0,
+            max_value=50.0,
+            value=5.0,
+            step=0.5
+            placeholder='Ex : 5.0'
+        )
+
     # ========== OPTION 1: Current Geolocation ==========
     if st.session_state["location_mode"] == "📍 Use my current location":
         if st.session_state.get("reset_checkbox"):
@@ -95,14 +104,6 @@ with container1:
             else:
                 st.error("❌ Couldn't find coordinates for this postcode.")
     
-    max_distance_km = st.number_input(
-            "📏 Enter maximum distance (in km) to search for nearby stores:",
-            min_value=1.0,
-            max_value=50.0,
-            value=None,
-            step=0.5
-            placeholder='Ex : 5.0'
-        )
 
     # ========== Store Search Logic ==========
     def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
