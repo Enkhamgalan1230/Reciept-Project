@@ -21,7 +21,7 @@ else:
 api_key = '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'
 
 client = OpenAI(
-    api_key=st.secrets["openai_api_key"],  # REQUIRED by OpenAI SDK
+    api_key=api_key,  # REQUIRED by OpenAI SDK
     base_url="https://openrouter.ai/api/v1",  # REQUIRED by OpenRouter
     default_headers={  # REQUIRED by OpenRouter (authorization header)
         "Authorization": f"Bearer {api_key}"
