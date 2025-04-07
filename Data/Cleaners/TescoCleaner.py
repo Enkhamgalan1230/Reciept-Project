@@ -54,7 +54,9 @@ df = df.drop(columns=['Date'])
         Remove the '£' sign and convert to float
 
 '''
-df['Price'] = df['Price'].replace('£', '', regex=True).astype(float)
+# Cleaning the Price: remove £ and commas, then convert to float
+df['Price'] = df['Price'].replace('£', '', regex=True).replace(',', '', regex=True).astype(float)
+
 
 
 # Apply the cleaning function to the 'Nectar price' column

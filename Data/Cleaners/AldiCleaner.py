@@ -51,60 +51,64 @@ df['Price'] = df['Price'].replace('£', '', regex=True).astype(float)
 
 def standardize_price_per_unit(price_per_unit):
     """
-    Converts price per unit to standardized float value and unit ('kg', 'litre', 'each').
-    Handles specific formats like '£5 per kg', '£5 per 100g', etc.
+    Converts price per unit to a standardised float and one of the units: 'kg', 'litre', or 'each'.
+    Handles strings like '£0.75/100G', '70p/75CL', '(£0.32/75CL)', '£5 each', etc.
     """
-    if isinstance(price_per_unit, str):  # Ensure the value is a string
-        price_per_unit = price_per_unit.strip()  # Remove leading/trailing spaces
+    if isinstance(price_per_unit, str):
+        # Remove wrapping parentheses and extra whitespace
+        price_per_unit = price_per_unit.strip("()").strip()
         
-        if 'per' in price_per_unit:  # Handle 'per' formats
-            
-            # Split the string into price and unit
-            price_value, unit = price_per_unit.split(' per ')
-            price_value = price_value.strip()  # Clean whitespace
-            unit = unit.strip()  # Clean whitespace
-                
-            if 'p' in price_value:
-                price_value = float(price_value.replace('p', '').strip()) / 100  # Convert pence to pound
-            elif '£' in price_value:
-                price_value = float(price_value.replace('£', '').strip())  # Convert price to float and remove '£'
-            
-            # Handle specific unit conversions
-            if '100g' in unit:  # Convert 100g to kg
-                price_value *= 10  # 100g is 0.1kg
+        if '/' in price_per_unit:
+            try:
+                price_value, unit = price_per_unit.split('/')
+                price_value = price_value.replace('£', '').replace('p', '').strip()
+                unit = unit.strip().upper()
+                price_value = float(price_value)
+            except:
+                return np.nan, 'other'
+
+            # Convert to standard unit
+            if unit in ['100G', '100GNE']:
+                price_value *= 10
                 unit = 'kg'
-            elif '10g' in unit:
+            elif unit == '10G':
                 price_value *= 100
                 unit = 'kg'
-            elif 'kg' in unit:  # No conversion needed
+            elif unit in ['1KG', '1KGE', '1KNE']:
                 unit = 'kg'
-            elif '100ml' in unit:  # Convert 100ml to litre
-                price_value *= 10  # 100ml is 0.1 litre
+            elif unit == '100ML':
+                price_value *= 10
                 unit = 'litre'
-            elif '75cl' in unit:
-                price_value *= (4 / 3) 
+            elif unit == '75CL':
+                price_value *= (4 / 3)
                 unit = 'litre'
-            elif 'litre' in unit:  # No conversion needed
+            elif unit == '70CL':
+                price_value *= (10 / 7)
                 unit = 'litre'
-            elif 'each' in unit:  # Handle 'each'
+            elif unit in ['1L', 'L']:
+                unit = 'litre'
+            elif unit in ['1EA', '1SHT', '1PAC']:
                 unit = 'each'
             else:
-                unit ='other'
-                    
-            return price_value, unit
+                unit = 'other'
             
-        elif 'each' in price_per_unit:  # Handle '£5 each' format
+            return price_value, unit
+        
+        elif 'each' in price_per_unit.lower():
             try:
-                price_value = float(price_per_unit.replace('£', '').replace('each', '').strip())
-                return price_value, 'each'
-            except ValueError:
+                price_value = price_per_unit.lower().replace('£', '').replace('each', '').replace('(', '').replace(')', '').strip()
+                return float(price_value), 'each'
+            except:
                 return np.nan, 'other'
     
-    return np.nan, np.nan  # Return NaN for invalid or missing values
+    return np.nan, np.nan
+
 # Apply the function to 'Price per Unit' column
 df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(
     lambda x: pd.Series(standardize_price_per_unit(x))
 )
+
+print(df['Unit'].value_counts())
 
 # Filter out invalid unit values (anything not 'kg', 'litre', or 'each')
 df = df[df['Unit'].isin(['kg', 'litre', 'each'])]
@@ -123,13 +127,11 @@ df.drop(columns=['Unit', 'Price per Unit'], inplace=True)
 # Replace empty strings with NaN (NULL equivalent in PostgreSQL)
 df.replace("", pd.NA, inplace=True)
 
-
-'''
-    Saving the clean data.
-'''
+#Saving
 desktop_path = os.path.expanduser(r"C:\Users\Entwan\Desktop")
 current_date = datetime.now().strftime("%Y-%m-%d")
 csv_file_path = os.path.join(desktop_path, f"Aldi_Clean_{current_date}.csv")
 df.to_csv(csv_file_path, index=False, encoding='utf-8')
 
 print(f"Data saved to {csv_file_path}")
+
