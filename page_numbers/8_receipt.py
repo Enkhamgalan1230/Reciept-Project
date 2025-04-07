@@ -18,13 +18,11 @@ if "df" in st.session_state:
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
-api_key = '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'
-
 client = OpenAI(
-    api_key= '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',  # REQUIRED by OpenAI SDK
+    api_key= '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',  # REQUIRED by OpenAI SDK
     base_url="https://openrouter.ai/api/v1",  # REQUIRED by OpenRouter
     default_headers={  # REQUIRED by OpenRouter (authorization header)
-        "Authorization": f"Bearer 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"
+        "Authorization": f"Bearer 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"
     }
 )
 
