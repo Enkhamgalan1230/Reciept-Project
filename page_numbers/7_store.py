@@ -52,8 +52,8 @@ with container1:
             "📏 Enter maximum distance (in km) to search for nearby stores:",
             min_value=1.0,
             max_value=50.0,
-            value=5.0,
-            step=0.5
+            value=None,
+            step=0.5,
             placeholder='Ex : 5.0'
         )
 
