@@ -19,8 +19,10 @@ else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
 client = OpenAI(
-    api_key=st.secrets["openai_api_key"],
-    base_url="https://openrouter.ai/api/v1"
+    base_url="https://openrouter.ai/api/v1",
+    default_headers={
+        "Authorization": f"Bearer {st.secrets['openai_api_key']}"
+    }
 )
 
 def ask_llm(prompt):
