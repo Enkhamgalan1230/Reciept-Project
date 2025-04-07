@@ -19,7 +19,7 @@ else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
 # GitHub Marketplace LLM proxy
-openai.api_base = "https://openai-api-proxy.vercel.app/v1"
+openai.api_base = "https://openrouter.ai/api/v1"
 openai.api_key = st.secrets["openai_api_key"]
 
 
