@@ -25,7 +25,7 @@ openai.api_key = st.secrets["openai_api_key"]
 
 def ask_llm(prompt):
     response = openai.ChatCompletion.create(
-        model="gpt-4o",  # or try "mistral" or "llama-3.2"
+        model="openchat/openchat-3.5-0106", 
         messages=[
             {"role": "system", "content": "You are a helpful shopping assistant."},
             {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only."}
