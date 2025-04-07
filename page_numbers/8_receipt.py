@@ -19,15 +19,16 @@ else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
 client = OpenAI(
+    api_key=st.secrets["openai_api_key"],  # ✅ Required by SDK
     base_url="https://openrouter.ai/api/v1",
-    default_headers={
+    default_headers={                      # ✅ Required by OpenRouter
         "Authorization": f"Bearer {st.secrets['openai_api_key']}"
     }
 )
 
 def ask_llm(prompt):
     response = client.chat.completions.create(
-        model="openchat/openchat-3.5-0106",  # or another OpenRouter model
+        model="openchat/openchat-3.5-0106",
         messages=[
             {"role": "system", "content": "You are a helpful shopping assistant."},
             {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only."}
