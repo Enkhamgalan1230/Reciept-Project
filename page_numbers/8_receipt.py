@@ -234,8 +234,8 @@ with container3:
                 item for item in st.session_state.voice_products if item not in selected_to_delete
             ]
 
-            st.toast("✅ Selected primary item(s) deleted.")
             st.rerun()
+            st.toast("✅ Selected primary item(s) deleted.")
     else:
         st.info("Your primary list is currently empty.")
 
@@ -259,8 +259,8 @@ with container3:
                 item for item in st.session_state.secondary_list if item not in selected_to_delete
             ]
 
-            st.toast("✅ Selected secondary item(s) deleted.")
             st.rerun()
+            st.toast("✅ Selected secondary item(s) deleted.")
     else:
         st.info("No secondary items added yet.")
 
