@@ -215,6 +215,10 @@ secondary_products = st.session_state.secondary_list
 with container3:
     st.subheader("🧾 **Combined Grocery List**")
 
+    if st.session_state.get("show_delete_toast"):
+        st.toast("✅ Selected primary item(s) deleted.")
+        del st.session_state["show_delete_toast"]
+
     # Essential + Voice Products
     if all_products:
         st.caption("✅ Tick items to delete from your primary list")
@@ -233,9 +237,8 @@ with container3:
             st.session_state.voice_products = [
                 item for item in st.session_state.voice_products if item not in selected_to_delete
             ]
-
+            st.session_state["show_delete_toast"] = True
             st.rerun()
-            st.toast("✅ Selected primary item(s) deleted.")
     else:
         st.info("Your primary list is currently empty.")
 
