@@ -94,6 +94,14 @@ with container1:
                 st.success(f"✅ Location found for postcode: {postcode}")
             else:
                 st.error("❌ Couldn't find coordinates for this postcode.")
+    
+    max_distance_km = st.number_input(
+            "📏 Enter maximum distance (in km) to search for nearby stores:",
+            min_value=1.0,
+            max_value=50.0,
+            value=5.0,
+            step=0.5
+        )
 
     # ========== Store Search Logic ==========
     def get_store_locations(store_name, user_lat, user_lon, max_distance_km):
@@ -134,13 +142,7 @@ with container1:
 
     # ========== Run Search if Location Available ==========
     if user_lat and user_lon:
-        max_distance_km = st.number_input(
-            "📏 Enter maximum distance (in km) to search for nearby stores:",
-            min_value=1.0,
-            max_value=50.0,
-            value=5.0,
-            step=0.5
-        )
+
         store_names = ["Tesco", "Sainsbury's", "Waitrose", "Asda", "Aldi"]
         all_stores = []
 
