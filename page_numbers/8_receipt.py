@@ -17,6 +17,22 @@ if "df" in st.session_state:
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
+import openai
+
+# Use the GitHub Marketplace base URL and your token
+openai.api_base = "https://openai-api-proxy.vercel.app/v1"
+openai.api_key = st.secrets["openai_api_key"]
+
+def ask_llm(prompt):
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are a helpful shopping assistant."},
+            {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only. If user asks the product to add to list forward that product straight away back to user."}
+        ]
+    )
+    return response.choices[0].message.content.strip()
+
 
 # ========== SESSION STATE SETUP ==========
 for key in ["essential_list", "voice_products", "secondary_list"]:
@@ -28,6 +44,9 @@ if "audio_processed" not in st.session_state:
 
 if "transcribed_text" not in st.session_state:
     st.session_state.transcribed_text = ""
+
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
 # ========== LOAD MODELS AND DATA ==========
 @st.cache_resource
@@ -121,6 +140,7 @@ st.markdown("---")
 container1 = st.container(border=True)
 container2 = st.container(border=True)
 container3 = st.container(border=True)
+container4 = st.container(border=True)
 
 with container1:
     st.subheader("✏️ **Write your grocery list**")
@@ -213,12 +233,41 @@ with container2:
 if audio is None:
     st.session_state.audio_processed = False
 
+with container3:
+    st.subheader("🧠 AI Shopping Assistant")
+
+    # Chat display
+    for msg in st.session_state.chat_history:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    # Input section
+    if prompt := st.chat_input("What would you like to add to your shopping list?"):
+        # Show user message
+        st.chat_message("user").markdown(prompt)
+        st.session_state.chat_history.append({"role": "user", "content": prompt})
+
+        # Get AI response
+        response = ask_llm(prompt)
+        st.session_state.chat_history.append({"role": "assistant", "content": response})
+
+        # Show assistant message
+        with st.chat_message("assistant"):
+            st.markdown(response)
+
+            # Try parsing items from response
+            items = [item.strip() for item in response.split(",")]
+            if len(items) > 1:
+                if st.button("✅ Confirm and Add to List"):
+                    st.session_state.essential_list.extend(items)
+                    st.success("Items added to your essential shopping list.")
+
 # ========== COMBINED LIST ==========
 all_products = st.session_state.essential_list + st.session_state.voice_products
 secondary_products = st.session_state.secondary_list
 
 
-with container3:
+with container4:
     st.subheader("🧾 **Combined Grocery List**")
 
     if st.session_state.get("show_delete_toast"):

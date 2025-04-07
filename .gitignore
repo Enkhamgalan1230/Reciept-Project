@@ -1,0 +1,3 @@
+git add .gitignore
+git rm --cached .streamlit/secrets.toml
+git commit -m "Remove secrets from repo and update .gitignore"
