@@ -10,6 +10,7 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 import hashlib
+import openai as OpenAI
 
 # Check if df is stored in session state
 if "df" in st.session_state:
@@ -17,18 +18,17 @@ if "df" in st.session_state:
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
-import openai
-
-# Use the GitHub Marketplace base URL and your token
-openai.api_base = "https://openai-api-proxy.vercel.app/v1"
-openai.api_key = st.secrets["openai_api_key"]
+client = OpenAI(
+    base_url="https://openai-api-proxy.vercel.app/v1",
+    api_key=st.secrets["openai_api_key"]
+)
 
 def ask_llm(prompt):
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a helpful shopping assistant."},
-            {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only. If user asks the product to add to list forward that product straight away back to user."}
+            {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only."}
         ]
     )
     return response.choices[0].message.content.strip()
