@@ -218,6 +218,10 @@ with container3:
     if st.session_state.get("show_delete_toast"):
         st.toast("✅ Selected primary item(s) deleted.")
         del st.session_state["show_delete_toast"]
+    
+    if st.session_state.get("show_delete_secondary_toast"):
+        st.toast("✅ Selected secondary item(s) deleted.")
+        del st.session_state["show_delete_secondary_toast"]
 
     # Essential + Voice Products
     if all_products:
@@ -261,9 +265,9 @@ with container3:
             st.session_state.secondary_list = [
                 item for item in st.session_state.secondary_list if item not in selected_to_delete
             ]
-
+            st.session_state["show_delete_secondary_toast"] = True
             st.rerun()
-            st.toast("✅ Selected secondary item(s) deleted.")
+            
     else:
         st.info("No secondary items added yet.")
 
