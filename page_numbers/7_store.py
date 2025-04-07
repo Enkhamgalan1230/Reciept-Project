@@ -46,7 +46,7 @@ with container1:
         )
     user_lat = user_lon = None
 
-    st.markdown("---")
+    #st.markdown("---")
 
     max_distance_km = st.number_input(
             "📏 Enter maximum distance (in km) to search for nearby stores:",
