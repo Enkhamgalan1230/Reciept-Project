@@ -33,9 +33,6 @@ def ask_llm(prompt):
             {"role": "system", "content": "You are a helpful shopping assistant."},
             {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only."}
         ],
-        headers={
-            "HTTP-Referer": "https://github.com/Enkhamgalan1230/Reciept-Project"
-        }
         )
     return response.choices[0].message.content.strip()
 
