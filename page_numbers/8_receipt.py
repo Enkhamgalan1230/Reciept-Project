@@ -186,7 +186,6 @@ with container2:
                 audio_data = recognizer.record(source)
                 try:
                     text = recognizer.recognize_google(audio_data)
-                    speach = text
                     text = clean_transcript(text)
                     text = fix_multiword_adjectives(text)
 
@@ -208,7 +207,7 @@ with container2:
 
     # Always display latest transcript just under mic
     if latest_transcript:
-        transcript_placeholder.success(f"🗣️ You said: {speach}")
+        transcript_placeholder.success(f"🗣️ You said: {latest_transcript}")
 
 # Optional: Reset flags if no audio
 if audio is None:
