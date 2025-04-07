@@ -10,7 +10,7 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 import hashlib
-import openai
+from openai import OpenAI
 
 # Check if df is stored in session state
 if "df" in st.session_state:
@@ -18,20 +18,20 @@ if "df" in st.session_state:
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
-# GitHub Marketplace LLM proxy
-openai.api_base = "https://openrouter.ai/api/v1"
-openai.api_key = st.secrets["openai_api_key"]
-
+client = OpenAI(
+    api_key=st.secrets["openai_api_key"],
+    base_url="https://openrouter.ai/api/v1"
+)
 
 def ask_llm(prompt):
-    response = openai.ChatCompletion.create(
-        model="openchat/openchat-3.5-0106", 
+    response = client.chat.completions.create(
+        model="openchat/openchat-3.5-0106",  # or another OpenRouter model
         messages=[
             {"role": "system", "content": "You are a helpful shopping assistant."},
             {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only."}
         ]
     )
-    return response.choices[0].message["content"].strip()
+    return response.choices[0].message.content.strip()
 
 
 # ========== SESSION STATE SETUP ==========
