@@ -34,6 +34,27 @@ def load_adjectives():
     hyphens = set(df["Food_Adjective"].str.lower().tolist())
     return hyphens, {adj.replace("-", " "): adj for adj in hyphens}
 
+def clean_transcript(text):
+    filler_phrases = [
+        "add to my shopping list",
+        "add this to my shopping list",
+        "to my shopping list",
+        "add to the list",
+        "add this",
+        "can you add",
+        "please add",
+        "i want",
+        "i would like",
+        "put",
+        "include"
+    ]
+
+    text = text.lower()
+    for phrase in filler_phrases:
+        if phrase in text:
+            text = text.replace(phrase, "")
+    return text.strip()
+
 nlp = load_nlp_model()
 hyphenated_adjs, phrase_map = load_adjectives()
 
@@ -159,6 +180,7 @@ with container2:
                 audio_data = recognizer.record(source)
                 try:
                     text = recognizer.recognize_google(audio_data)
+                    text = clean_transcript(text)
                     text = fix_multiword_adjectives(text)
 
                     st.session_state.transcribed_text = text
