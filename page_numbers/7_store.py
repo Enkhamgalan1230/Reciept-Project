@@ -134,7 +134,13 @@ with container1:
 
     # ========== Run Search if Location Available ==========
     if user_lat and user_lon:
-        max_distance_km = 5
+        max_distance_km = st.number_input(
+            "📏 Enter maximum distance (in km) to search for nearby stores:",
+            min_value=1.0,
+            max_value=50.0,
+            value=5.0,
+            step=0.5
+        )
         store_names = ["Tesco", "Sainsbury's", "Waitrose", "Asda", "Aldi"]
         all_stores = []
 
