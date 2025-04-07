@@ -11,6 +11,12 @@ import subprocess
 import importlib
 import hashlib
 
+# Check if df is stored in session state
+if "df" in st.session_state:
+    df = st.session_state.df  # Retrieve stored data
+else:
+    st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
+
 
 # ========== SESSION STATE SETUP ==========
 for key in ["essential_list", "voice_products", "secondary_list"]:
@@ -180,6 +186,7 @@ with container2:
                 audio_data = recognizer.record(source)
                 try:
                     text = recognizer.recognize_google(audio_data)
+                    speach = text
                     text = clean_transcript(text)
                     text = fix_multiword_adjectives(text)
 
@@ -201,7 +208,7 @@ with container2:
 
     # Always display latest transcript just under mic
     if latest_transcript:
-        transcript_placeholder.success(f"🗣️ You said: {latest_transcript}")
+        transcript_placeholder.success(f"🗣️ You said: {speach}")
 
 # Optional: Reset flags if no audio
 if audio is None:
