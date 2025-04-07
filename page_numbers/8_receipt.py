@@ -10,7 +10,8 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 import hashlib
-import openai
+from openai import OpenAI
+
 # Check if df is stored in session state
 if "df" in st.session_state:
     df = st.session_state.df  # Retrieve stored data
@@ -18,21 +19,24 @@ else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
 # 🔐 Your OpenRouter key
-openai.api_key = "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"
-openai.api_base = "https://openrouter.ai/api/v1"
+client = OpenAI(
+    api_key="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",
+    base_url="https://openrouter.ai/api/v1"
+)
 
 def ask_llm(prompt):
-    response = openai.ChatCompletion.create(
+    completion = client.chat.completions.create(
         model="meta-llama/llama-4-maverick:free",
         messages=[
             {"role": "system", "content": "You are a helpful shopping assistant."},
             {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only."}
         ],
-        headers={
-            "HTTP-Referer": "https://github.com/Enkhamgalan1230/Reciept-Project"  # <- IMPORTANT
+        extra_headers={
+            "HTTP-Referer": "https://github.com/Enkhamgalan1230/Reciept-Project",
+            "X-Title": "ReceiptBot"
         }
     )
-    return response["choices"][0]["message"]["content"].strip()
+    return completion.choices[0].message.content.strip()
 
 # ========== SESSION STATE SETUP ==========
 for key in ["essential_list", "voice_products", "secondary_list"]:
