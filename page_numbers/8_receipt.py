@@ -17,17 +17,14 @@ if "df" in st.session_state:
     df = st.session_state.df  # Retrieve stored data
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
-
-
 def ask_llm_direct(prompt):
     headers = {
-        "Authorization": "Bearer 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",  # replace this!
-        "HTTP-Referer": "https://receipt-entwan.streamlit.app",  # your Streamlit app URL
-        "X-Title": "Receipt AI Shopping Assistant",
+        "Authorization": "Bearer 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",  # 🔐 your real OpenRouter key
+        "HTTP-Referer": "https://github.com/Enkhamgalan1230/Reciept-Project",  # ✅ required
         "Content-Type": "application/json"
     }
 
-    data = {
+    json_data = {
         "model": "meta-llama/llama-4-maverick:free",
         "messages": [
             {"role": "system", "content": "You are a helpful shopping assistant."},
@@ -35,12 +32,12 @@ def ask_llm_direct(prompt):
         ]
     }
 
-    res = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
-
-    if res.status_code == 200:
-        return res.json()["choices"][0]["message"]["content"]
+    response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=json_data)
+    
+    if response.status_code == 200:
+        return response.json()["choices"][0]["message"]["content"].strip()
     else:
-        return f"❌ Error {res.status_code}: {res.text}"
+        return f"❌ Error {response.status_code}: {response.text}"
 
 # ========== SESSION STATE SETUP ==========
 for key in ["essential_list", "voice_products", "secondary_list"]:
