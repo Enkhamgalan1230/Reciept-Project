@@ -132,6 +132,7 @@ for main_category, subcategories in category_urls.items():
 
             # Now scrape all products after all pages have been loaded
             product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
+            print(f"Found {len(product_boxes)} products for {subcategory}")
 
             for product in product_boxes:
                 product_name = product.find_element(By.CSS_SELECTOR, product_name_CSS).text

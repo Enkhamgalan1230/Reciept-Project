@@ -105,6 +105,7 @@ for main_category, subcategories in category_urls.items():
         while True:
             # Extract product elements on the current page
             product_boxes = driver.find_elements(By.CSS_SELECTOR, product_box_CSS)
+            print(f"Found {len(product_boxes)} products for {subcategory}")
 
             for product in product_boxes:
                 # Extract product name

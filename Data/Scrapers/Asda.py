@@ -195,7 +195,7 @@ strong at the end ensures that it captures the actual price within both regular 
 '''
 
 #product_box_CSS = '#main-content > main > div:nth-child(7) div[class*="co-product-list"] > ul > li'
-product_box_CSS = '#main-content > main div.co-product-list:not([data-type="ProductSpotlight"]):not([data-type="personalized-recommendation"]) > ul > li'
+product_box_CSS = '#main-content > main div.co-product-list:not([data-type="personalized-recommendation"]) ul.co-product-list__main-cntr > li'
 product_name_CSS = 'div[class*="co-product-list"] li div[class*="co-item__col2"] div[class*="co-item__title-container"] h3 a'
 product_price_CSS = 'div[class*="co-item__price-container"] strong.co-product__price'
 product_price_per_unit_CSS = 'div[class*="co-product-list"] li div[class*="co-item__col3"] div[class*="co-item__price-container"] :is(span p span, div p span)'
