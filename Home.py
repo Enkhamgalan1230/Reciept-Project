@@ -6,7 +6,6 @@ from supabase import create_client, Client
 import supabase
 import time
 import base64
-from streamlit_theme import st_theme
 
 # Set page title and icon
 st.set_page_config(
@@ -79,12 +78,11 @@ pg = st.navigation(
     }
 )
 
-# Call the plugin function
-theme = st_theme()
+# ✅ 2. Get the theme mode (light or dark)
+theme_mode = st.get_option("theme.base") or "dark"  # fallback to dark
 
-mode = theme["base"] if theme and "base" in theme else "dark"
-
-if mode == "light":
+# ✅ 3. Choose logo based on theme
+if theme_mode == "light":
     logo_path = "assets/logo_longer_black.png"
 else:
     logo_path = "assets/logo_longer_white.png"
