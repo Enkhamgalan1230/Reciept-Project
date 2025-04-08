@@ -9,16 +9,22 @@ import base64
 from streamlit_theme import st_theme
 
 
-# Detect theme
+# Call the plugin function
 theme = st_theme()
-mode = theme.get("base", "dark")
 
-# Select logo path based on theme
+# Safe fallback
+if theme and "base" in theme:
+    mode = theme["base"]
+else:
+    mode = "dark"  # fallback default
+
+# Now select the correct logo
 if mode == "light":
     logo_path = "assets/logo_longer_black.png"
 else:
     logo_path = "assets/logo_longer_white.png"
 
+    
 #This is the main file, not rlly home page.
 # Function to convert image to Base64
 def get_base64_image(image_path):
