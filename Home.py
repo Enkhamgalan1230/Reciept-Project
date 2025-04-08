@@ -9,6 +9,14 @@ import base64
 import streamlit.components.v1 as components
 
 
+# Set page title and icon
+st.set_page_config(
+    page_title="Receipt",  # Set the title in the navigation bar
+    page_icon="📃",  # Set a custom icon (optional)
+    layout="wide"  # Optionally, set layout to 'wide' or 'centered'
+)
+# Page Setup
+
 # Inject a hidden HTML tag that stores the theme mode (optional)
 st.markdown(
     """
@@ -25,14 +33,6 @@ st.markdown(
 
 # Delay slightly to let JS take effect
 time.sleep(0.1)
-
-# Set page title and icon
-st.set_page_config(
-    page_title="Receipt",  # Set the title in the navigation bar
-    page_icon="📃",  # Set a custom icon (optional)
-    layout="wide"  # Optionally, set layout to 'wide' or 'centered'
-)
-# Page Setup
 
 home_page = st.Page(
     page = "page_numbers/1_home.py",
