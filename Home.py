@@ -8,15 +8,26 @@ import time
 import base64
 from streamlit_theme import st_theme
 
+
+# Detect theme
+theme = st_theme()
+mode = theme.get("base", "dark")
+
+# Select logo path based on theme
+if mode == "light":
+    logo_path = "assets/logo_longer_black.png"
+else:
+    logo_path = "assets/logo_longer_white.png"
+
 #This is the main file, not rlly home page.
 # Function to convert image to Base64
 def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-logo = "assets/logo_longer_white.png"
 
-email_base64 = get_base64_image(logo)
+
+logo = get_base64_image(logo_path)
 # Set page title and icon
 st.set_page_config(
     page_title="Receipt",  # Set the title in the navigation bar
