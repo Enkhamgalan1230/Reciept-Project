@@ -6,7 +6,7 @@ from supabase import create_client, Client
 import supabase
 import time
 import base64
-from streamlit_theme import get_theme
+from streamlit_theme import st_theme
 
 #This is the main file, not rlly home page.
 # Function to convert image to Base64
