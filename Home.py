@@ -6,8 +6,7 @@ from supabase import create_client, Client
 import supabase
 import time
 import base64
-import streamlit.components.v1 as components
-
+from streamlit_theme import st_theme
 
 # Set page title and icon
 st.set_page_config(
@@ -16,23 +15,6 @@ st.set_page_config(
     layout="wide"  # Optionally, set layout to 'wide' or 'centered'
 )
 # Page Setup
-
-# Inject a hidden HTML tag that stores the theme mode (optional)
-st.markdown(
-    """
-    <script>
-        const themeDiv = document.createElement('div');
-        themeDiv.id = 'theme-detector';
-        themeDiv.style.display = 'none';
-        themeDiv.innerText = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        document.body.appendChild(themeDiv);
-    </script>
-    """,
-    unsafe_allow_html=True
-)
-
-# Delay slightly to let JS take effect
-time.sleep(0.1)
 
 home_page = st.Page(
     page = "page_numbers/1_home.py",
@@ -97,23 +79,17 @@ pg = st.navigation(
     }
 )
 
+# Choose correct logo based on theme
+theme = st_theme()
+mode = theme["base"] if theme and "base" in theme else "dark"
 
-# ✅ Custom logo that switches with theme
-st.markdown(
-    """
-    <style>
-    .dark-logo { display: none; }
-    @media (prefers-color-scheme: dark) {
-        .light-logo { display: none !important; }
-        .dark-logo { display: block !important; }
-    }
-    </style>
-    
-    <img src="assets/logo_longer_black.png" class="light-logo" style="width: 250px; margin-bottom: 1rem;" />
-    <img src="assets/logo_longer_white.png" class="dark-logo" style="width: 250px; margin-bottom: 1rem;" />
-    """,
-    unsafe_allow_html=True
-)
+if mode == "light":
+    logo_path = "assets/logo_longer_black.png"
+else:
+    logo_path = "assets/logo_longer_white.png"
+
+# ✅ No base64 needed here
+st.logo(image=logo_path, icon_image="assets/logo.png", size="large")
 
 pg.run()
 
