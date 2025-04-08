@@ -106,7 +106,7 @@ def get_base64_image(image_path):
 logo = get_base64_image(logo_path)
 
 
-st.logo(image=logo,icon_image="assets/logo.png", size= "large")
+st.logo(image=logo_path,icon_image="assets/logo.png", size= "large")
 
 pg.run()
 
