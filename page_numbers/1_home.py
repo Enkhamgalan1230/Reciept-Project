@@ -7,6 +7,7 @@ import supabase
 import time
 import base64
 
+
 st.title("Welcome to Receipt 👋", anchor=False)
 
 st.markdown("---")
@@ -42,13 +43,18 @@ def get_base64_image(image_path):
         return base64.b64encode(img_file.read()).decode()
 
 # Convert image to Base64
-email = "assets/email-white.png"  # Adjust this based on your file location
-github = "assets/github-white.png"
-phone = "assets/phone-white.png"
+email_white = "assets/email-white.png"  # Adjust this based on your file location
+github_white = "assets/github-white.png"
+phone_white = "assets/phone-white.png"
 
-email_base64 = get_base64_image(email)
-github_base64 = get_base64_image(github)
-phone_base64 = get_base64_image(phone)
+# Convert image to Base64
+email_black = "assets/email-black.png" 
+github_black = "assets/github-black.png"
+phone_black = "assets/phone-black.png"
+
+email_base64 = get_base64_image(email_white)
+github_base64 = get_base64_image(github_white)
+phone_base64 = get_base64_image(phone_white)
 
 
 

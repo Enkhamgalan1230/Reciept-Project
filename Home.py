@@ -6,6 +6,7 @@ from supabase import create_client, Client
 import supabase
 import time
 import base64
+from streamlit_theme import get_theme
 
 #This is the main file, not rlly home page.
 # Function to convert image to Base64
@@ -90,7 +91,7 @@ pg = st.navigation(
 
 
 
-st.logo("assets/logo_longer_white.png",icon_image="assets/logo.png", size= "large")
+st.logo(logo,icon_image="assets/logo.png", size= "large")
 
 pg.run()
 
