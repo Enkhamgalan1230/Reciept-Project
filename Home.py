@@ -82,31 +82,15 @@ pg = st.navigation(
 # Call the plugin function
 theme = st_theme()
 
-# Safe fallback
-if theme and "base" in theme:
-    mode = theme["base"]
-else:
-    mode = "dark"  # fallback default
+mode = theme["base"] if theme and "base" in theme else "dark"
 
-# Now select the correct logo
 if mode == "light":
     logo_path = "assets/logo_longer_black.png"
 else:
     logo_path = "assets/logo_longer_white.png"
 
-    
-#This is the main file, not rlly home page.
-# Function to convert image to Base64
-def get_base64_image(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
-
-
-
-logo = get_base64_image(logo_path)
-
-
-st.logo(image=logo_path,icon_image="assets/logo.png", size= "large")
+# ✅ No base64 needed here
+st.logo(image=logo_path, icon_image="assets/logo.png", size="large")
 
 pg.run()
 
