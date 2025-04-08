@@ -8,39 +8,12 @@ import time
 import base64
 from streamlit_theme import st_theme
 
-
-# Call the plugin function
-theme = st_theme()
-
-# Safe fallback
-if theme and "base" in theme:
-    mode = theme["base"]
-else:
-    mode = "dark"  # fallback default
-
-# Now select the correct logo
-if mode == "light":
-    logo_path = "assets/logo_longer_black.png"
-else:
-    logo_path = "assets/logo_longer_white.png"
-
-    
-#This is the main file, not rlly home page.
-# Function to convert image to Base64
-def get_base64_image(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
-
-
-
-logo = get_base64_image(logo_path)
 # Set page title and icon
 st.set_page_config(
     page_title="Receipt",  # Set the title in the navigation bar
     page_icon="📃",  # Set a custom icon (optional)
     layout="wide"  # Optionally, set layout to 'wide' or 'centered'
 )
-
 # Page Setup
 
 home_page = st.Page(
@@ -106,6 +79,31 @@ pg = st.navigation(
     }
 )
 
+# Call the plugin function
+theme = st_theme()
+
+# Safe fallback
+if theme and "base" in theme:
+    mode = theme["base"]
+else:
+    mode = "dark"  # fallback default
+
+# Now select the correct logo
+if mode == "light":
+    logo_path = "assets/logo_longer_black.png"
+else:
+    logo_path = "assets/logo_longer_white.png"
+
+    
+#This is the main file, not rlly home page.
+# Function to convert image to Base64
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
+
+
+logo = get_base64_image(logo_path)
 
 
 st.logo(logo,icon_image="assets/logo.png", size= "large")
