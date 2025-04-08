@@ -80,13 +80,8 @@ pg = st.navigation(
 )
 
 # Choose correct logo based on theme
-theme = st_theme()
-mode = theme["base"] if theme and "base" in theme else "dark"
 
-if mode == "light":
-    logo_path = "assets/logo_longer_black.png"
-else:
-    logo_path = "assets/logo_longer_white.png"
+logo_path = "assets/logo_longer_white.png"
 
 # ✅ No base64 needed here
 st.logo(image=logo_path, icon_image="assets/logo.png", size="large")
