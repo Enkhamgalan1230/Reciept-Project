@@ -32,7 +32,7 @@ comment = '''
 
 container1 = st.container(border=True)
 with container1:
-    st.markdown("### 🌍 Choose how you'd like to use your location")
+    st.markdown("### Choose how you'd like to use your location")
     st.caption("You can either use your real-time location or enter a UK postcode.")
 
     # ========== Location Mode Selection ==========
@@ -45,8 +45,8 @@ with container1:
         )
     user_lat = user_lon = None
 
-    st.markdown("---")
-    unit = st.radio("Choose distance unit:", ["km", "miles"], horizontal=True)
+    st.markdown("### Choose Distance unit.")
+    unit = st.radio(["km", "miles"], horizontal=True)
     #st.markdown("---")
 
     distance_input = st.number_input(
@@ -68,7 +68,7 @@ with container1:
             del st.session_state["reset_checkbox"]
             st.rerun()
 
-        st.checkbox("✅ Check my location", key="check_location")
+        st.checkbox("👈 Check my location", key="check_location")
 
         if st.session_state.get("check_location"):
             loc = get_geolocation()
