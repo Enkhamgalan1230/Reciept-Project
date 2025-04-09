@@ -46,7 +46,7 @@ with container1:
     user_lat = user_lon = None
 
     st.markdown("### Choose Distance unit.")
-    unit = st.radio(["km", "miles"], horizontal=True)
+    unit = st.radio("Choose unit",["km", "miles"], horizontal=True,label_visibility="collapsed")
     #st.markdown("---")
 
     distance_input = st.number_input(
