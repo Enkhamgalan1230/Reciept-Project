@@ -157,6 +157,7 @@ def get_audio_hash(audio_bytes):
 
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
+st.caption("💡 You can write, speak or generate your shopping list here!")
 st.markdown("---")
 
 # I like containers haha.
@@ -168,7 +169,7 @@ container4 = st.container(border=True)
 # ========== WRITING INPUT ==========
 with container1:
     st.subheader("✏️ **Write your grocery list**")
-    st.caption("💡 If you know what you are buying, write it up here...")
+    st.caption("📌 If you know what you are buying, write it up here...")
     budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
     with st.form("add_item_form"):
@@ -199,7 +200,7 @@ with container1:
 
 with container2:
     st.subheader("🗣️ **Speak your grocery list**")
-    st.caption("💡 Writing is boring IK, speak it here...")
+    st.caption("📌 Writing is boring IK, speak it here...")
 
     audio = audio_recorder(
         text="Click to Record 👉",
@@ -258,7 +259,7 @@ if audio is None:
 # ========== AI INPUT ==========
 with container3:
     st.subheader("🧠 AI Shopping Assistant")
-    st.caption("💡 If you don't know what to buy, explain it to AI...")
+    st.caption("📌 If you don't know what to buy, explain it to AI...")
     # Input field
     user_query = st.text_input("Ask me what to cook or what to buy:", key="chat_query")
 
