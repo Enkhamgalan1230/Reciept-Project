@@ -160,7 +160,10 @@ with container1:
 
         if all_stores:
             df = pd.DataFrame(all_stores)
-            st.success(f"🎯 Found {len(df)} store(s) within {max_distance_km}{unit}!")
+            if unit == "miles":
+                st.success(f"🎯 Found {len(df)} store(s) within {distance_input} miles!")
+            else:
+                st.success(f"🎯 Found {len(df)} store(s) within {max_distance_km}km!")
             st.dataframe(df)
 
             st.subheader("🗺️ Store Locations Map", anchor=False)
