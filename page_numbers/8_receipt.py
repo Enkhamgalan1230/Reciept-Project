@@ -82,21 +82,25 @@ hyphenated_adjs, phrase_map = load_adjectives()
 
 # ========== TEXT PROCESSING HELPERS ==========
 def extract_bullet_items(text):
-    # Find the section after "Suggested items:"
-    split_text = re.split(r"(?i)suggested items:?", text)  # case-insensitive
+    # Split after "Suggested items:" section (case-insensitive)
+    split_text = re.split(r"(?i)suggested items:?", text)
     if len(split_text) < 2:
-        return []  # No list section found
+        return []
 
-    list_block = split_text[1]
-    lines = list_block.strip().splitlines()
+    list_block = split_text[1].strip()
+    lines = list_block.splitlines()
 
     items = []
     for line in lines:
-        match = re.match(r"^\s*[-*•]\s*(.+)", line)
+        # Stop at the first line that does NOT look like a bullet point
+        if not re.match(r"^\s*[-*•]\s+", line):
+            break
+        match = re.match(r"^\s*[-*•]\s+(.+)", line)
         if match:
-            items.append(match.group(1).strip())
-        else:
-            break  # Stop at first non-bullet line
+            item = match.group(1).strip()
+            # Remove any Markdown bold/italics/formatting just in case
+            item = re.sub(r"[*_`]", "", item)
+            items.append(item)
 
     return items
 
