@@ -12,6 +12,7 @@ import importlib
 import hashlib
 import openai
 from groq import Groq
+import re
 
 # Check if df is stored in session state
 if "df" in st.session_state:
@@ -23,7 +24,13 @@ else:
 # Initialise client using Streamlit Secrets
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-
+system_prompt = (
+    "You are a friendly shopping assistant. "
+    "First, explain your understanding of the user's request and why certain foods are being recommended. "
+    "Then, present a bullet-point list of the suggested grocery items. "
+    "Wait for the user to confirm or ask for modifications before finalising. "
+    "If the user asks to change or remove items, do so and confirm the new list."
+)
 
 # ========== SESSION STATE SETUP ==========
 for key in ["essential_list", "voice_products", "secondary_list"]:
@@ -226,35 +233,44 @@ if audio is None:
 
 with container3:
     st.subheader("🧠 AI Shopping Assistant")
-    user_prompt = st.text_input("What do you want to buy or cook?")
+    user_input = st.text_input("What do you want to buy or cook?", key="chat_input")
 
-    if user_prompt:
+    if user_input:
+        st.session_state.chat_history.append({"role": "user", "content": user_input})
+
         with st.spinner("Thinking..."):
-            completion = client.chat.completions.create(
+            response = client.chat.completions.create(
                 model="meta-llama/llama-4-scout-17b-16e-instruct",
                 messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a helpful assistant for a grocery list application. "
-                            "Your task is to analyse the user's message and extract a detailed list of grocery food items. "
-                            "Return the items as a clear, bullet-point list without repeating or adding unnecessary explanations. "
-                            "If the user mentions meals, recipes, or events, infer the basic ingredients needed for preparation. "
-                            "Avoid kitchenware or general non-food products unless specifically mentioned. "
-                            "If quantities or specific brands are mentioned, include them."
-                        )
-                    },
-                    {"role": "user", "content": user_prompt}
+                    {"role": "system", "content": system_prompt},
+                    *st.session_state.chat_history  # Use chat history to maintain context
                 ],
-                temperature=0.3,
+                temperature=0.4,
                 max_tokens=512,
-                top_p=1,
                 stream=False
             )
-            response_text = completion.choices[0].message.content
-            st.markdown("**Suggested items:**")
-            st.write(response_text)
 
+            assistant_reply = response.choices[0].message.content
+            st.session_state.chat_history.append({"role": "assistant", "content": assistant_reply})
+            st.write(assistant_reply)
+
+    # Show full conversation
+    with st.expander("📝 Chat history", expanded=False):
+        for msg in st.session_state.chat_history:
+            st.markdown(f"**{msg['role'].capitalize()}**: {msg['content']}")
+
+    # Button to finalise and extract items
+    if st.button("✅ Finalise & Add to Grocery List"):
+        last_assistant_reply = st.session_state.chat_history[-1]["content"]
+        items = re.findall(r"[-*•]\s*(.+)", last_assistant_reply)
+        if items:
+            for item in items:
+                clean = item.strip().lower()
+                if clean not in st.session_state.essential_list:
+                    st.session_state.essential_list.append(clean)
+            st.success("✅ Items added to your grocery list.")
+        else:
+            st.warning("⚠️ No items detected to add.")
 # ========== COMBINED LIST ==========
 all_products = st.session_state.essential_list + st.session_state.voice_products
 secondary_products = st.session_state.secondary_list
