@@ -281,14 +281,17 @@ with container3:
 
         # Finalise button
         if st.button("✅ Add to Grocery List"):
-            # Extract bullet points
             extracted_items = re.findall(r"^\s*[-*•]\s*(.+)", st.session_state.last_bot_reply, flags=re.MULTILINE)
 
-            # Remove 'Suggested items' line if it was picked up
-            extracted_items = [item for item in extracted_items if item.strip().lower() != "suggested items"]
+            # Strip formatting and remove 'Suggested items' safely
+            cleaned_items = []
+            for item in extracted_items:
+                plain = re.sub(r"[*_`]", "", item.strip().lower())  # remove markdown
+                if plain != "suggested items":
+                    cleaned_items.append(item.strip())
 
             added_items = 0
-            for item in extracted_items:
+            for item in cleaned_items:
                 clean = item.strip().lower()
                 if clean and clean not in st.session_state.essential_list:
                     st.session_state.essential_list.append(clean)
@@ -298,7 +301,7 @@ with container3:
                 st.success(f"✅ {added_items} item(s) added to your grocery list.")
             else:
                 st.warning("⚠️ No valid items found to add.")
-                
+
     with st.expander("💬 View Chat History"):
         for entry in st.session_state.chat_history:
             role = "👤 You" if entry["role"] == "user" else "🤖 Assistant"
