@@ -156,7 +156,7 @@ with container1:
             results = get_store_locations(store, user_lat, user_lon, max_distance_km)
             all_stores.extend(results)
 
-        all_stores = sorted(all_stores, key=lambda x: x["Distance (km)"])
+        all_stores = sorted(all_stores, key=lambda x: x["Distance"])
 
         if all_stores:
             df = pd.DataFrame(all_stores)
