@@ -35,7 +35,6 @@ with container1:
     st.markdown("### 🌍 Choose how you'd like to use your location")
     st.caption("You can either use your real-time location or enter a UK postcode.")
 
-    st.markdown("---")
     # ========== Location Mode Selection ==========
     location_mode = st.radio(
             "📌 Location Mode",
@@ -46,16 +45,21 @@ with container1:
         )
     user_lat = user_lon = None
 
+    st.markdown("---")
+    unit = st.radio("Choose distance unit:", ["km", "miles"], horizontal=True)
     #st.markdown("---")
 
-    max_distance_km = st.number_input(
-            "📏 Enter maximum distance (in km) to search for nearby stores:",
-            min_value=1.0,
-            max_value=50.0,
-            value=None,
-            step=0.5,
-            placeholder='Ex : 5.0'
-        )
+    distance_input = st.number_input(
+        f"📏 Enter maximum distance (in {unit}) to search for nearby stores:",
+        min_value=1.0,
+        max_value=50.0,
+        value=5.0,
+        step=0.5,
+        placeholder='Distance'
+    )
+
+    # Convert miles to km if needed
+    max_distance_km = distance_input * 1.609 if unit == "miles" else distance_input
 
     # ========== OPTION 1: Current Geolocation ==========
     if st.session_state["location_mode"] == "📍 Use my current location":
@@ -156,7 +160,7 @@ with container1:
 
         if all_stores:
             df = pd.DataFrame(all_stores)
-            st.success(f"🎯 Found {len(df)} store(s) within {max_distance_km} km!")
+            st.success(f"🎯 Found {len(df)} store(s) within {max_distance_km}{unit}!")
             st.dataframe(df)
 
             st.subheader("🗺️ Store Locations Map", anchor=False)
@@ -171,7 +175,7 @@ with container1:
             for _, row in df.iterrows():
                 folium.Marker(
                     [row["Latitude"], row["Longitude"]],
-                    popup=f"{row['Store']} ({row['Distance (km)']} km)",
+                    popup=f"{row['Store']} ({row['Distance']}{unit})",
                     tooltip=row["Store"],
                     icon=folium.Icon(color="green", icon="shopping-cart")
                 ).add_to(m)
