@@ -25,11 +25,10 @@ else:
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 system_prompt = (
-    "You are a friendly shopping assistant. "
-    "First, explain your understanding of the user's request and why certain foods are being recommended. "
-    "Then, present a bullet-point list of the suggested grocery items. "
-    "Wait for the user to confirm or ask for modifications before finalising. "
-    "If the user asks to change or remove items, do so and confirm the new list."
+    "You are a helpful assistant for a grocery list app. "
+    "When the user asks about what to buy, first explain the reasoning behind your suggestions. "
+    "Then, provide a separate section titled 'Suggested items:' followed by a markdown bullet-point list of **only grocery item names** (no quantities or extra notes). "
+    "Avoid non-food items unless specifically asked."
 )
 
 # ========== SESSION STATE SETUP ==========
@@ -233,44 +232,50 @@ if audio is None:
 
 with container3:
     st.subheader("🧠 AI Shopping Assistant")
-    user_input = st.text_input("What do you want to buy or cook?", key="chat_input")
+    # Input field
+    user_query = st.text_input("Ask me what to cook or what to buy:", key="chat_query")
 
-    if user_input:
-        st.session_state.chat_history.append({"role": "user", "content": user_input})
+    # Ask button
+    if st.button("🧠 Ask"):
+        if user_query:
+            st.session_state.chat_history.append({"role": "user", "content": user_query})
 
-        with st.spinner("Thinking..."):
-            response = client.chat.completions.create(
-                model="meta-llama/llama-4-scout-17b-16e-instruct",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    *st.session_state.chat_history  # Use chat history to maintain context
-                ],
-                temperature=0.4,
-                max_tokens=512,
-                stream=False
-            )
+            with st.spinner("Thinking..."):
+                response = client.chat.completions.create(
+                    model="meta-llama/llama-4-scout-17b-16e-instruct",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        *st.session_state.chat_history
+                    ],
+                    temperature=0.4,
+                    max_tokens=600
+                )
 
-            assistant_reply = response.choices[0].message.content
-            st.session_state.chat_history.append({"role": "assistant", "content": assistant_reply})
-            st.write(assistant_reply)
+                bot_reply = response.choices[0].message.content
+                st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
+                st.session_state.last_bot_reply = bot_reply
 
-    # Show full conversation
-    with st.expander("📝 Chat history", expanded=False):
-        for msg in st.session_state.chat_history:
-            st.markdown(f"**{msg['role'].capitalize()}**: {msg['content']}")
+    # Display latest assistant message
+    if "last_bot_reply" in st.session_state:
+        st.markdown("##### 📝 Assistant's Response")
+        st.markdown(st.session_state.last_bot_reply)
 
-    # Button to finalise and extract items
-    if st.button("✅ Finalise & Add to Grocery List"):
-        last_assistant_reply = st.session_state.chat_history[-1]["content"]
-        items = re.findall(r"[-*•]\s*(.+)", last_assistant_reply)
-        if items:
-            for item in items:
+        # Finalise button
+        if st.button("✅ Add to Grocery List"):
+            extracted_items = re.findall(r"[-*•]\s*(.+)", st.session_state.last_bot_reply)
+            added_items = 0
+            for item in extracted_items:
                 clean = item.strip().lower()
                 if clean not in st.session_state.essential_list:
                     st.session_state.essential_list.append(clean)
-            st.success("✅ Items added to your grocery list.")
-        else:
-            st.warning("⚠️ No items detected to add.")
+                    added_items += 1
+            st.success(f"✅ {added_items} item(s) added to your grocery list.")
+
+    with st.expander("💬 View Chat History"):
+        for entry in st.session_state.chat_history:
+            role = "👤 You" if entry["role"] == "user" else "🤖 Assistant"
+            st.markdown(f"**{role}:** {entry['content']}")
+
 # ========== COMBINED LIST ==========
 all_products = st.session_state.essential_list + st.session_state.voice_products
 secondary_products = st.session_state.secondary_list
