@@ -139,7 +139,7 @@ with container1:
                 found_stores.append({
                     "Store": store_name,
                     "Address": store_address,
-                    "Distance (km)": round(distance, 2),
+                    "Distance": round(distance, 2),
                     "Latitude": store_lat,
                     "Longitude": store_lon
                 })
@@ -175,7 +175,7 @@ with container1:
             for _, row in df.iterrows():
                 folium.Marker(
                     [row["Latitude"], row["Longitude"]],
-                    popup=f"{row['Store']} ({row['Distance']} km)",
+                    popup=f"{row['Store']} ({row['Distance']}{unit})",
                     tooltip=row["Store"],
                     icon=folium.Icon(color="green", icon="shopping-cart")
                 ).add_to(m)
