@@ -158,12 +158,17 @@ with container1:
 
         all_stores = sorted(all_stores, key=lambda x: x["Distance"])
 
+        # Convert distances to miles if needed
+        if unit == "miles":
+            for store in all_stores:
+                store["Distance"] = round(store["Distance"] / 1.609, 2)
+
         if all_stores:
             df = pd.DataFrame(all_stores)
-            if unit == "miles":
-                st.success(f"🎯 Found {len(df)} store(s) within {distance_input} miles!")
-            else:
-                st.success(f"🎯 Found {len(df)} store(s) within {max_distance_km}km!")
+            distance_col = f"Distance ({unit})"
+            df.rename(columns={"Distance": distance_col}, inplace=True)
+
+            st.success(f"🎯 Found {len(df)} store(s) within {distance_input} {unit}!")
             st.dataframe(df)
 
             st.subheader("🗺️ Store Locations Map", anchor=False)
@@ -178,7 +183,7 @@ with container1:
             for _, row in df.iterrows():
                 folium.Marker(
                     [row["Latitude"], row["Longitude"]],
-                    popup=f"{row['Store']} ({row['Distance']}{unit})",
+                    popup=f"{row['Store']} ({row[distance_col]} {unit})",
                     tooltip=row["Store"],
                     icon=folium.Icon(color="green", icon="shopping-cart")
                 ).add_to(m)
