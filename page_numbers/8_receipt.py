@@ -1,3 +1,5 @@
+# ========== IMPORTS ==========
+
 import streamlit as st
 import requests
 import pandas as pd
@@ -14,25 +16,17 @@ import openai
 from groq import Groq
 import re
 
+# ========== SESSION STATE SETUP ==========
+
 # Check if df is stored in session state
 if "df" in st.session_state:
     df = st.session_state.df  # Retrieve stored data
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
-# Set your Groq API Key
-# Initialise client using Streamlit Secrets
+# Set up Groq API Key
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-system_prompt = (
-    "You are a helpful assistant for a grocery list app and your name is Entwan. "
-    "When the user asks about what to buy, first introduce your name and explain the reasoning behind your suggestions. "
-    "Then, provide a separate section titled 'Suggested items:' followed by a markdown bullet-point list of **only grocery item names** (no quantities or extra notes) also don't offer item. "
-    "Avoid non-food items unless specifically asked."
-    "Avoid using alternatives or slashes like 'or', '/', or parentheses. Always choose one clear, specific item to recommend in the grocery list."
-)
-
-# ========== SESSION STATE SETUP ==========
 for key in ["essential_list", "voice_products", "secondary_list"]:
     if key not in st.session_state:
         st.session_state[key] = []
@@ -46,6 +40,7 @@ if "transcribed_text" not in st.session_state:
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
+
 # ========== LOAD MODELS AND DATA ==========
 @st.cache_resource
 def load_nlp_model():
@@ -56,6 +51,19 @@ def load_adjectives():
     df = pd.read_csv("food_adjectives.csv")
     hyphens = set(df["Food_Adjective"].str.lower().tolist())
     return hyphens, {adj.replace("-", " "): adj for adj in hyphens}
+
+system_prompt = (
+    "You are a helpful assistant for a grocery list app and your name is Entwan. "
+    "When the user asks about what to buy, first introduce your name and explain the reasoning behind your suggestions. "
+    "Then, provide a separate section titled 'Suggested items:' followed by a markdown bullet-point list of **only grocery item names** (no quantities or extra notes) also don't offer item. "
+    "Avoid non-food items unless specifically asked."
+    "Avoid using alternatives or slashes like 'or', '/', or parentheses. Always choose one clear, specific item to recommend in the grocery list."
+)
+
+nlp = load_nlp_model()
+hyphenated_adjs, phrase_map = load_adjectives()
+
+# ========== HELPER FUNCTIONS ==========
 
 def clean_transcript(text):
     filler_phrases = [
@@ -78,10 +86,6 @@ def clean_transcript(text):
             text = text.replace(phrase, "")
     return text.strip()
 
-nlp = load_nlp_model()
-hyphenated_adjs, phrase_map = load_adjectives()
-
-# ========== TEXT PROCESSING HELPERS ==========
 def extract_bullet_items(text):
     # Find the section after "Suggested items:"
     split_text = re.split(r"(?i)suggested items:?", text)  # case-insensitive
@@ -148,19 +152,23 @@ def extract_adj_noun_phrases(text):
 
     return phrases
 
-# ========== UI ==========
+def get_audio_hash(audio_bytes):
+    return hashlib.md5(audio_bytes).hexdigest()
+
+# ========== Main File ==========
 st.title("Shopping List generator 📃")
-st.caption("💡 You can either write or record your list")
 st.markdown("---")
 
-# ========== MANUAL ENTRY ==========
+# I like containers haha.
 container1 = st.container(border=True)
 container2 = st.container(border=True)
 container3 = st.container(border=True)
 container4 = st.container(border=True)
 
+# ========== WRITING INPUT ==========
 with container1:
     st.subheader("✏️ **Write your grocery list**")
+    st.caption("💡 If you what you are buying, write it up here...")
     budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
     with st.form("add_item_form"):
@@ -188,13 +196,10 @@ with container1:
                 st.warning("Item already in the list.")
 
 # ========== VOICE INPUT ==========
-# In the VOICE INPUT section:
-
-def get_audio_hash(audio_bytes):
-    return hashlib.md5(audio_bytes).hexdigest()
 
 with container2:
     st.subheader("🗣️ **Speak your grocery list**")
+    st.caption("💡 Writing is boring IK, speak it here...")
 
     audio = audio_recorder(
         text="Click to Record 👉",
@@ -227,7 +232,7 @@ with container2:
                     text = fix_multiword_adjectives(text)
 
                     st.session_state.transcribed_text = text
-                    latest_transcript = text  # ✅ Update immediately
+                    latest_transcript = text  # Update immediately
 
                     new_items = extract_adj_noun_phrases(text)
                     for item in new_items:
@@ -240,7 +245,7 @@ with container2:
                 except sr.RequestError as e:
                     transcript_placeholder.error(f"❌ Could not request results; {e}")
 
-            st.audio(audio, format="audio/wav")  # 👈 Still show the player after processing
+            st.audio(audio, format="audio/wav")  # Still show the player after processing
 
     # Always display latest transcript just under mic
     if latest_transcript:
@@ -250,13 +255,15 @@ with container2:
 if audio is None:
     st.session_state.audio_processed = False
 
+# ========== AI INPUT ==========
 with container3:
     st.subheader("🧠 AI Shopping Assistant")
+    st.caption("💡 If you don't know what to buy, explain it to AI...")
     # Input field
     user_query = st.text_input("Ask me what to cook or what to buy:", key="chat_query")
 
     # Ask button
-    if st.button("🧠 Ask"):
+    if st.button("Ask"):
         if user_query:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
 
@@ -281,7 +288,7 @@ with container3:
         st.markdown(st.session_state.last_bot_reply)
 
         # Finalise button
-        if st.button("✅ Add to Grocery List"):
+        if st.button("Add to Grocery List"):
             extracted_items = re.findall(r"^\s*[-*•]\s*(.+)", st.session_state.last_bot_reply, flags=re.MULTILINE)
 
             # Strip formatting and remove 'Suggested items' safely
