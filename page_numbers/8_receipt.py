@@ -81,6 +81,25 @@ nlp = load_nlp_model()
 hyphenated_adjs, phrase_map = load_adjectives()
 
 # ========== TEXT PROCESSING HELPERS ==========
+def extract_bullet_items(text):
+    # Find the section after "Suggested items:"
+    split_text = re.split(r"(?i)suggested items:?", text)  # case-insensitive
+    if len(split_text) < 2:
+        return []  # No list section found
+
+    list_block = split_text[1]
+    lines = list_block.strip().splitlines()
+
+    items = []
+    for line in lines:
+        match = re.match(r"^\s*[-*•]\s*(.+)", line)
+        if match:
+            items.append(match.group(1).strip())
+        else:
+            break  # Stop at first non-bullet line
+
+    return items
+
 def fix_multiword_adjectives(text):
     for plain, hyphenated in phrase_map.items():
         if plain in text:
@@ -260,16 +279,18 @@ with container3:
         st.markdown("##### 📝 Assistant's Response")
         st.markdown(st.session_state.last_bot_reply)
 
-        # Finalise button
         if st.button("✅ Add to Grocery List"):
-            extracted_items = re.findall(r"[-*•]\s*(.+)", st.session_state.last_bot_reply)
+            items = extract_bullet_items(st.session_state.last_bot_reply)
             added_items = 0
-            for item in extracted_items:
+            for item in items:
                 clean = item.strip().lower()
                 if clean not in st.session_state.essential_list:
                     st.session_state.essential_list.append(clean)
                     added_items += 1
-            st.success(f"✅ {added_items} item(s) added to your grocery list.")
+            if added_items:
+                st.success(f"✅ {added_items} item(s) added to your grocery list.")
+            else:
+                st.warning("⚠️ No valid items found to add.")
 
     with st.expander("💬 View Chat History"):
         for entry in st.session_state.chat_history:
