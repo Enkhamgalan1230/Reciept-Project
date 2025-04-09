@@ -6,7 +6,6 @@ from supabase import create_client, Client
 import supabase
 import time
 import base64
-from streamlit_theme import st_theme
 
 # Set page title and icon
 st.set_page_config(

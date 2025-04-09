@@ -10,34 +10,20 @@ from fuzzywuzzy import process
 import subprocess
 import importlib
 import hashlib
-from openai import OpenAI
+import openai
+from groq import Groq
 
 # Check if df is stored in session state
 if "df" in st.session_state:
     df = st.session_state.df  # Retrieve stored data
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
-def ask_llm_direct(prompt):
-    headers = {
-        "Authorization": "Bearer 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",  # 🔐 your real OpenRouter key
-        "HTTP-Referer": "https://github.com/Enkhamgalan1230/Reciept-Project",  # ✅ required
-        "Content-Type": "application/json"
-    }
 
-    json_data = {
-        "model": "meta-llama/llama-4-maverick:free",
-        "messages": [
-            {"role": "system", "content": "You are a helpful shopping assistant."},
-            {"role": "user", "content": f"{prompt}\nGive food product names based on this sentence. Respond with a comma-separated list only."}
-        ]
-    }
+# Set your Groq API Key
+# Initialise client using Streamlit Secrets
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-    response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=json_data)
-    
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"].strip()
-    else:
-        return f"❌ Error {response.status_code}: {response.text}"
+
 
 # ========== SESSION STATE SETUP ==========
 for key in ["essential_list", "voice_products", "secondary_list"]:
@@ -240,33 +226,34 @@ if audio is None:
 
 with container3:
     st.subheader("🧠 AI Shopping Assistant")
+    user_prompt = st.text_input("What do you want to buy or cook?")
 
-    # Show full chat history
-    for msg in st.session_state.chat_history:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
-
-    # User prompt input
-    if prompt := st.chat_input("What would you like to add to your shopping list?"):
-        # Append user message
-        st.chat_message("user").markdown(prompt)
-        st.session_state.chat_history.append({"role": "user", "content": prompt})
-
-        # Get AI reply from OpenRouter
-        response = ask_llm_direct(prompt)
-        st.session_state.chat_history.append({"role": "assistant", "content": response})
-
-        # Show AI reply
-        with st.chat_message("assistant"):
-            st.markdown(response)
-
-            # Try extracting food items from comma-separated output
-            items = [item.strip() for item in response.split(",") if item.strip()]
-            if len(items) > 0:
-                if st.button("✅ Confirm and Add to List"):
-                    st.session_state.essential_list.extend(items)
-                    st.success("✅ Items added to your essential shopping list.")
-
+    if user_prompt:
+        with st.spinner("Thinking..."):
+            completion = client.chat.completions.create(
+                model="meta-llama/llama-4-scout-17b-16e-instruct",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a helpful assistant for a grocery list application. "
+                            "Your task is to analyse the user's message and extract a detailed list of grocery food items. "
+                            "Return the items as a clear, bullet-point list without repeating or adding unnecessary explanations. "
+                            "If the user mentions meals, recipes, or events, infer the basic ingredients needed for preparation. "
+                            "Avoid kitchenware or general non-food products unless specifically mentioned. "
+                            "If quantities or specific brands are mentioned, include them."
+                        )
+                    },
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.3,
+                max_tokens=512,
+                top_p=1,
+                stream=False
+            )
+            response_text = completion.choices[0].message.content
+            st.markdown("**Suggested items:**")
+            st.write(response_text)
 
 # ========== COMBINED LIST ==========
 all_products = st.session_state.essential_list + st.session_state.voice_products
