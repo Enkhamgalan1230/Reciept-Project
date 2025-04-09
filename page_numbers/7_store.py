@@ -175,7 +175,7 @@ with container1:
             for _, row in df.iterrows():
                 folium.Marker(
                     [row["Latitude"], row["Longitude"]],
-                    popup=f"{row['Store']} ({row['Distance']}{unit})",
+                    popup=f"{row['Store']} ({row['Distance']} km)",
                     tooltip=row["Store"],
                     icon=folium.Icon(color="green", icon="shopping-cart")
                 ).add_to(m)
