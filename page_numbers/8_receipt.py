@@ -82,25 +82,21 @@ hyphenated_adjs, phrase_map = load_adjectives()
 
 # ========== TEXT PROCESSING HELPERS ==========
 def extract_bullet_items(text):
-    # Split after "Suggested items:" section (case-insensitive)
-    split_text = re.split(r"(?i)suggested items:?", text)
+    # Find the section after "Suggested items:"
+    split_text = re.split(r"(?i)suggested items:?", text)  # case-insensitive
     if len(split_text) < 2:
-        return []
+        return []  # No list section found
 
-    list_block = split_text[1].strip()
-    lines = list_block.splitlines()
+    list_block = split_text[1]
+    lines = list_block.strip().splitlines()
 
     items = []
     for line in lines:
-        # Stop at the first line that does NOT look like a bullet point
-        if not re.match(r"^\s*[-*•]\s+", line):
-            break
-        match = re.match(r"^\s*[-*•]\s+(.+)", line)
+        match = re.match(r"^\s*[-*•]\s*(.+)", line)
         if match:
-            item = match.group(1).strip()
-            # Remove any Markdown bold/italics/formatting just in case
-            item = re.sub(r"[*_`]", "", item)
-            items.append(item)
+            items.append(match.group(1).strip())
+        else:
+            break  # Stop at first non-bullet line
 
     return items
 
@@ -283,18 +279,16 @@ with container3:
         st.markdown("##### 📝 Assistant's Response")
         st.markdown(st.session_state.last_bot_reply)
 
+        # Finalise button
         if st.button("✅ Add to Grocery List"):
-            items = extract_bullet_items(st.session_state.last_bot_reply)
+            extracted_items = re.findall(r"[-*•]\s*(.+)", st.session_state.last_bot_reply)
             added_items = 0
-            for item in items:
+            for item in extracted_items:
                 clean = item.strip().lower()
                 if clean not in st.session_state.essential_list:
                     st.session_state.essential_list.append(clean)
                     added_items += 1
-            if added_items:
-                st.success(f"✅ {added_items} item(s) added to your grocery list.")
-            else:
-                st.warning("⚠️ No valid items found to add.")
+            st.success(f"✅ {added_items} item(s) added to your grocery list.")
 
     with st.expander("💬 View Chat History"):
         for entry in st.session_state.chat_history:
