@@ -281,14 +281,23 @@ with container3:
 
         # Finalise button
         if st.button("✅ Add to Grocery List"):
-            extracted_items = re.findall(r"[-*•]\s*(.+)", st.session_state.last_bot_reply)
+            # First, clean up the reply and remove the heading
+            cleaned_text = re.sub(r"(?i)suggested items:?", "", st.session_state.last_bot_reply)
+
+            # Then extract bullet-point items
+            extracted_items = re.findall(r"^\s*[-*•]\s*(.+)", cleaned_text, flags=re.MULTILINE)
+
             added_items = 0
             for item in extracted_items:
                 clean = item.strip().lower()
-                if clean not in st.session_state.essential_list:
+                if clean and clean not in st.session_state.essential_list:
                     st.session_state.essential_list.append(clean)
                     added_items += 1
-            st.success(f"✅ {added_items} item(s) added to your grocery list.")
+
+            if added_items:
+                st.success(f"✅ {added_items} item(s) added to your grocery list.")
+            else:
+                st.warning("⚠️ No valid items found to add.")
 
     with st.expander("💬 View Chat History"):
         for entry in st.session_state.chat_history:
