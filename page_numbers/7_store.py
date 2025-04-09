@@ -33,19 +33,17 @@ comment = '''
 container1 = st.container(border=True)
 with container1:
     st.markdown("### Choose how you'd like to use your location")
-    st.caption("You can either use your real-time location or enter a UK postcode.")
-
     # ========== Location Mode Selection ==========
     location_mode = st.radio(
             "📌 Location Mode",
             ["📍 Use my current location", "🏡 Enter postcode manually"],
             key="location_mode",
-            label_visibility="collapsed"  # Hide label to rely on markdown title above
-
+            label_visibility="collapsed",  # Hide label to rely on markdown title above
+            horizontal=True
         )
     user_lat = user_lon = None
 
-    st.markdown("### Choose Distance unit.")
+    st.markdown("### Choose Distance unit")
     unit = st.radio("Choose unit",["km", "miles"], horizontal=True,label_visibility="collapsed")
     #st.markdown("---")
 
