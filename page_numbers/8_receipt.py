@@ -168,7 +168,7 @@ container4 = st.container(border=True)
 # ========== WRITING INPUT ==========
 with container1:
     st.subheader("✏️ **Write your grocery list**")
-    st.caption("💡 If you what you are buying, write it up here...")
+    st.caption("💡 If you know what you are buying, write it up here...")
     budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
     with st.form("add_item_form"):
