@@ -4,8 +4,12 @@ st.title("Helper", anchor=False)
 st.markdown("---")
 
 st.subheader("Frequently Asked Questions FAQ", anchor=False)
+expander1 = st.expander
+expander2 = st.expander
+expander3 = st.expander
+expander4 = st.expander
 
-with st.expander("Hint: No data available"):
+with expander1("Hint: No data available"):
     col1, col2, col3 = st.columns([1, 2, 1])  # middle column is 2x wider
     with col2:
         st.image("assets/hint.png", use_container_width=True)
@@ -17,7 +21,7 @@ with st.expander("Hint: No data available"):
         "[Data Fetcher](./data_fetcher) page, where the application will retrieve the most recent information available from our sources."
     )
 
-with st.expander("How often data gets updated."):
+with expander2("How often data gets updated."):
     st.markdown(
         "• If no data appears to be available, please do not be concerned. "
         "The data is refreshed on a **weekly** basis to maintain accuracy and relevance. "
@@ -26,13 +30,13 @@ with st.expander("How often data gets updated."):
         "\n\nYou may also revisit the **Data Fetcher** page to view the most recent data manually."
     )
 
-with st.expander("What does the price comparison dashboard show?"):
+with expander3("What does the price comparison dashboard show?"):
     st.markdown(
         "The dashboard displays the **latest prices** for 15 commonly purchased grocery items across five major UK supermarkets. "
         "It highlights the **cheapest store** for each product and provides a visual comparison to assist with budgeting."
     )
 
-with st.expander("How does the product search work?"):
+with expander4("How does the product search work?"):
     st.markdown(
         "The product search feature allows you to enter keywords (e.g., 'chicken breast 400g') to find exact matches across your selected stores and subcategories. "
         "Only results containing **all keywords** in your query will be shown, sorted by the lowest price."
