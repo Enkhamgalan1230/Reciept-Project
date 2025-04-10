@@ -3,7 +3,7 @@ import streamlit as st
 st.title("Helper", anchor=False)
 st.markdown("---")
 
-st.subheader("Frequently Asked Questions FAQ", anchor=False)
+st.subheader("Frequently Asked Questions (FAQ)", anchor=False)
 expander1 = st.expander
 expander2 = st.expander
 expander3 = st.expander
