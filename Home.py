@@ -62,6 +62,12 @@ receipt = st.Page(
     icon = "📃"
 )
 
+helper = st.Page(
+    page = "page_numbers/helper.py",
+    title= "Helper",
+    icon = "💡"
+)
+
 data_fetcher = st.Page(
     page = "page_numbers/data_fetcher.py",
     title= "Data Fetcher",
@@ -69,11 +75,14 @@ data_fetcher = st.Page(
 )
 
 
+
+
 pg = st.navigation(
     {
         "Info": [home_page],
         "Data":[data_collection,data],
         "Main Logics": [price_comparison,price_inflation,price_prediction,store, receipt],
+        "Help": [helper],
         "Boring Stuff": [data_fetcher]
     }
 )
