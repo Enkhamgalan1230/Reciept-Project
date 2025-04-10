@@ -65,7 +65,6 @@ receipt = st.Page(
 helper = st.Page(
     page = "page_numbers/helper.py",
     title= "Helper",
-    icon = "💡"
 )
 
 data_fetcher = st.Page(
