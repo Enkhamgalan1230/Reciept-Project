@@ -509,7 +509,7 @@ with st.container(border=True):
 
             st.success(f"✅ Total cost: £{final_total:.2f}")
             result_df = pd.DataFrame(final_list)
-            st.dataframe(result_df[["Input", "Matched Product", "Store_Name", "Price", "Discount"]], use_container_width=True)
+            st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
 
             if unfitted_essentials or unfitted_secondary:
                 st.warning("⚠️ Items that couldn’t fit within the budget:")
