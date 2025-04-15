@@ -24,8 +24,5 @@ spacy
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0.tar.gz
 openai
 groq
-sentence-transformers>=2.2.2
-tensorflow>=2.12.0,<2.16.0  # Avoid TF 2.16+ for now
-torch>=1.13.0
-transformers>=4.30.0
-keras<3.0.0
+torch
+sentence-transformers
