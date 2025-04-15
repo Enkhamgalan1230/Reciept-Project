@@ -64,7 +64,7 @@ exclude_keywords = [
     "ready", "ready meal", "frozen meal", "pre-cooked", "precooked", "cooked",
     "marinated", "roast", "roasted", "grilled", "tandoori", "bbq", "barbecue",
     "fried", "battered", "smoked", "steamed", "seasoned", "cured","frozen", "breaded",
-    "cure","joint","stuffing"
+    "cure","joint","stuffing",
 
     # Flavourings and sweet/dessert items
     "flavoured", "flavor", "sweet", "dessert", "chocolate", "vanilla", "caramel",
