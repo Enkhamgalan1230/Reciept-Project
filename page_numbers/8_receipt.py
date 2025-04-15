@@ -157,7 +157,7 @@ def get_audio_hash(audio_bytes):
 
 exclude_keywords = [
             "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie", "drink",
-            "ready meal", "frozen meal", "meat-free", "snack", "dessert", "alternative"
+            "ready meal", "frozen meal", "meat-free", "snack", "dessert", "alternative", "plant"
         ]
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
