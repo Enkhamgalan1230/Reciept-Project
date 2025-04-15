@@ -471,7 +471,7 @@ if st.button("🛒 Generate List"):
 
         if final_items:
             result_df = pd.DataFrame(final_items)
-            result_df = result_df[["Name", "Price", "Store_Name", "Category", "Subcategory", "Source"]]
+            result_df = result_df[["Name", "Price", "Store_Name", "Category", "Subcategory"]]
             st.subheader("✅ Final Shopping List")
             st.dataframe(result_df, use_container_width=True)
             st.success(f"🧮 Total Cost: £{final_cost:.2f} out of £{budget:.2f}")
