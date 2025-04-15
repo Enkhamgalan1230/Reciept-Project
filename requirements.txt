@@ -26,3 +26,4 @@ openai
 groq
 torch
 txtai
+sentence-transformers

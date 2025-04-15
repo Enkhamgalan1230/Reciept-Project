@@ -1,5 +1,6 @@
 # ========== IMPORTS ==========
-
+import os
+os.environ["USE_TF"] = "0"
 import streamlit as st
 import requests
 import pandas as pd
