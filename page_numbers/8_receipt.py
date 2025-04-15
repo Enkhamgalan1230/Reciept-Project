@@ -205,36 +205,40 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def filter_products(df, query_list, budget, allow_keywords=False):
-    product_names = df["Name"].astype(str).tolist()
-    product_embeddings = model.encode(product_names, convert_to_tensor=True)
+@st.cache_data(show_spinner=False)
+def compute_latest_embeddings(latest_df):
+    names = latest_df["Name"].astype(str).tolist()
+    return model.encode(names, convert_to_tensor=True)
 
+def filter_products(df, embeddings, query_list, budget, selected_store, allow_keywords=False):
     best_matches = []
+    product_names = df["Name"].astype(str).tolist()
 
     for item in query_list:
         item_embedding = model.encode(item, convert_to_tensor=True)
-        cosine_scores = util.cos_sim(item_embedding, product_embeddings)[0]
+        cosine_scores = util.cos_sim(item_embedding, embeddings)[0]
         top_indices = cosine_scores.argsort(descending=True)
 
         for idx in top_indices:
             product = df.iloc[idx.item()]
+            if product["Store"] != selected_store:
+                continue
             name_lower = product["Name"].lower()
-            if not allow_keywords:
-                if any(kw in name_lower for kw in exclude_keywords):
-                    continue  # Skip excluded items
+            if not allow_keywords and any(kw in name_lower for kw in exclude_keywords):
+                continue
             if pd.isna(product["Price"]):
                 continue
+
             best_matches.append({
                 "Input": item,
                 "Matched Product": product["Name"],
+                "Store": product["Store"],
                 "Price": product["Price"],
-                "Index": idx.item()
+                "Discount": product.get("Clubcard Price", np.nan),
             })
-            break  # Take only the best available match
+            break  # Best match for this item
 
-    # Sort matches by price
     best_matches.sort(key=lambda x: x["Price"])
-    
     total = 0
     selected = []
     not_fitted = []
@@ -481,15 +485,17 @@ selection = st.pills("Stores", options, selection_mode="single")
 essential_items = st.session_state.essential_list
 secondary_items = st.session_state.secondary_list
 
+# Compute embeddings for full dataset
+# Pre-compute embeddings for latest_df
+all_embeddings = compute_latest_embeddings(latest_df)
 
 if st.button("🛒 Generate List"):
     if not essential_items:
         st.warning("⚠️ Add essential items first.")
     else:
-        with st.spinner("🔍 Finding best matches..."):
-            test_df = latest_df.head(200)  # TEMP: speed up for testing
+        with st.spinner("🔍 Matching products..."):
             selected_essentials, total_essentials, unfitted_essentials = filter_products(
-                test_df, essential_items, budget
+                latest_df, all_embeddings, essential_items, budget, selected_store=selection
             )
 
             remaining_budget = budget - total_essentials
@@ -497,17 +503,15 @@ if st.button("🛒 Generate List"):
 
             if remaining_budget > 0:
                 selected_secondary, total_secondary, unfitted_secondary = filter_products(
-                    test_df, secondary_items, remaining_budget
+                    latest_df, all_embeddings, secondary_items, remaining_budget, selected_store=selection
                 )
 
             final_list = selected_essentials + selected_secondary
             final_total = total_essentials + total_secondary
 
-        # UI feedback
         st.success(f"✅ Total cost: £{final_total:.2f}")
-        st.write("🛍️ Your Shopping List:")
-        for item in final_list:
-            st.write(f"- {item['Input']} → {item['Matched Product']} (£{item['Price']:.2f})")
+        result_df = pd.DataFrame(final_list)
+        st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
 
         if unfitted_essentials or unfitted_secondary:
             st.warning("⚠️ Items that couldn’t fit within the budget:")
