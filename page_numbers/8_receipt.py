@@ -380,3 +380,13 @@ with container4:
     else:
         st.info("No secondary items added yet.")
 
+# Combine year, month, and day into a datetime column
+df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
+
+# Get the most recent date
+latest_date = df["Date"].max()
+
+# Filter to only the rows with the latest date
+latest_df = df[df["Date"] == latest_date]
+
+st.write(latest_df)
