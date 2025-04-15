@@ -230,16 +230,19 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
         keyword_filtered_df = df[keyword_mask]
 
         if not keyword_filtered_df.empty:
-            # 🧠 Phase 2: Run semantic similarity on just filtered rows
+            # 🧠 Run semantic search only within the keyword-filtered products
             keyword_indices = keyword_filtered_df.index.tolist()
+
+            if not keyword_indices:
+                continue  # ❗ Avoid index_select crash if empty
+
             item_embedding = model.encode(item, convert_to_tensor=True)
 
-            # Only compute similarity on filtered product embeddings
+            # Only compare against filtered subset
             filtered_embeddings = torch.index_select(embeddings, 0, torch.tensor(keyword_indices))
             cosine_scores = util.cos_sim(item_embedding, filtered_embeddings)[0]
             top_index_in_filtered = cosine_scores.argmax().item()
 
-            # Map back to original dataframe index
             best_index = keyword_indices[top_index_in_filtered]
             product = df.iloc[best_index]
 
