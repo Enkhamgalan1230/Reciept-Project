@@ -62,9 +62,17 @@ exclude_keywords = [
     "alternative", "plant", "nugget", "fried", "burger",
 ]
 
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9\s]', '', text)  # remove punctuation
+    text = text.strip()
+    return text
+
 def contains_exclude_keywords(name):
-    name_lower = name.lower()
-    return any(kw in name_lower for kw in exclude_keywords)
+    return any(kw in name for kw in exclude_keywords)
+
+def tokenize(text):
+    return set(normalize_text(text).split())
 
 system_prompt = (
     "You are a helpful assistant for a grocery list app and your name is Entwan. "
@@ -173,44 +181,31 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def get_best_match_tfidf(item, df, top_n=5, min_score=0.2):
-    product_names = df["Name"].astype(str).tolist()
-    if not product_names:
-        return None
+def get_best_match_keywords(item, df):
+    item_tokens = tokenize(item)
+    best_row = None
+    best_score = 0
 
-    texts = [item] + product_names
-    vectorizer = TfidfVectorizer(stop_words='english')
-    vectors = vectorizer.fit_transform(texts)
+    for _, row in df.iterrows():
+        name = normalize_text(row["Name"])
+        if contains_exclude_keywords(name):
+            continue
 
-    similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
-    best_idx = np.argsort(similarities)[::-1][:top_n]
+        name_tokens = set(name.split())
 
-    def is_clean(name):
-        return not contains_exclude_keywords(name) and contains_all_input_words(name, item)
+        # Match score = number of overlapping keywords
+        match_score = len(item_tokens.intersection(name_tokens))
 
-    # Step 1: best match above threshold that satisfies full-word check
-    for idx in best_idx:
-        score = similarities[idx]
-        name = product_names[idx]
-        if score >= min_score and is_clean(name):
-            return df.iloc[idx]
+        if match_score > best_score:
+            best_score = match_score
+            best_row = row
 
-    # Step 2: fallback to closest match that satisfies full-word check
-    for idx in best_idx:
-        name = product_names[idx]
-        if is_clean(name):
-            return df.iloc[idx]
-
-    # Step 3: fallback to highest match with no keyword filtering
-    for idx in best_idx:
-        return df.iloc[idx]
-
-    return None
+    return best_row if best_score > 0 else None
 
 def find_cheapest_matches(items, df):
     matched = []
     for item in items:
-        best_row = get_best_match_tfidf(item, df)
+        best_row = get_best_match_keywords(item, df)
         if best_row is not None:
             matched.append(best_row.to_frame().T)
     return matched
