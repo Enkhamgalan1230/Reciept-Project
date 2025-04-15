@@ -21,7 +21,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 #from txtai.embeddings import Embeddings
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer, util
 # ========== SESSION STATE SETUP ==========
 
 # Check if df is stored in session state
@@ -56,6 +56,7 @@ if "transcribed_text" not in st.session_state:
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
+model = SentenceTransformer("all-MiniLM-L6-v2")  # Lightweight and good for semantic search
 
 # ========== LOAD MODELS AND DATA ==========
 @st.cache_resource
@@ -204,6 +205,48 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
+def filter_products(df, query_list, budget, allow_keywords=False):
+    product_names = df["Name"].astype(str).tolist()
+    product_embeddings = model.encode(product_names, convert_to_tensor=True)
+
+    best_matches = []
+
+    for item in query_list:
+        item_embedding = model.encode(item, convert_to_tensor=True)
+        cosine_scores = util.cos_sim(item_embedding, product_embeddings)[0]
+        top_indices = cosine_scores.argsort(descending=True)
+
+        for idx in top_indices:
+            product = df.iloc[idx.item()]
+            name_lower = product["Name"].lower()
+            if not allow_keywords:
+                if any(kw in name_lower for kw in exclude_keywords):
+                    continue  # Skip excluded items
+            if pd.isna(product["Price"]):
+                continue
+            best_matches.append({
+                "Input": item,
+                "Matched Product": product["Name"],
+                "Price": product["Price"],
+                "Index": idx.item()
+            })
+            break  # Take only the best available match
+
+    # Sort matches by price
+    best_matches.sort(key=lambda x: x["Price"])
+    
+    total = 0
+    selected = []
+    not_fitted = []
+
+    for match in best_matches:
+        if total + match["Price"] <= budget:
+            total += match["Price"]
+            selected.append(match)
+        else:
+            not_fitted.append(match["Input"])
+
+    return selected, total, not_fitted
 
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
@@ -442,3 +485,26 @@ secondary_items = st.session_state.secondary_list
 if st.button("🛒 Generate List"):
     if not essential_items:
         st.warning("⚠️ Add essential items first.")
+    else:
+        selected_essentials, total_essentials, unfitted_essentials = filter_products(latest_df, essential_items, budget)
+
+        remaining_budget = budget - total_essentials
+        selected_secondary, total_secondary, unfitted_secondary = [], 0, []
+
+        if remaining_budget > 0:
+            selected_secondary, total_secondary, unfitted_secondary = filter_products(latest_df, secondary_items, remaining_budget)
+
+        final_list = selected_essentials + selected_secondary
+        final_total = total_essentials + total_secondary
+
+        st.success(f"✅ Total cost: £{final_total:.2f}")
+        st.write("🛍️ Your Shopping List:")
+        for item in final_list:
+            st.write(f"- {item['Input']} → {item['Matched Product']} (£{item['Price']:.2f})")
+
+        if unfitted_essentials or unfitted_secondary:
+            st.warning("⚠️ Items that couldn’t fit within the budget:")
+            if unfitted_essentials:
+                st.write("Essentials:", ", ".join(unfitted_essentials))
+            if unfitted_secondary:
+                st.write("Secondary:", ", ".join(unfitted_secondary))
