@@ -192,8 +192,6 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-
-
 def is_excluded(product_name):
     name = product_name.lower()
     return any(keyword in name for keyword in exclude_keywords)
@@ -201,51 +199,56 @@ def is_excluded(product_name):
 def is_match(user_input, product_name):
     user_input = user_input.lower().strip()
     product_name = product_name.lower().strip()
-
-    # Word-boundary match
     return re.search(rf"\b{re.escape(user_input)}\b", product_name) is not None
 
-def get_matching_items(user_item, df):
-    matches = df[df["Name"].apply(lambda name: is_match(user_item, name) and not is_excluded(name))]
-    matches = matches.sort_values(by="Price")
-    return matches
+def get_clean_matches(user_item, df):
+    return df[df["Name"].apply(lambda name: is_match(user_item, name) and not is_excluded(name))]
+
+def get_fallback_matches(user_item, df):
+    return df[df["Name"].apply(lambda name: is_match(user_item, name))]
+
+def get_best_match(user_item, df):
+    clean_matches = get_clean_matches(user_item, df)
+    if not clean_matches.empty:
+        return clean_matches.sort_values(by="Price").iloc[0]
+    
+    fallback_matches = get_fallback_matches(user_item, df)
+    if not fallback_matches.empty:
+        return fallback_matches.sort_values(by="Price").iloc[0]
+    
+    return None  # Nothing found
 
 def get_cheapest_items(items, df, store, budget):
     selected_items = []
     total_cost = 0.0
 
     for item in items:
-        matches = get_matching_items(item, df[df["Store_Name"] == store])
+        store_filtered_df = df[df["Store_Name"] == store]
+        match = get_best_match(item, store_filtered_df)
 
-        if not matches.empty:
-            cheapest = matches.iloc[0]
-            item_price = cheapest["Price"]
-
-            if total_cost + item_price <= budget:
-                selected_items.append(cheapest)
-                total_cost += item_price
-            else:
-                break
+        if match is not None:
+            price = match["Price"]
+            if total_cost + price <= budget:
+                selected_items.append(match)
+                total_cost += price
 
     return selected_items, total_cost
+
 
 def add_secondary_items(secondary_items, df, store, current_cost, budget):
     added_items = []
 
     for item in secondary_items:
-        matches = get_matching_items(item, df[df["Store_Name"] == store])
-        if not matches.empty:
-            cheapest = matches.iloc[0]
-            price = cheapest["Price"]
+        store_filtered_df = df[df["Store_Name"] == store]
+        match = get_best_match(item, store_filtered_df)
 
+        if match is not None:
+            price = match["Price"]
             if current_cost + price <= budget:
-                added_items.append(cheapest)
+                added_items.append(match)
                 current_cost += price
-            else:
-                continue
 
     return added_items, current_cost
-
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
