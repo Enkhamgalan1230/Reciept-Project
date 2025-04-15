@@ -412,16 +412,25 @@ if st.button("🛒 Generate List"):
         store_df = latest_df[latest_df["Store_Name"] == selection]
 
         # --- Step 2: Matching logic ---
-        def get_best_match(item, choices, threshold=85):
-            # First try direct match with filtered list
-            filtered_choices = [
-                c for c in choices
-                if all(kw not in c.lower() for kw in exclude_keywords) or kw_in_item(c, item)
-            ]
+        def get_best_match(item, df, threshold=85):
+            matches = process.extract(item, df["Name"].tolist(), scorer=fuzz.token_sort_ratio, limit=10)
             
-            result = process.extractOne(item, filtered_choices)
-            if result and result[1] >= threshold:
-                return result[0]
+            valid_matches = [match[0] for match in matches if match[1] >= threshold]
+
+            # Filter out "vegan", "flavoured", etc., unless user mentioned it
+            filtered = [
+                name for name in valid_matches
+                if all(kw not in name.lower() for kw in exclude_keywords)
+                or any(kw in item.lower() for kw in exclude_keywords)
+            ]
+
+            if not filtered:
+                return None
+
+            # Return row of cheapest valid match
+            matched_rows = df[df["Name"].isin(filtered)]
+            if not matched_rows.empty:
+                return matched_rows.sort_values("Price").iloc[0]
             return None
         
         def kw_in_item(product_name, original_query):
@@ -431,10 +440,9 @@ if st.button("🛒 Generate List"):
         def find_cheapest_matches(items, df):
             matched = []
             for item in items:
-                match = get_best_match(item, df["Name"].tolist())
-                if match:
-                    row = df[df["Name"] == match].sort_values("Price").head(1)
-                    matched.append(row)
+                best_row = get_best_match(item, df)
+                if best_row is not None:
+                    matched.append(best_row.to_frame().T)  # turn Series into DataFrame row
             return matched
 
         # --- Step 3: Match essential items ---
