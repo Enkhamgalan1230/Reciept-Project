@@ -63,7 +63,8 @@ exclude_keywords = [
     # Prepared / cooked / processed items
     "ready", "ready meal", "frozen meal", "pre-cooked", "precooked", "cooked",
     "marinated", "roast", "roasted", "grilled", "tandoori", "bbq", "barbecue",
-    "fried", "battered", "smoked", "steamed", "seasoned", "cured","frozen", "breaded"
+    "fried", "battered", "smoked", "steamed", "seasoned", "cured","frozen", "breaded",
+    "cure"
 
     # Flavourings and sweet/dessert items
     "flavoured", "flavor", "sweet", "dessert", "chocolate", "vanilla", "caramel",
