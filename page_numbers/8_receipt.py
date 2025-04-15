@@ -55,11 +55,37 @@ def load_adjectives():
     df = pd.read_csv("food_adjectives.csv")
     hyphens = set(df["Food_Adjective"].str.lower().tolist())
     return hyphens, {adj.replace("-", " "): adj for adj in hyphens}
-
 exclude_keywords = [
-    "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie",
-    "drink", "ready meal", "frozen meal", "meat-free", "snack", "dessert",
-    "alternative", "plant", "nugget", "fried", "burger",
+    # Dietary substitutes / labels
+    "vegan", "vegetarian", "plant-based", "plant", "meat-free", "meat alternative",
+    "non-dairy", "dairy-free", "egg-free", "gluten-free", "free from",
+
+    # Prepared / cooked / processed items
+    "ready", "ready meal", "frozen meal", "pre-cooked", "precooked", "cooked",
+    "marinated", "roast", "roasted", "grilled", "tandoori", "bbq", "barbecue",
+    "fried", "battered", "smoked", "steamed", "seasoned", "cured","frozen"
+
+    # Flavourings and sweet/dessert items
+    "flavoured", "flavor", "sweet", "dessert", "chocolate", "vanilla", "caramel",
+
+    # Packaged and processed variations
+    "sliced", "shredded", "deli", "nugget", "burger", "sausage", "bacon", "balls",
+    "bites", "strips", "patties", "chunks", "goujon", "finger", "popcorn",
+
+    # Canned and jarred goods
+    "canned", "tinned", "jar", "paste", "spread", "puree",
+
+    # Beverages and liquids
+    "drink", "smoothie", "juice", "shake", "beverage", "milkshake", "infused",
+
+    # Snacks and side products
+    "snack", "bar", "crisp", "chip", "popcorn", "dip", "sauce", "gravy", "dressing",
+
+    # Substitutes and alternatives
+    "substitute", "alternative", "replacement", "replica", "mock", "fake", "faux",
+    
+    # Other ambiguous types
+    "baby", "pet", "cat", "dog", "kitten", "puppy", "feed", "food for", "food supplement",
 ]
 
 
@@ -164,6 +190,8 @@ def extract_adj_noun_phrases(text):
 
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
+
+
 
 def is_excluded(name):
     name = name.lower()
