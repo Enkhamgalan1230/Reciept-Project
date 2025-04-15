@@ -247,7 +247,7 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
             top_index_in_filtered = cosine_scores.argmax().item()
 
             best_index = keyword_filtered_df.iloc[top_index_in_filtered]["index"]  # original df index
-            product = df.iloc[best_index]
+            product = df.loc[best_index]
 
             best_matches.append({
                 "Input": item,
