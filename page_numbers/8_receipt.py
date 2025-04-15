@@ -397,56 +397,67 @@ selection = st.pills("Stores", options, selection_mode="single")
 essential_items = st.session_state.essential_list
 secondary_items = st.session_state.secondary_list
 
-# Filter by selected store
-store_df = latest_df[latest_df["Store_Name"] == selection]
 
-# Function to fuzzy match items
-def get_best_match(item, choices, threshold=85):
-    result = process.extractOne(item, choices)
-    if result and result[1] >= threshold:
-        return result[0]  # return best match
-    return None
+if st.button("🛒 Generate List"):
 
-def find_cheapest_matches(items, df):
-    matched = []
-    for item in items:
-        match = get_best_match(item, df["Name"].tolist())
-        if match:
-            row = df[df["Name"] == match].sort_values("Price").head(1)
-            matched.append(row)
-    return matched
+    # --- Check if essentials are empty ---
+    if not essential_items:
+        st.warning("⚠️ Your essential item list is empty. Please add at least one item.")
+    else:
+        # --- Step 1: Filter data for selected store ---
+        store_df = latest_df[latest_df["Store_Name"] == selection]
 
-# --- Match Essential Items ---
-essential_matches = find_cheapest_matches(essential_items, store_df)
-essential_df = pd.concat(essential_matches) if essential_matches else pd.DataFrame()
+        # --- Step 2: Matching logic ---
+        def get_best_match(item, choices, threshold=85):
+            result = process.extractOne(item, choices)
+            if result and result[1] >= threshold:
+                return result[0]
+            return None
 
-# --- Filter to fit budget ---
-total_cost = 0.0
-final_items = []
+        def find_cheapest_matches(items, df):
+            matched = []
+            for item in items:
+                match = get_best_match(item, df["Name"].tolist())
+                if match:
+                    row = df[df["Name"] == match].sort_values("Price").head(1)
+                    matched.append(row)
+            return matched
 
-for _, row in essential_df.sort_values("Price").iterrows():
-    price = row["Price"]
-    if total_cost + price <= budget:
-        final_items.append(row)
-        total_cost += price
+        # --- Step 3: Match essential items ---
+        essential_matches = find_cheapest_matches(essential_items, store_df)
+        essential_df = pd.concat(essential_matches) if essential_matches else pd.DataFrame(columns=store_df.columns)
 
-# --- Use remaining budget for secondary items ---
-remaining_budget = budget - total_cost
+        # --- Step 4: Fit essentials within budget ---
+        total_cost = 0.0
+        final_items = []
 
-secondary_matches = find_cheapest_matches(secondary_items, store_df)
-secondary_df = pd.concat(secondary_matches) if secondary_matches else pd.DataFrame(columns=store_df.columns)
+        for _, row in essential_df.sort_values("Price").iterrows():
+            price = row["Price"]
+            if total_cost + price <= budget:
+                row["Source"] = "Essential"
+                final_items.append(row)
+                total_cost += price
 
-for _, row in secondary_df.sort_values("Price").iterrows():
-    price = row["Price"]
-    if total_cost + price <= budget:
-        final_items.append(row)
-        total_cost += price
+        # --- Step 5: Use leftover for secondary items (if any) ---
+        remaining_budget = budget - total_cost
 
-# --- Display Results ---
-if final_items:
-    result_df = pd.DataFrame(final_items)
-    st.subheader("🧾 Final Shopping List Within Budget")
-    st.dataframe(result_df[["Name", "Price", "Store_Name", "Category", "Subcategory"]])
-    st.success(f"✅ Total: £{total_cost:.2f} / £{budget:.2f}")
-else:
-    st.warning("No items could be added within your budget.")
+        if secondary_items:
+            secondary_matches = find_cheapest_matches(secondary_items, store_df)
+            secondary_df = pd.concat(secondary_matches) if secondary_matches else pd.DataFrame(columns=store_df.columns)
+
+            for _, row in secondary_df.sort_values("Price").iterrows():
+                price = row["Price"]
+                if total_cost + price <= budget:
+                    row["Source"] = "Secondary"
+                    final_items.append(row)
+                    total_cost += price
+
+        # --- Step 6: Display Results ---
+        if final_items:
+            result_df = pd.DataFrame(final_items)
+            result_df = result_df[["Name", "Price", "Store_Name", "Category", "Subcategory", "Source"]]
+            st.subheader("✅ Final Shopping List")
+            st.dataframe(result_df, use_container_width=True)
+            st.success(f"🧮 Total Cost: £{total_cost:.2f} out of £{budget:.2f}")
+        else:
+            st.warning("⚠️ None of the items fit within your budget.")
