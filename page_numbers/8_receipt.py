@@ -267,7 +267,6 @@ container4 = st.container(border=True)
 with container1:
     st.subheader("✏️ **Write your grocery list**")
     st.caption("📌 If you know what you are buying, write it up here...")
-    budget = st.number_input("Insert the budget (£)", placeholder="Ex: 30", format="%0.2f", min_value=0.0)
 
     with st.form("add_item_form"):
         new_item = st.text_input("Add an item to the list")
@@ -510,7 +509,7 @@ with st.container(border=True):
 
             st.success(f"✅ Total cost: £{final_total:.2f}")
             result_df = pd.DataFrame(final_list)
-            st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
+            st.dataframe(result_df[["Input", "Matched Product", "Store_Name", "Price", "Discount"]], use_container_width=True)
 
             if unfitted_essentials or unfitted_secondary:
                 st.warning("⚠️ Items that couldn’t fit within the budget:")
