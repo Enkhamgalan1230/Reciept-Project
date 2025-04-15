@@ -227,11 +227,11 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
                 lambda name: any(kw in name for kw in exclude_keywords)
             )
 
-        keyword_filtered_df = df[keyword_mask]
+        keyword_filtered_df = df[keyword_mask].reset_index()
 
         if not keyword_filtered_df.empty:
             # 🧠 Run semantic search only within the keyword-filtered products
-            keyword_indices = keyword_filtered_df.index.tolist()
+            keyword_indices = keyword_filtered_df["index"].tolist()
 
             if not keyword_indices:
                 continue  # ❗ Avoid index_select crash if empty
