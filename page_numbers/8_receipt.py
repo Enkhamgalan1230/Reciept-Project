@@ -16,6 +16,9 @@ import openai
 from groq import Groq
 import re
 from fuzzywuzzy import fuzz
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 # ========== SESSION STATE SETUP ==========
 
@@ -52,6 +55,17 @@ def load_adjectives():
     df = pd.read_csv("food_adjectives.csv")
     hyphens = set(df["Food_Adjective"].str.lower().tolist())
     return hyphens, {adj.replace("-", " "): adj for adj in hyphens}
+
+@st.cache_resource
+def load_embed_model():
+    return SentenceTransformer('all-MiniLM-L6-v2')
+
+embed_model = load_embed_model()
+
+exclude_keywords = [
+    "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie",
+    "drink", "ready meal", "frozen meal", "meat-free", "snack", "dessert", "alternative", "plant"
+]
 
 system_prompt = (
     "You are a helpful assistant for a grocery list app and your name is Entwan. "
@@ -156,10 +170,36 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-exclude_keywords = [
-            "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie", "drink",
-            "ready meal", "frozen meal", "meat-free", "snack", "dessert", "alternative", "plant"
-        ]
+def get_best_match_embed(item, df, top_n=1, min_score=0.5):
+    item_vec = embed_model.encode([item])
+    product_names = df["Name"].tolist()
+    product_vecs = embed_model.encode(product_names)
+
+    similarities = cosine_similarity(item_vec, product_vecs)[0]
+    best_idx = np.argsort(similarities)[::-1][:top_n]
+
+    for idx in best_idx:
+        score = similarities[idx]
+        product_name = df.iloc[idx]["Name"].lower()
+
+        # Exclude alt products unless mentioned
+        if score >= min_score and (
+            all(kw not in product_name for kw in exclude_keywords)
+            or any(kw in item.lower() for kw in exclude_keywords)
+        ):
+            return df.iloc[idx]
+    return None
+
+def find_cheapest_matches(items, df):
+    matched = []
+    for item in items:
+        best_row = get_best_match_embed(item, df)
+        st.write(f"🧪 Matching for '{item}':", best_row["Name"] if best_row is not None else "None")
+        if best_row is not None:
+            matched.append(best_row.to_frame().T)
+
+
+    return matched
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
@@ -405,55 +445,19 @@ secondary_items = st.session_state.secondary_list
 
 if st.button("🛒 Generate List"):
 
-    # --- Check if essentials are empty ---
     if not essential_items:
         st.warning("⚠️ Your essential item list is empty. Please add at least one item.")
     else:
-        # --- Step 1: Filter data for selected store ---
         store_df = latest_df[latest_df["Store_Name"] == selection]
+        store_df = store_df[store_df["Price"].notna()]  # Clean prices
+        store_df["Price"] = pd.to_numeric(store_df["Price"], errors="coerce")
 
-        # --- Step 2: Matching logic ---
-        def get_best_match(item, df, threshold=75):
-            matches = process.extract(item, df["Name"].tolist(), scorer=fuzz.token_sort_ratio, limit=10)
-            
-            valid_matches = [match[0] for match in matches if match[1] >= threshold]
-
-            # Filter out "vegan", "flavoured", etc., unless user mentioned it
-            filtered = [
-                name for name in valid_matches
-                if all(kw not in name.lower() for kw in exclude_keywords)
-                or any(kw in item.lower() for kw in exclude_keywords)
-            ]
-
-            if not filtered:
-                return None
-
-            # Return row of cheapest valid match
-            matched_rows = df[df["Name"].isin(filtered)]
-            if not matched_rows.empty:
-                return matched_rows.sort_values("Price").iloc[0]
-            return None
-        
-        def kw_in_item(product_name, original_query):
-            # Allow vegan/etc. only if it’s directly in user’s input (e.g., "vegan cheese")
-            return any(kw in original_query.lower() for kw in exclude_keywords)
-
-        def find_cheapest_matches(items, df):
-            matched = []
-            for item in items:
-                best_row = get_best_match(item, df)
-                st.write(f"🧪 Matching for '{item}':", best_row)  # DEBUG LOG
-                if best_row is not None:
-                    matched.append(best_row.to_frame().T)
-            return matched
-
-        # --- Step 3: Match essential items ---
-        essential_matches = find_cheapest_matches(essential_items, store_df)
-        essential_df = pd.concat(essential_matches) if essential_matches else pd.DataFrame(columns=store_df.columns)
-
-        # --- Step 4: Fit essentials within budget ---
         total_cost = 0.0
         final_items = []
+
+        # --- Match Essential Items ---
+        essential_matches = find_cheapest_matches(essential_items, store_df)
+        essential_df = pd.concat(essential_matches) if essential_matches else pd.DataFrame(columns=store_df.columns)
 
         for _, row in essential_df.sort_values("Price").iterrows():
             price = row["Price"]
@@ -462,7 +466,7 @@ if st.button("🛒 Generate List"):
                 final_items.append(row)
                 total_cost += price
 
-        # --- Step 5: Use leftover for secondary items (if any) ---
+        # --- Match Secondary if Budget Allows ---
         remaining_budget = budget - total_cost
 
         if secondary_items:
@@ -476,7 +480,7 @@ if st.button("🛒 Generate List"):
                     final_items.append(row)
                     total_cost += price
 
-        # --- Step 6: Display Results ---
+        # --- Show Results ---
         if final_items:
             result_df = pd.DataFrame(final_items)
             result_df = result_df[["Name", "Price", "Store_Name", "Category", "Subcategory", "Source"]]
