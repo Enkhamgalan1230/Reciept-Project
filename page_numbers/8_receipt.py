@@ -164,34 +164,20 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def contains_exclude_keywords(name):
-    name_lower = name.lower()
-    return any(kw in name_lower for kw in exclude_keywords)
-
-def get_best_match_tfidf(item, df, top_n=5, min_score=0.2):
+def get_best_match_tfidf(item, df, top_n=1, min_score=0.2):
     product_names = df["Name"].astype(str).tolist()
-    if not product_names:
-        return None
-
-    # TF-IDF similarity
     texts = [item] + product_names
+
     vectorizer = TfidfVectorizer(stop_words='english')
     vectors = vectorizer.fit_transform(texts)
+
     similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
     best_idx = np.argsort(similarities)[::-1][:top_n]
 
-    # Try top matches
     for idx in best_idx:
         score = similarities[idx]
-        name = product_names[idx]
-        if score >= min_score and not contains_exclude_keywords(name):
+        if score >= min_score:
             return df.iloc[idx]
-
-    item_words = item.lower().split()
-    for i, name in enumerate(product_names):
-        if all(word in name.lower() for word in item_words) and not contains_exclude_keywords(name):
-            return df.iloc[i]
-
     return None
 
 def find_cheapest_matches(items, df):
