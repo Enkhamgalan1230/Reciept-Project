@@ -423,8 +423,6 @@ latest_date = df["Date"].max()
 latest_df = df[df["Date"] == latest_date]
 
 st.write(latest_df)
-st.write(latest_df[latest_df["Store_Name"] == "Sainsburys"])
-
 options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
 selection = st.pills("Stores", options, selection_mode="single")
 
