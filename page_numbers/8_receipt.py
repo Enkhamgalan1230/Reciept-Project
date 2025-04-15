@@ -227,23 +227,26 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
                 lambda name: any(kw in name for kw in exclude_keywords)
             )
 
-        keyword_filtered_df = df[keyword_mask].reset_index()
+        keyword_filtered_df = df[keyword_mask].reset_index(drop=False)
 
         if not keyword_filtered_df.empty:
-            # 🧠 Run semantic search only within the keyword-filtered products
-            keyword_indices = keyword_filtered_df["index"].tolist()
+            keyword_positions = keyword_filtered_df.index.tolist()  # sequential row positions
 
-            if not keyword_indices:
-                continue  # ❗ Avoid index_select crash if empty
+            if not keyword_positions:
+                continue
 
             item_embedding = model.encode(item, convert_to_tensor=True)
 
-            # Only compare against filtered subset
-            filtered_embeddings = torch.index_select(embeddings, 0, torch.tensor(keyword_indices))
+            try:
+                filtered_embeddings = torch.index_select(embeddings, 0, torch.tensor(keyword_positions))
+            except IndexError:
+                st.warning(f"⚠️ Skipping '{item}' due to embedding mismatch.")
+                continue
+
             cosine_scores = util.cos_sim(item_embedding, filtered_embeddings)[0]
             top_index_in_filtered = cosine_scores.argmax().item()
 
-            best_index = keyword_indices[top_index_in_filtered]
+            best_index = keyword_filtered_df.iloc[top_index_in_filtered]["index"]  # original df index
             product = df.iloc[best_index]
 
             best_matches.append({
