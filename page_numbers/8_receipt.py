@@ -85,7 +85,8 @@ exclude_keywords = [
     "cure","joint","stuffing","pasty","tiles",
 
     # Flavourings and sweet/dessert items
-    "flavoured", "flavor", "sweet", "dessert", "chocolate", "vanilla", "caramel",
+    "flavoured", "flavor", "sweet", "dessert", "chocolate", "vanilla", "caramel","stock pots",
+    "sandwich", "vinegar","wrap",
 
     # Packaged and processed variations
     "sliced", "shredded", "deli", "nugget", "burger", "sausage", "bacon", "balls",
@@ -216,21 +217,21 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
     best_matches = []
 
     for item in query_list:
-        # Step 1: Try to find exact substring matches
+        # Step 1 — exact name filtering (with exclusions)
         mask = (
             df["Store_Name"] == selected_store
         ) & df["Name"].str.lower().str.contains(item.lower()) & df["Price"].notna()
 
         if not allow_keywords:
+            # Filter out any excluded keywords
             mask &= ~df["Name"].str.lower().apply(lambda name: any(kw in name for kw in exclude_keywords))
 
         keyword_matches = df[mask]
 
         if not keyword_matches.empty:
-            # Pick the cheapest keyword match
             product = keyword_matches.sort_values("Price").iloc[0]
         else:
-            # Step 2: Fall back to semantic search
+            # Step 2 — fallback to semantic search
             item_embedding = model.encode(item, convert_to_tensor=True)
             cosine_scores = util.cos_sim(item_embedding, embeddings)[0]
             top_indices = cosine_scores.argsort(descending=True)
@@ -246,10 +247,10 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
                 if pd.isna(row["Price"]):
                     continue
                 product = row
-                break
+                break  # first valid match
 
             if product is None:
-                continue  # No match found at all
+                continue  # No match at all
 
         best_matches.append({
             "Input": item,
@@ -506,6 +507,8 @@ with st.container(border=True):
 
     budget = st.number_input("Insert your budget (£)", format="%.2f", min_value=0.0, key="budget_generator")
 
+    allow_keywords = st.toggle("Allow substitutes & processed items (vegan, frozen, flavoured, sandwich etc.)", value=False)
+
     essential_items = st.session_state.essential_list
     secondary_items = st.session_state.secondary_list
 
@@ -515,9 +518,8 @@ with st.container(border=True):
         else:
             with st.spinner("🔍 Matching products..."):
                 selected_essentials, total_essentials, unfitted_essentials = filter_products(
-                    latest_df, all_embeddings, essential_items, budget, selected_store=selection
+                    latest_df, all_embeddings, essential_items, budget, selected_store=selection, allow_keywords=allow_keywords
                 )
-
                 remaining_budget = budget - total_essentials
                 selected_secondary, total_secondary, unfitted_secondary = [], 0, []
 
