@@ -194,17 +194,21 @@ def get_audio_hash(audio_bytes):
 
 
 
-def is_excluded(name):
-    name = name.lower()
+def is_excluded(product_name):
+    name = product_name.lower()
     return any(keyword in name for keyword in exclude_keywords)
 
 def is_match(user_input, product_name):
-    # Simple matching: exact match or word containment
-    return user_input.lower() in product_name.lower()
+    user_input = user_input.lower().strip()
+    product_name = product_name.lower().strip()
 
-def get_matching_items(item, df):
-    filtered = df[df["Name"].apply(lambda name: is_match(item, name) and not is_excluded(name))]
-    return filtered.sort_values(by="Price")
+    # Word-boundary match
+    return re.search(rf"\b{re.escape(user_input)}\b", product_name) is not None
+
+def get_matching_items(user_item, df):
+    matches = df[df["Name"].apply(lambda name: is_match(user_item, name) and not is_excluded(name))]
+    matches = matches.sort_values(by="Price")
+    return matches
 
 def get_cheapest_items(items, df, store, budget):
     selected_items = []
