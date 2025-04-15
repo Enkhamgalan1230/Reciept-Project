@@ -222,7 +222,7 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
 
         for idx in top_indices:
             product = df.iloc[idx.item()]
-            if product["Store"] != selected_store:
+            if product["Store_Name"] != selected_store:
                 continue
             name_lower = product["Name"].lower()
             if not allow_keywords and any(kw in name_lower for kw in exclude_keywords):
@@ -233,7 +233,7 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
             best_matches.append({
                 "Input": item,
                 "Matched Product": product["Name"],
-                "Store": product["Store"],
+                "Store": product["Store_Name"],
                 "Price": product["Price"],
                 "Discount": product.get("Clubcard Price", np.nan),
             })
