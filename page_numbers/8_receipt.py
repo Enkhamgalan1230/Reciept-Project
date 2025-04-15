@@ -59,7 +59,7 @@ def load_adjectives():
 exclude_keywords = [
     "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie",
     "drink", "ready meal", "frozen meal", "meat-free", "snack", "dessert",
-    "alternative", "plant", "nugget"
+    "alternative", "plant", "nugget", "fried", "burger",
 ]
 
 def contains_exclude_keywords(name):
