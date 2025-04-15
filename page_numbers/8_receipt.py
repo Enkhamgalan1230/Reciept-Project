@@ -60,7 +60,7 @@ latest_date = df["Date"].max()
 # Filter to only the rows with the latest date
 latest_df = df[df["Date"] == latest_date]
 
-embeddings_np = np.load("latest_embeddings_2025-04-15.npy")
+embeddings_np = np.load("latest_embeddings.npy")
 all_embeddings = torch.tensor(embeddings_np)
 
 @st.cache_resource
