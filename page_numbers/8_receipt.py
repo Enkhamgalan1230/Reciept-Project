@@ -19,7 +19,7 @@ from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-#from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer
 # ========== SESSION STATE SETUP ==========
 
 # Check if df is stored in session state
