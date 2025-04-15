@@ -68,6 +68,7 @@ def load_adjectives():
     df = pd.read_csv("food_adjectives.csv")
     hyphens = set(df["Food_Adjective"].str.lower().tolist())
     return hyphens, {adj.replace("-", " "): adj for adj in hyphens}
+
 exclude_keywords = [
     # Dietary substitutes / labels
     "vegan", "vegetarian", "plant-based", "plant", "meat-free", "meat alternative",
@@ -204,60 +205,6 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def is_excluded(name):
-    name = name.lower()
-    return any(kw in name for kw in exclude_keywords)
-
-def is_match(user_input, name):
-    user_input, name = user_input.lower().strip(), name.lower().strip()
-    return name.startswith(user_input) or user_input in name
-
-def strict_match(user_input, df):
-    return df[df["Name"].apply(lambda n: is_match(user_input, n) and not is_excluded(n))]
-
-def fallback_match(user_input, df):
-    return df[df["Name"].apply(lambda n: is_match(user_input, n))]
-
-def semantic_match(user_input, df, index, topn=5):
-    results = index.search(user_input, topn)
-    return pd.DataFrame([df.iloc[i] for i, _ in results])
-
-def get_best_match(user_input, df, index):
-    strict = strict_match(user_input, df)
-    if not strict.empty:
-        return strict.sort_values(by="Price").iloc[0]
-
-    fallback = fallback_match(user_input, df)
-    if not fallback.empty:
-        return fallback.sort_values(by="Price").iloc[0]
-
-    semantic = semantic_match(user_input, df, index)
-    semantic = semantic[~semantic["Name"].apply(is_excluded)]
-    if not semantic.empty:
-        return semantic.sort_values(by="Price").iloc[0]
-
-    return None
-
-def generate_list(item_list, df, store, budget, index):
-    selected = []
-    total = 0
-    skipped = []
-
-    store_df = df[df["Store_Name"] == store]
-
-    for item in item_list:
-        match = get_best_match(item, store_df, index)
-        if match is not None:
-            price = match["Price"]
-            if total + price <= budget:
-                selected.append(match)
-                total += price
-            else:
-                skipped.append((item, match["Name"], price))
-        else:
-            skipped.append((item, None, None))
-
-    return selected, total, skipped
 
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
@@ -496,24 +443,3 @@ secondary_items = st.session_state.secondary_list
 if st.button("🛒 Generate List"):
     if not essential_items:
         st.warning("⚠️ Add essential items first.")
-    else:
-        store = selection
-        budget = st.session_state.get("budget", 20.0)
-
-        selected, total, skipped = generate_list(essential_items, latest_df, store, budget, index)
-
-        if selected:
-            st.subheader("✅ Final Shopping List")
-            result_df = pd.DataFrame(selected)[["Name", "Price", "Store_Name", "Category", "Subcategory"]]
-            st.dataframe(result_df, use_container_width=True)
-            st.success(f"🧮 Total Cost: £{total:.2f} / £{budget:.2f}")
-
-            if skipped:
-                with st.expander("⚠️ Skipped Items"):
-                    for item, name, price in skipped:
-                        if name:
-                            st.write(f"'{item}' → matched '{name}' (£{price:.2f}), over budget")
-                        else:
-                            st.write(f"'{item}' → no match found")
-        else:
-            st.warning("❌ No items matched within your budget.")
