@@ -15,6 +15,7 @@ import hashlib
 import openai
 from groq import Groq
 import re
+from fuzzywuzzy import fuzz
 
 # ========== SESSION STATE SETUP ==========
 
