@@ -22,6 +22,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 #from txtai.embeddings import Embeddings
 from sentence_transformers import SentenceTransformer, util
+import torch
 # ========== SESSION STATE SETUP ==========
 
 # Check if df is stored in session state
@@ -29,16 +30,6 @@ if "df" in st.session_state:
     df = st.session_state.df  # Retrieve stored data
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
-
-# Combine year, month, and day into a datetime column
-df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
-
-# Get the most recent date
-latest_date = df["Date"].max()
-
-# Filter to only the rows with the latest date
-latest_df = df[df["Date"] == latest_date]
-
 
 # Set up Groq API Key
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
@@ -59,6 +50,19 @@ if "chat_history" not in st.session_state:
 model = SentenceTransformer("all-MiniLM-L6-v2")  # Lightweight and good for semantic search
 
 # ========== LOAD MODELS AND DATA ==========
+
+# Combine year, month, and day into a datetime column
+df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
+
+# Get the most recent date
+latest_date = df["Date"].max()
+
+# Filter to only the rows with the latest date
+latest_df = df[df["Date"] == latest_date]
+
+embeddings_np = np.load("latest_embeddings_2025-04-15.npy")
+all_embeddings = torch.tensor(embeddings_np)
+
 @st.cache_resource
 def load_nlp_model():
     return spacy.load("en_core_web_sm")
@@ -205,14 +209,11 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-@st.cache_data(show_spinner=False)
-def compute_latest_embeddings(latest_df):
-    names = latest_df["Name"].astype(str).tolist()
-    return model.encode(names, convert_to_tensor=True)
-
 def filter_products(df, embeddings, query_list, budget, selected_store, allow_keywords=False):
+    if len(embeddings) != len(df):
+        raise ValueError("Embeddings and DataFrame row count mismatch.")
+
     best_matches = []
-    product_names = df["Name"].astype(str).tolist()
 
     for item in query_list:
         item_embedding = model.encode(item, convert_to_tensor=True)
@@ -251,7 +252,6 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
             not_fitted.append(match["Input"])
 
     return selected, total, not_fitted
-
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
@@ -485,9 +485,12 @@ selection = st.pills("Stores", options, selection_mode="single")
 essential_items = st.session_state.essential_list
 secondary_items = st.session_state.secondary_list
 
-# Compute embeddings for full dataset
-# Pre-compute embeddings for latest_df
-all_embeddings = compute_latest_embeddings(latest_df)
+
+options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
+selection = st.pills("Stores", options, selection_mode="single")
+
+essential_items = st.session_state.essential_list
+secondary_items = st.session_state.secondary_list
 
 if st.button("🛒 Generate List"):
     if not essential_items:
