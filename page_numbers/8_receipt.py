@@ -164,7 +164,7 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def get_best_match_tfidf(item, df, top_n=1, min_score=0.2):
+def get_best_match_tfidf(item, df, top_n=1, min_score=0.15):
     product_names = df["Name"].astype(str).tolist()
     texts = [item] + product_names
 
