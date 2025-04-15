@@ -504,6 +504,7 @@ with st.container(border=True):
     st.subheader("🛒 Generate Grocery List")
     options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
     selection = st.pills("Stores", options, selection_mode="single")
+    selected_store = selection[0] if selection else "Unknown Store"
 
     budget = st.number_input("Insert your budget (£)", format="%.2f", min_value=0.0, key="budget_generator")
 
@@ -531,7 +532,7 @@ with st.container(border=True):
                 final_list = selected_essentials + selected_secondary
                 final_total = total_essentials + total_secondary
 
-            st.success(f"✅ Approximate Total cost: £{final_total:.2f} in {options}!")
+            st.success(f"✅ Approximate Total cost: £{final_total:.2f} in {selected_store}!")
             result_df = pd.DataFrame(final_list)
             st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
 
