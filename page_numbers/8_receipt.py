@@ -413,7 +413,7 @@ if st.button("🛒 Generate List"):
         store_df = latest_df[latest_df["Store_Name"] == selection]
 
         # --- Step 2: Matching logic ---
-        def get_best_match(item, df, threshold=85):
+        def get_best_match(item, df, threshold=75):
             matches = process.extract(item, df["Name"].tolist(), scorer=fuzz.token_sort_ratio, limit=10)
             
             valid_matches = [match[0] for match in matches if match[1] >= threshold]
@@ -442,8 +442,9 @@ if st.button("🛒 Generate List"):
             matched = []
             for item in items:
                 best_row = get_best_match(item, df)
+                st.write(f"🧪 Matching for '{item}':", best_row)  # DEBUG LOG
                 if best_row is not None:
-                    matched.append(best_row.to_frame().T)  # turn Series into DataFrame row
+                    matched.append(best_row.to_frame().T)
             return matched
 
         # --- Step 3: Match essential items ---
