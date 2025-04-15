@@ -26,3 +26,4 @@ openai
 groq
 torch
 sentence-transformers
+keras<3.0.0
