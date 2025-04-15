@@ -164,29 +164,33 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def get_best_match_tfidf(item, df, top_n=1, min_score=0.15):
+def get_best_match_tfidf(item, df, top_n=3, min_score=0.2):
     product_names = df["Name"].astype(str).tolist()
-    texts = [item] + product_names
+    if not product_names:
+        return None
 
+    texts = [item] + product_names
     vectorizer = TfidfVectorizer(stop_words='english')
     vectors = vectorizer.fit_transform(texts)
 
     similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
     best_idx = np.argsort(similarities)[::-1][:top_n]
 
+    # First try: top matches with high enough similarity
     for idx in best_idx:
         score = similarities[idx]
         if score >= min_score:
             return df.iloc[idx]
-    return None
 
-def find_cheapest_matches(items, df):
-    matched = []
-    for item in items:
-        best_row = get_best_match_tfidf(item, df)
-        if best_row is not None:
-            matched.append(best_row.to_frame().T)
-    return matched
+    # Fallback: look for partial word presence (e.g. "chicken" in name)
+    item_words = item.lower().split()
+    for name in product_names:
+        name_lower = name.lower()
+        if all(word in name_lower for word in item_words):  # Match all words
+            return df[df["Name"] == name].iloc[0]
+
+    # Still nothing found
+    return None
 
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
