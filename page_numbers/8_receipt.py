@@ -507,7 +507,7 @@ with st.container(border=True):
 
     budget = st.number_input("Insert your budget (£)", format="%.2f", min_value=0.0, key="budget_generator")
 
-    allow_keywords = st.toggle("Allow substitutes & processed items (vegan, frozen, flavoured, sandwich etc.)", value=False)
+    allow_keywords = st.toggle("Allow this and you might see substitutes & processed items (vegan, frozen, flavoured, sandwich etc.)", value=False)
 
     essential_items = st.session_state.essential_list
     secondary_items = st.session_state.secondary_list
@@ -531,7 +531,7 @@ with st.container(border=True):
                 final_list = selected_essentials + selected_secondary
                 final_total = total_essentials + total_secondary
 
-            st.success(f"✅ Total cost: £{final_total:.2f}")
+            st.success(f"✅ Approximate Total cost: £{final_total:.2f} in {options}!")
             result_df = pd.DataFrame(final_list)
             st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
 
