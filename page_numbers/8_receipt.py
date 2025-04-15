@@ -434,7 +434,7 @@ for _, row in essential_df.sort_values("Price").iterrows():
 remaining_budget = budget - total_cost
 
 secondary_matches = find_cheapest_matches(secondary_items, store_df)
-secondary_df = pd.concat(secondary_matches) if secondary_matches else pd.DataFrame()
+secondary_df = pd.concat(secondary_matches) if secondary_matches else pd.DataFrame(columns=store_df.columns)
 
 for _, row in secondary_df.sort_values("Price").iterrows():
     price = row["Price"]
