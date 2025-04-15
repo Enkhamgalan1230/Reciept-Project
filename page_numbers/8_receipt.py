@@ -16,7 +16,7 @@ import openai
 from groq import Groq
 import re
 from fuzzywuzzy import fuzz
-from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
@@ -55,12 +55,6 @@ def load_adjectives():
     df = pd.read_csv("food_adjectives.csv")
     hyphens = set(df["Food_Adjective"].str.lower().tolist())
     return hyphens, {adj.replace("-", " "): adj for adj in hyphens}
-
-@st.cache_resource
-def load_embed_model():
-    return SentenceTransformer('all-MiniLM-L6-v2')
-
-embed_model = load_embed_model()
 
 exclude_keywords = [
     "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie",
@@ -170,36 +164,30 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def get_best_match_embed(item, df, top_n=1, min_score=0.5):
-    item_vec = embed_model.encode([item])
-    product_names = df["Name"].tolist()
-    product_vecs = embed_model.encode(product_names)
+def get_best_match_tfidf(item, df, top_n=1, min_score=0.2):
+    product_names = df["Name"].astype(str).tolist()
+    texts = [item] + product_names
 
-    similarities = cosine_similarity(item_vec, product_vecs)[0]
+    vectorizer = TfidfVectorizer(stop_words='english')
+    vectors = vectorizer.fit_transform(texts)
+
+    similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
     best_idx = np.argsort(similarities)[::-1][:top_n]
 
     for idx in best_idx:
         score = similarities[idx]
-        product_name = df.iloc[idx]["Name"].lower()
-
-        # Exclude alt products unless mentioned
-        if score >= min_score and (
-            all(kw not in product_name for kw in exclude_keywords)
-            or any(kw in item.lower() for kw in exclude_keywords)
-        ):
+        if score >= min_score:
             return df.iloc[idx]
     return None
 
 def find_cheapest_matches(items, df):
     matched = []
     for item in items:
-        best_row = get_best_match_embed(item, df)
-        st.write(f"🧪 Matching for '{item}':", best_row["Name"] if best_row is not None else "None")
+        best_row = get_best_match_tfidf(item, df)
         if best_row is not None:
             matched.append(best_row.to_frame().T)
-
-
     return matched
+
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
@@ -449,13 +437,13 @@ if st.button("🛒 Generate List"):
         st.warning("⚠️ Your essential item list is empty. Please add at least one item.")
     else:
         store_df = latest_df[latest_df["Store_Name"] == selection]
-        store_df = store_df[store_df["Price"].notna()]  # Clean prices
+        store_df = store_df[store_df["Price"].notna()]
         store_df["Price"] = pd.to_numeric(store_df["Price"], errors="coerce")
 
         total_cost = 0.0
         final_items = []
 
-        # --- Match Essential Items ---
+        # Match Essential Items
         essential_matches = find_cheapest_matches(essential_items, store_df)
         essential_df = pd.concat(essential_matches) if essential_matches else pd.DataFrame(columns=store_df.columns)
 
@@ -466,9 +454,9 @@ if st.button("🛒 Generate List"):
                 final_items.append(row)
                 total_cost += price
 
-        # --- Match Secondary if Budget Allows ---
         remaining_budget = budget - total_cost
 
+        # Match Secondary Items if budget allows
         if secondary_items:
             secondary_matches = find_cheapest_matches(secondary_items, store_df)
             secondary_df = pd.concat(secondary_matches) if secondary_matches else pd.DataFrame(columns=store_df.columns)
@@ -480,7 +468,7 @@ if st.button("🛒 Generate List"):
                     final_items.append(row)
                     total_cost += price
 
-        # --- Show Results ---
+        # Display Final Results
         if final_items:
             result_df = pd.DataFrame(final_items)
             result_df = result_df[["Name", "Price", "Store_Name", "Category", "Subcategory", "Source"]]
