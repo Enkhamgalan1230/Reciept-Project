@@ -58,7 +58,7 @@ def load_adjectives():
 
 exclude_keywords = [
     "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie",
-    "drink", "ready meal", "frozen meal", "meat-free", "snack", "dessert", "alternative", "plant"
+    "drink", "ready meal", "frozen meal", "meat-free", "snack", "dessert", "alternative", "plant","nugget"
 ]
 
 system_prompt = (
@@ -423,6 +423,7 @@ latest_date = df["Date"].max()
 latest_df = df[df["Date"] == latest_date]
 
 st.write(latest_df)
+st.write(latest_df[latest_df["Store_Name"] == "Asda"])
 
 options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
 selection = st.pills("Stores", options, selection_mode="single")
