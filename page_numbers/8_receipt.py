@@ -192,6 +192,14 @@ def get_best_match_tfidf(item, df, top_n=3, min_score=0.2):
     # Still nothing found
     return None
 
+def find_cheapest_matches(items, df):
+    matched = []
+    for item in items:
+        best_row = get_best_match_tfidf(item, df)
+        if best_row is not None:
+            matched.append(best_row.to_frame().T)
+    return matched
+
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
