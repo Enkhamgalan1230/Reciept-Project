@@ -478,47 +478,43 @@ with container4:
         st.info("No secondary items added yet.")
 
 
-st.write(latest_df)
-options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
-selection = st.pills("Stores", options, selection_mode="single")
+with st.container(border=True):
+    st.subheader("🛒 Generate Grocery List")
+    options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
+    selection = st.pills("Stores", options, selection_mode="single")
 
-essential_items = st.session_state.essential_list
-secondary_items = st.session_state.secondary_list
+    budget = st.number_input("Insert your budget (£)", format="%.2f", min_value=0.0, key="budget_generator")
 
+    essential_items = st.session_state.essential_list
+    secondary_items = st.session_state.secondary_list
 
-options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
-selection = st.pills("Stores", options, selection_mode="single")
-
-essential_items = st.session_state.essential_list
-secondary_items = st.session_state.secondary_list
-
-if st.button("🛒 Generate List"):
-    if not essential_items:
-        st.warning("⚠️ Add essential items first.")
-    else:
-        with st.spinner("🔍 Matching products..."):
-            selected_essentials, total_essentials, unfitted_essentials = filter_products(
-                latest_df, all_embeddings, essential_items, budget, selected_store=selection
-            )
-
-            remaining_budget = budget - total_essentials
-            selected_secondary, total_secondary, unfitted_secondary = [], 0, []
-
-            if remaining_budget > 0:
-                selected_secondary, total_secondary, unfitted_secondary = filter_products(
-                    latest_df, all_embeddings, secondary_items, remaining_budget, selected_store=selection
+    if st.button("🛒 Generate List", use_container_width=True):
+        if not essential_items:
+            st.warning("⚠️ Add essential items first.")
+        else:
+            with st.spinner("🔍 Matching products..."):
+                selected_essentials, total_essentials, unfitted_essentials = filter_products(
+                    latest_df, all_embeddings, essential_items, budget, selected_store=selection
                 )
 
-            final_list = selected_essentials + selected_secondary
-            final_total = total_essentials + total_secondary
+                remaining_budget = budget - total_essentials
+                selected_secondary, total_secondary, unfitted_secondary = [], 0, []
 
-        st.success(f"✅ Total cost: £{final_total:.2f}")
-        result_df = pd.DataFrame(final_list)
-        st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
+                if remaining_budget > 0:
+                    selected_secondary, total_secondary, unfitted_secondary = filter_products(
+                        latest_df, all_embeddings, secondary_items, remaining_budget, selected_store=selection
+                    )
 
-        if unfitted_essentials or unfitted_secondary:
-            st.warning("⚠️ Items that couldn’t fit within the budget:")
-            if unfitted_essentials:
-                st.write("Essentials:", ", ".join(unfitted_essentials))
-            if unfitted_secondary:
-                st.write("Secondary:", ", ".join(unfitted_secondary))
+                final_list = selected_essentials + selected_secondary
+                final_total = total_essentials + total_secondary
+
+            st.success(f"✅ Total cost: £{final_total:.2f}")
+            result_df = pd.DataFrame(final_list)
+            st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
+
+            if unfitted_essentials or unfitted_secondary:
+                st.warning("⚠️ Items that couldn’t fit within the budget:")
+                if unfitted_essentials:
+                    st.write("Essentials:", ", ".join(unfitted_essentials))
+                if unfitted_secondary:
+                    st.write("Secondary:", ", ".join(unfitted_secondary))
