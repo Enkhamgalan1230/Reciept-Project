@@ -20,8 +20,8 @@ from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-from txtai.embeddings import Embeddings
-
+#from txtai.embeddings import Embeddings
+from sentence_transformers import SentenceTransformer
 #from sentence_transformers import SentenceTransformer
 # ========== SESSION STATE SETUP ==========
 
@@ -62,12 +62,6 @@ if "chat_history" not in st.session_state:
 @st.cache_resource
 def load_nlp_model():
     return spacy.load("en_core_web_sm")
-@st.cache_resource
-def create_index(df):
-    index = Embeddings({"path": "sentence-transformers/all-MiniLM-L6-v2"})
-    index.index([(i, name, None) for i, name in enumerate(df["Name"].tolist())])
-    return index
-
 
 @st.cache_data
 def load_adjectives():
@@ -119,8 +113,6 @@ system_prompt = (
 
 nlp = load_nlp_model()
 hyphenated_adjs, phrase_map = load_adjectives()
-
-index = create_index(latest_df)
 
 def clean_transcript(text):
     filler_phrases = [
