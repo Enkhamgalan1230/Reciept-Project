@@ -486,17 +486,24 @@ if st.button("🛒 Generate List"):
     if not essential_items:
         st.warning("⚠️ Add essential items first.")
     else:
-        selected_essentials, total_essentials, unfitted_essentials = filter_products(latest_df, essential_items, budget)
+        with st.spinner("🔍 Finding best matches..."):
+            test_df = latest_df.head(200)  # TEMP: speed up for testing
+            selected_essentials, total_essentials, unfitted_essentials = filter_products(
+                test_df, essential_items, budget
+            )
 
-        remaining_budget = budget - total_essentials
-        selected_secondary, total_secondary, unfitted_secondary = [], 0, []
+            remaining_budget = budget - total_essentials
+            selected_secondary, total_secondary, unfitted_secondary = [], 0, []
 
-        if remaining_budget > 0:
-            selected_secondary, total_secondary, unfitted_secondary = filter_products(latest_df, secondary_items, remaining_budget)
+            if remaining_budget > 0:
+                selected_secondary, total_secondary, unfitted_secondary = filter_products(
+                    test_df, secondary_items, remaining_budget
+                )
 
-        final_list = selected_essentials + selected_secondary
-        final_total = total_essentials + total_secondary
+            final_list = selected_essentials + selected_secondary
+            final_total = total_essentials + total_secondary
 
+        # UI feedback
         st.success(f"✅ Total cost: £{final_total:.2f}")
         st.write("🛍️ Your Shopping List:")
         for item in final_list:
