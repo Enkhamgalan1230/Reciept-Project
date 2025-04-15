@@ -78,6 +78,10 @@ nlp = load_nlp_model()
 hyphenated_adjs, phrase_map = load_adjectives()
 
 # ========== HELPER FUNCTIONS ==========
+def contains_all_input_words(product_name, input_item):
+    name = product_name.lower()
+    words = input_item.lower().split()
+    return all(word in name for word in words)
 
 def clean_transcript(text):
     filler_phrases = [
@@ -181,22 +185,25 @@ def get_best_match_tfidf(item, df, top_n=5, min_score=0.2):
     similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
     best_idx = np.argsort(similarities)[::-1][:top_n]
 
-    #  Try to find a clean match above threshold
+    def is_clean(name):
+        return not contains_exclude_keywords(name) and contains_all_input_words(name, item)
+
+    # Step 1: best match above threshold that satisfies full-word check
     for idx in best_idx:
         score = similarities[idx]
         name = product_names[idx]
-        if score >= min_score and not contains_exclude_keywords(name):
+        if score >= min_score and is_clean(name):
             return df.iloc[idx]
 
-    #  If nothing above threshold, return highest match that isn’t excluded
+    # Step 2: fallback to closest match that satisfies full-word check
     for idx in best_idx:
         name = product_names[idx]
-        if not contains_exclude_keywords(name):
+        if is_clean(name):
             return df.iloc[idx]
 
-    #  Still nothing? Return the highest match even if excluded
-    if best_idx.size > 0:
-        return df.iloc[best_idx[0]]
+    # Step 3: fallback to highest match with no keyword filtering
+    for idx in best_idx:
+        return df.iloc[idx]
 
     return None
 
