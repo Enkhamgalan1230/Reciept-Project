@@ -199,13 +199,36 @@ def is_excluded(product_name):
 def is_match(user_input, product_name):
     user_input = user_input.lower().strip()
     product_name = product_name.lower().strip()
-    return re.search(rf"\b{re.escape(user_input)}\b", product_name) is not None
+
+    # Exact match, or starts with the phrase
+    return product_name.startswith(user_input) or user_input == product_name
 
 def get_clean_matches(user_item, df):
     return df[df["Name"].apply(lambda name: is_match(user_item, name) and not is_excluded(name))]
 
 def get_fallback_matches(user_item, df):
     return df[df["Name"].apply(lambda name: is_match(user_item, name))]
+
+def is_strictly_relevant(user_input, product_name, subcategory=None):
+    name = product_name.lower()
+    if user_input.lower() not in name:
+        return False
+
+    # Optional: validate that it's actually a sauce product
+    if subcategory and "sauce" not in subcategory.lower():
+        return False
+
+    # Prevent dishes like "beans in tomato sauce"
+    bad_contexts = ["in tomato sauce", "with tomato sauce", "stuffed", "loops", "meatballs", "spaghetti", "pasta"]
+    return not any(bad in name for bad in bad_contexts)
+
+def priority_score(user_input, product_name):
+    name = product_name.lower()
+    if name.startswith(user_input.lower()):
+        return 2
+    if user_input.lower() in name and " in " not in name:
+        return 1
+    return 0
 
 def get_best_match(user_item, df):
     clean_matches = get_clean_matches(user_item, df)
@@ -214,9 +237,12 @@ def get_best_match(user_item, df):
     
     fallback_matches = get_fallback_matches(user_item, df)
     if not fallback_matches.empty:
-        return fallback_matches.sort_values(by="Price").iloc[0]
+        # Sort by priority_score and then price
+        fallback_matches["priority"] = fallback_matches["Name"].apply(lambda name: priority_score(user_item, name))
+        fallback_matches = fallback_matches.sort_values(by=["priority", "Price"], ascending=[False, True])
+        return fallback_matches.iloc[0]
     
-    return None  # Nothing found
+    return None
 
 def get_cheapest_items(items, df, store, budget):
     selected_items = []
