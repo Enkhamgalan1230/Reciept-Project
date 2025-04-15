@@ -16,6 +16,8 @@ import openai
 from groq import Groq
 import re
 from fuzzywuzzy import fuzz
+import os
+os.environ["TRANSFORMERS_NO_TF"] = "1"
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
