@@ -19,7 +19,7 @@ from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-from sentence_transformers import SentenceTransformer
+#from sentence_transformers import SentenceTransformer
 # ========== SESSION STATE SETUP ==========
 
 # Check if df is stored in session state
@@ -62,17 +62,6 @@ exclude_keywords = [
     "alternative", "plant", "nugget", "fried", "burger",
 ]
 
-def normalize_text(text):
-    text = text.lower()
-    text = re.sub(r'[^a-z0-9\s]', '', text)  # remove punctuation
-    text = text.strip()
-    return text
-
-def contains_exclude_keywords(name):
-    return any(kw in name for kw in exclude_keywords)
-
-def tokenize(text):
-    return set(normalize_text(text).split())
 
 system_prompt = (
     "You are a helpful assistant for a grocery list app and your name is Entwan. "
@@ -85,11 +74,6 @@ system_prompt = (
 nlp = load_nlp_model()
 hyphenated_adjs, phrase_map = load_adjectives()
 
-# ========== HELPER FUNCTIONS ==========
-def contains_all_input_words(product_name, input_item):
-    name = product_name.lower()
-    words = input_item.lower().split()
-    return all(word in name for word in words)
 
 def clean_transcript(text):
     filler_phrases = [
@@ -181,34 +165,53 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def get_best_match_keywords(item, df):
-    item_tokens = tokenize(item)
-    best_row = None
-    best_score = 0
+def is_excluded(name):
+    name = name.lower()
+    return any(keyword in name for keyword in exclude_keywords)
 
-    for _, row in df.iterrows():
-        name = normalize_text(row["Name"])
-        if contains_exclude_keywords(name):
-            continue
+def is_match(user_input, product_name):
+    # Simple matching: exact match or word containment
+    return user_input.lower() in product_name.lower()
 
-        name_tokens = set(name.split())
+def get_matching_items(item, df):
+    filtered = df[df["Name"].apply(lambda name: is_match(item, name) and not is_excluded(name))]
+    return filtered.sort_values(by="Price")
 
-        # Match score = number of overlapping keywords
-        match_score = len(item_tokens.intersection(name_tokens))
+def get_cheapest_items(items, df, store, budget):
+    selected_items = []
+    total_cost = 0.0
 
-        if match_score > best_score:
-            best_score = match_score
-            best_row = row
-
-    return best_row if best_score > 0 else None
-
-def find_cheapest_matches(items, df):
-    matched = []
     for item in items:
-        best_row = get_best_match_keywords(item, df)
-        if best_row is not None:
-            matched.append(best_row.to_frame().T)
-    return matched
+        matches = get_matching_items(item, df[df["Store_Name"] == store])
+
+        if not matches.empty:
+            cheapest = matches.iloc[0]
+            item_price = cheapest["Price"]
+
+            if total_cost + item_price <= budget:
+                selected_items.append(cheapest)
+                total_cost += item_price
+            else:
+                break
+
+    return selected_items, total_cost
+
+def add_secondary_items(secondary_items, df, store, current_cost, budget):
+    added_items = []
+
+    for item in secondary_items:
+        matches = get_matching_items(item, df[df["Store_Name"] == store])
+        if not matches.empty:
+            cheapest = matches.iloc[0]
+            price = cheapest["Price"]
+
+            if current_cost + price <= budget:
+                added_items.append(cheapest)
+                current_cost += price
+            else:
+                continue
+
+    return added_items, current_cost
 
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
@@ -453,48 +456,24 @@ secondary_items = st.session_state.secondary_list
 
 
 if st.button("🛒 Generate List"):
-
     if not essential_items:
         st.warning("⚠️ Your essential item list is empty. Please add at least one item.")
     else:
-        store_df = latest_df[latest_df["Store_Name"] == selection]
-        store_df = store_df[store_df["Price"].notna()]
-        store_df["Price"] = pd.to_numeric(store_df["Price"], errors="coerce")
+        budget = st.session_state.get("budget", 20.0)
+        store = selection
 
-        total_cost = 0.0
-        final_items = []
+        store_df = latest_df[latest_df["Store_Name"] == store]
 
-        # Match Essential Items
-        essential_matches = find_cheapest_matches(essential_items, store_df)
-        essential_df = pd.concat(essential_matches) if essential_matches else pd.DataFrame(columns=store_df.columns)
+        essential_result, cost = get_cheapest_items(essential_items, store_df, store, budget)
+        secondary_result, final_cost = add_secondary_items(secondary_items, store_df, store, cost, budget)
 
-        for _, row in essential_df.sort_values("Price").iterrows():
-            price = row["Price"]
-            if total_cost + price <= budget:
-                row["Source"] = "Essential"
-                final_items.append(row)
-                total_cost += price
+        final_items = essential_result + secondary_result
 
-        remaining_budget = budget - total_cost
-
-        # Match Secondary Items if budget allows
-        if secondary_items:
-            secondary_matches = find_cheapest_matches(secondary_items, store_df)
-            secondary_df = pd.concat(secondary_matches) if secondary_matches else pd.DataFrame(columns=store_df.columns)
-
-            for _, row in secondary_df.sort_values("Price").iterrows():
-                price = row["Price"]
-                if total_cost + price <= budget:
-                    row["Source"] = "Secondary"
-                    final_items.append(row)
-                    total_cost += price
-
-        # Display Final Results
         if final_items:
             result_df = pd.DataFrame(final_items)
             result_df = result_df[["Name", "Price", "Store_Name", "Category", "Subcategory", "Source"]]
             st.subheader("✅ Final Shopping List")
             st.dataframe(result_df, use_container_width=True)
-            st.success(f"🧮 Total Cost: £{total_cost:.2f} out of £{budget:.2f}")
+            st.success(f"🧮 Total Cost: £{final_cost:.2f} out of £{budget:.2f}")
         else:
             st.warning("⚠️ None of the items fit within your budget.")
