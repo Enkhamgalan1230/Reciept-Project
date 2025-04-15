@@ -7,7 +7,7 @@ import supabase
 import time
 import base64
 import os
-os.environ["TRANSFORMERS_NO_TF"] = "1"
+#os.environ["TRANSFORMERS_NO_TF"] = "1"
 
 # Set page title and icon
 st.set_page_config(
