@@ -19,6 +19,8 @@ from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+from txtai.embeddings import Embeddings
+
 #from sentence_transformers import SentenceTransformer
 # ========== SESSION STATE SETUP ==========
 
@@ -27,6 +29,16 @@ if "df" in st.session_state:
     df = st.session_state.df  # Retrieve stored data
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
+
+# Combine year, month, and day into a datetime column
+df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
+
+# Get the most recent date
+latest_date = df["Date"].max()
+
+# Filter to only the rows with the latest date
+latest_df = df[df["Date"] == latest_date]
+
 
 # Set up Groq API Key
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
@@ -49,6 +61,12 @@ if "chat_history" not in st.session_state:
 @st.cache_resource
 def load_nlp_model():
     return spacy.load("en_core_web_sm")
+@st.cache_resource
+def create_index(df):
+    index = Embeddings({"path": "sentence-transformers/all-MiniLM-L6-v2"})
+    index.index([(i, name, None) for i, name in enumerate(df["Name"].tolist())])
+    return index
+
 
 @st.cache_data
 def load_adjectives():
@@ -101,6 +119,7 @@ system_prompt = (
 nlp = load_nlp_model()
 hyphenated_adjs, phrase_map = load_adjectives()
 
+index = create_index(latest_df)
 
 def clean_transcript(text):
     filler_phrases = [
@@ -192,89 +211,61 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def is_excluded(product_name):
-    name = product_name.lower()
-    return any(keyword in name for keyword in exclude_keywords)
+def is_excluded(name):
+    name = name.lower()
+    return any(kw in name for kw in exclude_keywords)
 
-def is_match(user_input, product_name):
-    user_input = user_input.lower().strip()
-    product_name = product_name.lower().strip()
+def is_match(user_input, name):
+    user_input, name = user_input.lower().strip(), name.lower().strip()
+    return name.startswith(user_input) or user_input in name
 
-    # Exact match, or starts with the phrase
-    return product_name.startswith(user_input) or user_input == product_name
+def strict_match(user_input, df):
+    return df[df["Name"].apply(lambda n: is_match(user_input, n) and not is_excluded(n))]
 
-def get_clean_matches(user_item, df):
-    return df[df["Name"].apply(lambda name: is_match(user_item, name) and not is_excluded(name))]
+def fallback_match(user_input, df):
+    return df[df["Name"].apply(lambda n: is_match(user_input, n))]
 
-def get_fallback_matches(user_item, df):
-    return df[df["Name"].apply(lambda name: is_match(user_item, name))]
+def semantic_match(user_input, df, index, topn=5):
+    results = index.search(user_input, topn)
+    return pd.DataFrame([df.iloc[i] for i, _ in results])
 
-def is_strictly_relevant(user_input, product_name, subcategory=None):
-    name = product_name.lower()
-    if user_input.lower() not in name:
-        return False
+def get_best_match(user_input, df, index):
+    strict = strict_match(user_input, df)
+    if not strict.empty:
+        return strict.sort_values(by="Price").iloc[0]
 
-    # Optional: validate that it's actually a sauce product
-    if subcategory and "sauce" not in subcategory.lower():
-        return False
+    fallback = fallback_match(user_input, df)
+    if not fallback.empty:
+        return fallback.sort_values(by="Price").iloc[0]
 
-    # Prevent dishes like "beans in tomato sauce"
-    bad_contexts = ["in tomato sauce", "with tomato sauce", "stuffed", "loops", "meatballs", "spaghetti", "pasta"]
-    return not any(bad in name for bad in bad_contexts)
+    semantic = semantic_match(user_input, df, index)
+    semantic = semantic[~semantic["Name"].apply(is_excluded)]
+    if not semantic.empty:
+        return semantic.sort_values(by="Price").iloc[0]
 
-def priority_score(user_input, product_name):
-    name = product_name.lower()
-    if name.startswith(user_input.lower()):
-        return 2
-    if user_input.lower() in name and " in " not in name:
-        return 1
-    return 0
-
-def get_best_match(user_item, df):
-    clean_matches = get_clean_matches(user_item, df)
-    if not clean_matches.empty:
-        return clean_matches.sort_values(by="Price").iloc[0]
-    
-    fallback_matches = get_fallback_matches(user_item, df)
-    if not fallback_matches.empty:
-        # Sort by priority_score and then price
-        fallback_matches["priority"] = fallback_matches["Name"].apply(lambda name: priority_score(user_item, name))
-        fallback_matches = fallback_matches.sort_values(by=["priority", "Price"], ascending=[False, True])
-        return fallback_matches.iloc[0]
-    
     return None
 
-def get_cheapest_items(items, df, store, budget):
-    selected_items = []
-    total_cost = 0.0
+def generate_list(item_list, df, store, budget, index):
+    selected = []
+    total = 0
+    skipped = []
 
-    for item in items:
-        store_filtered_df = df[df["Store_Name"] == store]
-        match = get_best_match(item, store_filtered_df)
+    store_df = df[df["Store_Name"] == store]
 
+    for item in item_list:
+        match = get_best_match(item, store_df, index)
         if match is not None:
             price = match["Price"]
-            if total_cost + price <= budget:
-                selected_items.append(match)
-                total_cost += price
+            if total + price <= budget:
+                selected.append(match)
+                total += price
+            else:
+                skipped.append((item, match["Name"], price))
+        else:
+            skipped.append((item, None, None))
 
-    return selected_items, total_cost
+    return selected, total, skipped
 
-
-def add_secondary_items(secondary_items, df, store, current_cost, budget):
-    added_items = []
-
-    for item in secondary_items:
-        store_filtered_df = df[df["Store_Name"] == store]
-        match = get_best_match(item, store_filtered_df)
-
-        if match is not None:
-            price = match["Price"]
-            if current_cost + price <= budget:
-                added_items.append(match)
-                current_cost += price
-
-    return added_items, current_cost
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
@@ -500,14 +491,6 @@ with container4:
     else:
         st.info("No secondary items added yet.")
 
-# Combine year, month, and day into a datetime column
-df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
-
-# Get the most recent date
-latest_date = df["Date"].max()
-
-# Filter to only the rows with the latest date
-latest_df = df[df["Date"] == latest_date]
 
 st.write(latest_df)
 options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
@@ -519,23 +502,25 @@ secondary_items = st.session_state.secondary_list
 
 if st.button("🛒 Generate List"):
     if not essential_items:
-        st.warning("⚠️ Your essential item list is empty. Please add at least one item.")
+        st.warning("⚠️ Add essential items first.")
     else:
-        budget = st.session_state.get("budget", 20.0)
         store = selection
+        budget = st.session_state.get("budget", 20.0)
 
-        store_df = latest_df[latest_df["Store_Name"] == store]
+        selected, total, skipped = generate_list(essential_items, latest_df, store, budget, index)
 
-        essential_result, cost = get_cheapest_items(essential_items, store_df, store, budget)
-        secondary_result, final_cost = add_secondary_items(secondary_items, store_df, store, cost, budget)
-
-        final_items = essential_result + secondary_result
-
-        if final_items:
-            result_df = pd.DataFrame(final_items)
-            result_df = result_df[["Name", "Price", "Store_Name", "Category", "Subcategory"]]
+        if selected:
             st.subheader("✅ Final Shopping List")
+            result_df = pd.DataFrame(selected)[["Name", "Price", "Store_Name", "Category", "Subcategory"]]
             st.dataframe(result_df, use_container_width=True)
-            st.success(f"🧮 Total Cost: £{final_cost:.2f} out of £{budget:.2f}")
+            st.success(f"🧮 Total Cost: £{total:.2f} / £{budget:.2f}")
+
+            if skipped:
+                with st.expander("⚠️ Skipped Items"):
+                    for item, name, price in skipped:
+                        if name:
+                            st.write(f"'{item}' → matched '{name}' (£{price:.2f}), over budget")
+                        else:
+                            st.write(f"'{item}' → no match found")
         else:
-            st.warning("⚠️ None of the items fit within your budget.")
+            st.warning("❌ No items matched within your budget.")
