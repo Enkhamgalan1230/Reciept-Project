@@ -164,7 +164,11 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def get_best_match_tfidf(item, df, top_n=5, min_score=0.15):
+def contains_exclude_keywords(name):
+    name_lower = name.lower()
+    return any(kw in name_lower for kw in exclude_keywords)
+
+def get_best_match_tfidf(item, df, top_n=5, min_score=0.2):
     product_names = df["Name"].astype(str).tolist()
     if not product_names:
         return None
@@ -179,13 +183,13 @@ def get_best_match_tfidf(item, df, top_n=5, min_score=0.15):
     # Try top matches
     for idx in best_idx:
         score = similarities[idx]
-        if score >= min_score:
+        name = product_names[idx]
+        if score >= min_score and not contains_exclude_keywords(name):
             return df.iloc[idx]
 
-    # Fallback: if "chicken breast" words are in name
     item_words = item.lower().split()
     for i, name in enumerate(product_names):
-        if all(word in name.lower() for word in item_words):
+        if all(word in name.lower() for word in item_words) and not contains_exclude_keywords(name):
             return df.iloc[i]
 
     return None
