@@ -216,29 +216,50 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
     best_matches = []
 
     for item in query_list:
-        item_embedding = model.encode(item, convert_to_tensor=True)
-        cosine_scores = util.cos_sim(item_embedding, embeddings)[0]
-        top_indices = cosine_scores.argsort(descending=True)
+        # Step 1: Try to find exact substring matches
+        mask = (
+            df["Store_Name"] == selected_store
+        ) & df["Name"].str.lower().str.contains(item.lower()) & df["Price"].notna()
 
-        for idx in top_indices:
-            product = df.iloc[idx.item()]
-            if product["Store_Name"] != selected_store:
-                continue
-            name_lower = product["Name"].lower()
-            if not allow_keywords and any(kw in name_lower for kw in exclude_keywords):
-                continue
-            if pd.isna(product["Price"]):
-                continue
+        if not allow_keywords:
+            mask &= ~df["Name"].str.lower().apply(lambda name: any(kw in name for kw in exclude_keywords))
 
-            best_matches.append({
-                "Input": item,
-                "Matched Product": product["Name"],
-                "Store": product["Store_Name"],
-                "Price": product["Price"],
-                "Discount": product.get("Clubcard Price", np.nan),
-            })
-            break  # Best match for this item
+        keyword_matches = df[mask]
 
+        if not keyword_matches.empty:
+            # Pick the cheapest keyword match
+            product = keyword_matches.sort_values("Price").iloc[0]
+        else:
+            # Step 2: Fall back to semantic search
+            item_embedding = model.encode(item, convert_to_tensor=True)
+            cosine_scores = util.cos_sim(item_embedding, embeddings)[0]
+            top_indices = cosine_scores.argsort(descending=True)
+
+            product = None
+            for idx in top_indices:
+                row = df.iloc[idx.item()]
+                if row["Store_Name"] != selected_store:
+                    continue
+                name_lower = row["Name"].lower()
+                if not allow_keywords and any(kw in name_lower for kw in exclude_keywords):
+                    continue
+                if pd.isna(row["Price"]):
+                    continue
+                product = row
+                break
+
+            if product is None:
+                continue  # No match found at all
+
+        best_matches.append({
+            "Input": item,
+            "Matched Product": product["Name"],
+            "Store": product["Store_Name"],
+            "Price": product["Price"],
+            "Discount": product.get("Clubcard Price", np.nan),
+        })
+
+    # Budget filtering
     best_matches.sort(key=lambda x: x["Price"])
     total = 0
     selected = []
@@ -252,6 +273,7 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
             not_fitted.append(match["Input"])
 
     return selected, total, not_fitted
+
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
