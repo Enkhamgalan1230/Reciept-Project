@@ -217,50 +217,41 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
     best_matches = []
 
     for item in query_list:
-        # Step 1 — exact name filtering (with exclusions)
-        mask = (
+        # 🔍 Phase 1: Filter items by keyword match
+        keyword_mask = (
             df["Store_Name"] == selected_store
         ) & df["Name"].str.lower().str.contains(item.lower()) & df["Price"].notna()
 
         if not allow_keywords:
-            # Filter out any excluded keywords
-            mask &= ~df["Name"].str.lower().apply(lambda name: any(kw in name for kw in exclude_keywords))
+            keyword_mask &= ~df["Name"].str.lower().apply(
+                lambda name: any(kw in name for kw in exclude_keywords)
+            )
 
-        keyword_matches = df[mask]
+        keyword_filtered_df = df[keyword_mask]
 
-        if not keyword_matches.empty:
-            product = keyword_matches.sort_values("Price").iloc[0]
-        else:
-            # Step 2 — fallback to semantic search
+        if not keyword_filtered_df.empty:
+            # 🧠 Phase 2: Run semantic similarity on just filtered rows
+            keyword_indices = keyword_filtered_df.index.tolist()
             item_embedding = model.encode(item, convert_to_tensor=True)
-            cosine_scores = util.cos_sim(item_embedding, embeddings)[0]
-            top_indices = cosine_scores.argsort(descending=True)
 
-            product = None
-            for idx in top_indices:
-                row = df.iloc[idx.item()]
-                if row["Store_Name"] != selected_store:
-                    continue
-                name_lower = row["Name"].lower()
-                if not allow_keywords and any(kw in name_lower for kw in exclude_keywords):
-                    continue
-                if pd.isna(row["Price"]):
-                    continue
-                product = row
-                break  # first valid match
+            # Only compute similarity on filtered product embeddings
+            filtered_embeddings = torch.index_select(embeddings, 0, torch.tensor(keyword_indices))
+            cosine_scores = util.cos_sim(item_embedding, filtered_embeddings)[0]
+            top_index_in_filtered = cosine_scores.argmax().item()
 
-            if product is None:
-                continue  # No match at all
+            # Map back to original dataframe index
+            best_index = keyword_indices[top_index_in_filtered]
+            product = df.iloc[best_index]
 
-        best_matches.append({
-            "Input": item,
-            "Matched Product": product["Name"],
-            "Store": product["Store_Name"],
-            "Price": product["Price"],
-            "Discount": product.get("Clubcard Price", np.nan),
-        })
+            best_matches.append({
+                "Input": item,
+                "Matched Product": product["Name"],
+                "Store": product["Store_Name"],
+                "Price": product["Price"],
+                "Discount": product.get("Clubcard Price", np.nan),
+            })
 
-    # Budget filtering
+    # 🧾 Budget filtering
     best_matches.sort(key=lambda x: x["Price"])
     total = 0
     selected = []
