@@ -532,7 +532,7 @@ with st.container(border=True):
                 final_list = selected_essentials + selected_secondary
                 final_total = total_essentials + total_secondary
 
-            st.success(f"✅ Approximate Total cost: £{final_total:.2f} in {selected_store}!")
+            st.success(f"✅ Approximate Total cost: £{final_total:.2f}")
             result_df = pd.DataFrame(final_list)
             st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
 
