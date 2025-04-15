@@ -155,6 +155,10 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
+exclude_keywords = [
+            "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie", "drink",
+            "ready meal", "frozen meal", "meat-free", "snack", "dessert", "alternative"
+        ]
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
@@ -409,10 +413,20 @@ if st.button("🛒 Generate List"):
 
         # --- Step 2: Matching logic ---
         def get_best_match(item, choices, threshold=85):
-            result = process.extractOne(item, choices)
+            # First try direct match with filtered list
+            filtered_choices = [
+                c for c in choices
+                if all(kw not in c.lower() for kw in exclude_keywords) or kw_in_item(c, item)
+            ]
+            
+            result = process.extractOne(item, filtered_choices)
             if result and result[1] >= threshold:
                 return result[0]
             return None
+        
+        def kw_in_item(product_name, original_query):
+            # Allow vegan/etc. only if it’s directly in user’s input (e.g., "vegan cheese")
+            return any(kw in original_query.lower() for kw in exclude_keywords)
 
         def find_cheapest_matches(items, df):
             matched = []
