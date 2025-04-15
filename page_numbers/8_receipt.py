@@ -58,8 +58,13 @@ def load_adjectives():
 
 exclude_keywords = [
     "vegan", "vegetarian", "plant-based", "flavoured", "flavor", "smoothie",
-    "drink", "ready meal", "frozen meal", "meat-free", "snack", "dessert", "alternative", "plant","nugget"
+    "drink", "ready meal", "frozen meal", "meat-free", "snack", "dessert",
+    "alternative", "plant", "nugget"
 ]
+
+def contains_exclude_keywords(name):
+    name_lower = name.lower()
+    return any(kw in name_lower for kw in exclude_keywords)
 
 system_prompt = (
     "You are a helpful assistant for a grocery list app and your name is Entwan. "
@@ -164,20 +169,35 @@ def extract_adj_noun_phrases(text):
 def get_audio_hash(audio_bytes):
     return hashlib.md5(audio_bytes).hexdigest()
 
-def get_best_match_tfidf(item, df, top_n=1, min_score=0.2):
+def get_best_match_tfidf(item, df, top_n=5, min_score=0.2):
     product_names = df["Name"].astype(str).tolist()
-    texts = [item] + product_names
+    if not product_names:
+        return None
 
+    texts = [item] + product_names
     vectorizer = TfidfVectorizer(stop_words='english')
     vectors = vectorizer.fit_transform(texts)
 
     similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
     best_idx = np.argsort(similarities)[::-1][:top_n]
 
+    #  Try to find a clean match above threshold
     for idx in best_idx:
         score = similarities[idx]
-        if score >= min_score:
+        name = product_names[idx]
+        if score >= min_score and not contains_exclude_keywords(name):
             return df.iloc[idx]
+
+    #  If nothing above threshold, return highest match that isn’t excluded
+    for idx in best_idx:
+        name = product_names[idx]
+        if not contains_exclude_keywords(name):
+            return df.iloc[idx]
+
+    #  Still nothing? Return the highest match even if excluded
+    if best_idx.size > 0:
+        return df.iloc[best_idx[0]]
+
     return None
 
 def find_cheapest_matches(items, df):
