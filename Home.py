@@ -23,6 +23,17 @@ home_page = st.Page(
     icon = "🏠"
 )
 
+login = st.Page(
+    page = "page_numbers/login.py",
+    title = "Log in",
+    icon = "👤"
+)
+mylist = st.Page(
+    page = "page_numbers/mylist.py",
+    title = "My List",
+    icon = "👤"
+)
+
 data_collection = st.Page(
     page = "page_numbers/2_data_collection.py",
     title= "Data Collection",
