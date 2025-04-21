@@ -53,8 +53,7 @@ price_inflation = st.Page(
 
 price_prediction = st.Page(
     page = "page_numbers/6_price_prediction.py",
-    title= "Price Prediction",
-    icon = "🔮"
+    title= "Price Prediction"
 )
 store = st.Page(
     page = "page_numbers/7_store.py",

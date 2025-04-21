@@ -27,3 +27,4 @@ groq
 torch
 txtai
 sentence-transformers
+bcrypt
