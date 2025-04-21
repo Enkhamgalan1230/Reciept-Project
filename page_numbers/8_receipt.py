@@ -30,7 +30,7 @@ import math
 # ========== SESSION STATE SETUP ==========
 
 SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MTM4ODY4MSwiZXhwIjoyMDU2OTY0NjgxfQ.8ZspiLmRb6GseBh31KWAJfnqGDdY6xK-GrYY-K_ogQA"
 
 # Check if df is stored in session state
 if "df" in st.session_state:
