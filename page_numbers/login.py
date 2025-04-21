@@ -50,7 +50,7 @@ if "logged_in_user" not in st.session_state:
     st.session_state.logged_in_user = None
 
 st.markdown("## 👤 Account")
-auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], horizontal=True, selection_mode="single")
+auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single")
 st.markdown("---")
 
 # ------------------- LOGGED IN VIEW -------------------
