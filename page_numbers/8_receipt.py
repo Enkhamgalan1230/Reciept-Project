@@ -498,6 +498,7 @@ with container4:
 
 
 with st.container(border=True):
+    st.header("Shopping List")
     st.subheader("🛒 Generate Potential Buys")
     options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
     selection = st.pills("Stores", options, selection_mode="single")
@@ -540,3 +541,40 @@ with st.container(border=True):
                 if unfitted_secondary:
                     st.write("Secondary:", ", ".join(unfitted_secondary))
 
+combined_input = (
+    st.session_state.essential_list
+    + st.session_state.voice_products
+    + st.session_state.secondary_list
+)
+
+matched_json = result_df.to_dict(orient="records")
+
+# Save this list if user is logged in
+if "logged_in_user" in st.session_state:
+    from supabase import create_client
+
+    SUPABASE_URL = st.secrets["supabase"]["url"]
+    SUPABASE_KEY = st.secrets["supabase"]["key"]
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    combined_input = (
+        st.session_state.essential_list
+        + st.session_state.voice_products
+        + st.session_state.secondary_list
+    )
+
+    matched_json = result_df.to_dict(orient="records")
+
+    try:
+        supabase.table("shopping_lists").insert({
+            "user_email": st.session_state.logged_in_user,
+            "store": selected_store,
+            "input_items": combined_input,
+            "matched_items": matched_json,
+        }).execute()
+        st.success("📝 Your list was saved to your account.")
+    except Exception as e:
+        st.error("❌ Failed to save list to Supabase.")
+        st.text(str(e))
+else:
+    st.info("🔐 You must be logged in to save this shopping list.")
