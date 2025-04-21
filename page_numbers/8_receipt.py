@@ -533,6 +533,8 @@ with container5:
 
             st.success(f"✅ Approximate Total cost: £{final_total:.2f}")
             result_df = pd.DataFrame(final_list)
+            st.session_state.final_list_df = result_df 
+            st.session_state.selected_store = selected_store
             st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
 
             if unfitted_essentials or unfitted_secondary:
@@ -542,40 +544,38 @@ with container5:
                 if unfitted_secondary:
                     st.write("Secondary:", ", ".join(unfitted_secondary))
 
-combined_input = (
-    st.session_state.essential_list
-    + st.session_state.voice_products
-    + st.session_state.secondary_list
-)
 
-matched_json = result_df.to_dict(orient="records")
+if "final_list_df" in st.session_state:
+    result_df = st.session_state.final_list_df
+    matched_json = result_df.to_dict(orient="records")
+    combined_input = (
+        st.session_state.essential_list
+        + st.session_state.voice_products
+        + st.session_state.secondary_list
+    )
+    selected_store = st.session_state.get("selected_store", "Unknown")
 
-if st.session_state.get("logged_in_user"):
-    if st.button("💾 Save This List to My Account", use_container_width=True):
-        from supabase import create_client
+    if "logged_in_user" in st.session_state:
+        st.markdown("---")
+        if st.button("💾 Save This List to My Account", use_container_width=True):
+            from datetime import datetime
+            from supabase import create_client
 
-        SUPABASE_URL = st.secrets["supabase"]["url"]
-        SUPABASE_KEY = st.secrets["supabase"]["key"]
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+            SUPABASE_URL = st.secrets["supabase"]["url"]
+            SUPABASE_KEY = st.secrets["supabase"]["key"]
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-        combined_input = (
-            st.session_state.essential_list
-            + st.session_state.voice_products
-            + st.session_state.secondary_list
-        )
-
-        matched_json = result_df.to_dict(orient="records")
-
-        try:
-            supabase.table("shopping_lists").insert({
-                "user_email": st.session_state.logged_in_user,
-                "store": selected_store,
-                "input_items": combined_input,
-                "matched_items": matched_json,
-            }).execute()
-            st.success("📝 Your list was saved to your account.")
-        except Exception as e:
-            st.error("❌ Failed to save list to Supabase.")
-            st.text(str(e))
-else:
-    st.info("🔐 You must be logged in to save this shopping list.")
+            try:
+                supabase.table("shopping_lists").insert({
+                    "user_email": st.session_state.logged_in_user,
+                    "store": selected_store,
+                    "input_items": combined_input,
+                    "matched_items": matched_json,
+                    "created_at": datetime.utcnow().isoformat()
+                }).execute()
+                st.success("📝 Your list was saved to your account.")
+            except Exception as e:
+                st.error("❌ Failed to save list to Supabase.")
+                st.text(str(e))
+    else:
+        st.info("🔐 You must be logged in to save this shopping list.")
