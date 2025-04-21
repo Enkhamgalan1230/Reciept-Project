@@ -552,7 +552,11 @@ with container5:
 
 if "final_list_df" in st.session_state:
     result_df = st.session_state.final_list_df
-    matched_json = result_df.to_dict(orient="records")
+    # Clean the DataFrame before saving
+    result_df_cleaned = result_df.fillna(value={"Discount": None})
+
+    # Convert to JSON-compliant dict
+    matched_json = result_df_cleaned.to_dict(orient="records")
     combined_input = (
         st.session_state.essential_list
         + st.session_state.voice_products
