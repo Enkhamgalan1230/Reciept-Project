@@ -37,6 +37,7 @@ if "df" in st.session_state:
     df = st.session_state.df  # Retrieve stored data
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
+    st.stop()
 
 # Set up Groq API Key
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
