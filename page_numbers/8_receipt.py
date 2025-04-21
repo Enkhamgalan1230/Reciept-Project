@@ -23,7 +23,12 @@ import numpy as np
 #from txtai.embeddings import Embeddings
 from sentence_transformers import SentenceTransformer, util
 import torch
+from datetime import datetime
+from supabase import create_client
 # ========== SESSION STATE SETUP ==========
+
+SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
 
 # Check if df is stored in session state
 if "df" in st.session_state:
@@ -558,11 +563,7 @@ if "final_list_df" in st.session_state:
     if "logged_in_user" in st.session_state:
         st.markdown("---")
         if st.button("💾 Save This List to My Account", use_container_width=True):
-            from datetime import datetime
-            from supabase import create_client
 
-            SUPABASE_URL = st.secrets["supabase"]["url"]
-            SUPABASE_KEY = st.secrets["supabase"]["key"]
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
             try:
