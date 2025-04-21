@@ -4,6 +4,7 @@ from supabase import create_client, Client
 import re
 import random, smtplib
 from email.message import EmailMessage
+import traceback
 
 EMAIL = st.secrets["email"]["address"]
 EMAIL_PASSWORD = st.secrets["email"]["password"]
@@ -76,20 +77,27 @@ if "temp_signup" in st.session_state:
 
     if verify_btn:
         if otp_input == st.session_state.generated_otp:
-            # Hash & store
+            # Hash password
             hashed_pw = hash_password(st.session_state.temp_signup["password"])
+            email = st.session_state.temp_signup["email"]
 
-            st.write("Inserting:", {
-                "username": st.session_state.temp_signup["email"],
-                "password_hash": hashed_pw
-            })
-            supabase.table("user").insert({
-                "username": st.session_state.temp_signup["email"],
-                "password_hash": hashed_pw
-            }).execute()
-            st.success("Account created successfully!")
-            st.session_state.logged_in_user = st.session_state.temp_signup["email"]
-            del st.session_state.temp_signup
-            del st.session_state.generated_otp
+            user_data = {
+                "username": email,
+                "password_hash": hashed_pw,
+                "created_at": datetime.utcnow().isoformat()  # Only needed if not default
+            }
+
+            st.write("Inserting user data:", user_data)
+
+            try:
+                res = supabase.table("user").insert(user_data).execute()
+                st.success("Account created successfully!")
+                st.session_state.logged_in_user = email
+                del st.session_state.temp_signup
+                del st.session_state.generated_otp
+            except Exception as e:
+                st.error("Insert failed!")
+                st.text("Error details:")
+                st.text(traceback.format_exc())
         else:
             st.error("Invalid verification code.")
