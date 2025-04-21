@@ -67,7 +67,7 @@ if st.session_state.logged_in_user:
         for key in ["essential_list", "voice_products", "secondary_list", "final_list_df", "selected_store"]:
             st.session_state.pop(key, None)
 
-        st.experimental_rerun()
+        st.rerun()
 
 # ------------------- SIGN UP FLOW -------------------
 elif auth_tab == "Sign Up":
