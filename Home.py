@@ -92,6 +92,7 @@ data_fetcher = st.Page(
 pg = st.navigation(
     {
         "Info": [home_page],
+        "User": [login,mylist],
         "Data":[data_collection,data],
         "Main Logics": [price_comparison,price_inflation,price_prediction,store, receipt],
         "Help": [helper],
