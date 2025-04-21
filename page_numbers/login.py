@@ -91,7 +91,7 @@ if "temp_signup" in st.session_state:
             st.write("Inserting user data:", user_data)
 
             try:
-                res = supabase.table("user").insert(user_data).execute()
+                res = supabase.table("users").insert(user_data).execute()
                 st.success("Account created successfully!")
                 st.session_state.logged_in_user = email
                 del st.session_state.temp_signup
