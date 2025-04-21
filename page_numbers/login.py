@@ -49,13 +49,14 @@ def hash_password(password: str) -> str:
 if "logged_in_user" not in st.session_state:
     st.session_state.logged_in_user = None
 
-st.markdown("## 👤 Account")
+st.markdown("## Account")
 auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single")
 st.markdown("---")
 
 # ------------------- LOGGED IN VIEW -------------------
 if st.session_state.logged_in_user:
-    st.success(f"Welcome, {st.session_state.logged_in_user}")
+    username_display = st.session_state.logged_in_user.split('@')[0].upper()
+    st.success(f"Welcome, {username_display}")
     if st.button("Log Out"):
         st.session_state.logged_in_user = None
         st.session_state.generated_otp = None
