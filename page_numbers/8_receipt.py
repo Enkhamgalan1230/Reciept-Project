@@ -520,7 +520,7 @@ with container5:
     st.subheader("🛒 Generate Potential Buys")
     options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
     selection = st.pills("Stores", options, selection_mode="single")
-    selected_store = selection if selection else None
+    selected_store = selection[0] if isinstance(selection, list) and selection else selection
 
     budget = st.number_input("Insert your budget (£)", format="%.2f", min_value=0.0, key="budget_generator")
 
