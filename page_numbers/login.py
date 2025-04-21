@@ -85,16 +85,11 @@ if "temp_signup" in st.session_state:
                 "created_at": datetime.utcnow().isoformat()
             }
 
-            st.write("Inserting user data:", user_data)
-
             try:
                 existing = supabase.table("users").select("id").eq("username", email).execute()
                 if existing.data:
                     st.error("Email already registered. Try logging in.")
                 else:
-                    st.write("Anon key being used:", key[:10], "...")  # Just to confirm it's anon key
-                    st.write("Table name being written to:", "users")
-                    st.write("Data to insert:", user_data)
                     res = supabase.table("users").insert(user_data).execute()
                 st.success("Account created successfully!")
                 st.session_state.logged_in_user = email
@@ -102,7 +97,7 @@ if "temp_signup" in st.session_state:
                 del st.session_state.generated_otp
             except Exception as e:
                 st.error("Insert failed!")
-                st.text("Error details:")
+                st.text("Error details: Show to Entwan")
                 st.text(traceback.format_exc())
         else:
             st.error("Invalid verification code.")
