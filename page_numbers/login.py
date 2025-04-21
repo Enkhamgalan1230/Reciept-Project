@@ -75,7 +75,7 @@ if "temp_signup" in st.session_state:
         if otp_input == st.session_state.generated_otp:
             # Hash & store
             hashed_pw = hash_password(st.session_state.temp_signup["password"])
-            supabase.table("users").insert({
+            supabase.table("user").insert({
                 "username": st.session_state.temp_signup["email"],
                 "password_hash": hashed_pw
             }).execute()
