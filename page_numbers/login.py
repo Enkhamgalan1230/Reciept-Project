@@ -55,7 +55,8 @@ st.markdown("---")
 
 # ------------------- LOGGED IN VIEW -------------------
 if st.session_state.logged_in_user:
-    username_display = st.session_state.logged_in_user.split('@')[0].upper()
+    username_raw = st.session_state.logged_in_user.split('@')[0]
+    username_display = username_raw.capitalize()
     st.success(f"Welcome, {username_display}")
     if st.button("Log Out"):
         st.session_state.logged_in_user = None
