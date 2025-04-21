@@ -21,70 +21,70 @@ home_page = st.Page(
      page = "page_numbers/1_home.py",
      title= "Home Page",
      icon = "🏠"
- )
+)
  
 login = st.Page(
      page = "page_numbers/login.py",
      title = "Log in",
      icon = "👤"
- )
+)
 mylist = st.Page(
      page = "page_numbers/mylist.py",
      title = "My List",
      icon = "👤"
- )
+)
  
 data_collection = st.Page(
      page = "page_numbers/2_data_collection.py",
      title= "Data Collection",
      icon = "📉"
- )
+)
  
 data = st.Page(
      page = "page_numbers/3_data_analysis.py",
      title= "Data Analysis",
      icon = "📈"
- )
+)
  
 price_comparison = st.Page(
      page = "page_numbers/4_price_comparison.py",
      title= "Price Comparison",
      icon = "🏷️"
- )
+)
  
 price_inflation = st.Page(
      page = "page_numbers/5_price_inflation.py",
      title= "Price Inflation",
      icon = "💷"
- )
+)
  
 price_prediction = st.Page(
      page = "page_numbers/6_price_prediction.py",
      title= "Price Prediction",
      icon = "🔮"
- )
+)
 store = st.Page(
      page = "page_numbers/7_store.py",
      title= "Store Finder",
      icon = "📍"
- )
+)
  
 receipt = st.Page(
      page = "page_numbers/8_receipt.py",
      title= "Receipt",
      icon = "📃"
- )
+)
  
 helper = st.Page(
      page = "page_numbers/helper.py",
      title= "Helper",
- )
+)
  
 data_fetcher = st.Page(
      page = "page_numbers/data_fetcher.py",
      title= "Data Fetcher",
      icon = "🛠️"
- )
+)
 
 
 
