@@ -8,6 +8,9 @@ from email.message import EmailMessage
 EMAIL = st.secrets["email"]["address"]
 EMAIL_PASSWORD = st.secrets["email"]["password"]
 
+address = "zaecisama@gmail.com"
+password = "eevfcclkpaijsmwg"
+
 url = "https://rgfhrhvdspwlexlymdga.supabase.co"
 key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
 
@@ -38,7 +41,7 @@ def send_otp_to_email(email):
     msg["To"] = email
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(EMAIL, EMAIL_PASSWORD)
+        server.login(address, password)
         server.send_message(msg)
 
 def hash_password(password: str) -> str:
