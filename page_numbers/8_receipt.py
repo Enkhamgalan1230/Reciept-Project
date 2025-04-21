@@ -25,6 +25,8 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 from datetime import datetime
 from supabase import create_client
+import math
+
 # ========== SESSION STATE SETUP ==========
 
 SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
@@ -125,6 +127,16 @@ system_prompt = (
 nlp = load_nlp_model()
 hyphenated_adjs, phrase_map = load_adjectives()
 
+def clean_nans(obj):
+    if isinstance(obj, float) and math.isnan(obj):
+        return None
+    elif isinstance(obj, dict):
+        return {k: clean_nans(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [clean_nans(i) for i in obj]
+    else:
+        return obj
+    
 def clean_transcript(text):
     filler_phrases = [
         "add to my shopping list",
@@ -554,7 +566,8 @@ if "final_list_df" in st.session_state:
     result_df = st.session_state.final_list_df
 
     result_df_cleaned = result_df.where(pd.notna(result_df), None)
-    matched_json = result_df_cleaned.to_dict(orient="records")
+    matched_json_raw = result_df_cleaned.to_dict(orient="records")
+    matched_json = clean_nans(matched_json_raw)
     
     combined_input = (
         st.session_state.essential_list
