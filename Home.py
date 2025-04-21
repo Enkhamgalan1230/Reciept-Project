@@ -19,43 +19,36 @@ st.set_page_config(
 
 home_page = st.Page(
     page = "page_numbers/1_home.py",
-    title= "Home Page",
-    icon = "🏠"
+    title= "Home Page"
 )
 
 login = st.Page(
     page = "page_numbers/login.py",
-    title = "Log in",
-    icon = "👤"
+    title = "Log in"
 )
 mylist = st.Page(
     page = "page_numbers/mylist.py",
-    title = "My List",
-    icon = "👤"
+    title = "My List"
 )
 
 data_collection = st.Page(
     page = "page_numbers/2_data_collection.py",
-    title= "Data Collection",
-    icon = "📉"
+    title= "Data Collection"
 )
 
 data = st.Page(
     page = "page_numbers/3_data_analysis.py",
-    title= "Data Analysis",
-    icon = "📈"
+    title= "Data Analysis"
 )
 
 price_comparison = st.Page(
     page = "page_numbers/4_price_comparison.py",
-    title= "Price Comparison",
-    icon = "🏷️"
+    title= "Price Comparison"
 )
 
 price_inflation = st.Page(
     page = "page_numbers/5_price_inflation.py",
-    title= "Price Inflation",
-    icon = "💷"
+    title= "Price Inflation"
 )
 
 price_prediction = st.Page(
@@ -65,14 +58,12 @@ price_prediction = st.Page(
 )
 store = st.Page(
     page = "page_numbers/7_store.py",
-    title= "Store Finder",
-    icon = "📍"
+    title= "Store Finder"
 )
 
 receipt = st.Page(
     page = "page_numbers/8_receipt.py",
-    title= "Receipt",
-    icon = "📃"
+    title= "Receipt"
 )
 
 helper = st.Page(
@@ -82,8 +73,7 @@ helper = st.Page(
 
 data_fetcher = st.Page(
     page = "page_numbers/data_fetcher.py",
-    title= "Data Fetcher",
-    icon = "🛠️"
+    title= "Data Fetcher"
 )
 
 
@@ -92,11 +82,11 @@ data_fetcher = st.Page(
 pg = st.navigation(
     {
         "Info": [home_page],
-        "User": [login,mylist],
-        "Data":[data_collection,data],
-        "Main Logics": [price_comparison,price_inflation,price_prediction,store, receipt],
+        "User 👤": [login,mylist],
+        "Data 📈":[data_collection,data],
+        "Main Logics 💷": [price_comparison,price_inflation,price_prediction,store, receipt],
         "Help": [helper],
-        "Boring Stuff": [data_fetcher]
+        "Boring Stuff 🛠️": [data_fetcher]
     }
 )
 
