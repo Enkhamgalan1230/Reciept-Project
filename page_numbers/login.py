@@ -92,6 +92,9 @@ if "temp_signup" in st.session_state:
                 if existing.data:
                     st.error("Email already registered. Try logging in.")
                 else:
+                    st.write("Anon key being used:", key[:10], "...")  # Just to confirm it's anon key
+                    st.write("Table name being written to:", "users")
+                    st.write("Data to insert:", user_data)
                     res = supabase.table("users").insert(user_data).execute()
                 st.success("Account created successfully!")
                 st.session_state.logged_in_user = email
