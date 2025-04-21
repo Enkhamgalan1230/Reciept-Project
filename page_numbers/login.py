@@ -81,8 +81,7 @@ if "temp_signup" in st.session_state:
 
             user_data = {
                 "username": email,
-                "password_hash": hashed_pw,
-                "created_at": datetime.utcnow().isoformat()  # Only needed if not default
+                "password_hash": hashed_pw  # Only needed if not default
             }
 
             st.write("Inserting user data:", user_data)
