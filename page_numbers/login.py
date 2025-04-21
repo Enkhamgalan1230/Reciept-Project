@@ -63,6 +63,12 @@ if st.session_state.logged_in_user:
         st.session_state.generated_otp = None
         st.session_state.temp_signup = None
 
+        # Optional: clear any saved lists/items too
+        for key in ["essential_list", "voice_products", "secondary_list", "final_list_df", "selected_store"]:
+            st.session_state.pop(key, None)
+
+        st.experimental_rerun()
+
 # ------------------- SIGN UP FLOW -------------------
 elif auth_tab == "Sign Up":
     with st.container():
