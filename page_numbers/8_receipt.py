@@ -438,7 +438,7 @@ secondary_products = st.session_state.secondary_list
 
 
 with container4:
-    st.subheader("🧾 **Essentials to buy**")
+    st.subheader("🧾 **Essentials List**")
 
     if st.session_state.get("show_delete_toast"):
         st.toast("✅ Selected primary item(s) deleted.")
@@ -474,7 +474,7 @@ with container4:
     st.markdown("---")
 
     # Secondary List
-    st.subheader("✨ Optional Extras to buy")
+    st.subheader("✨ Optional Extras List")
 
     if secondary_products:
         st.caption("These are the items you'd like to include *if budget allows*. You can also remove them below.")
@@ -498,7 +498,7 @@ with container4:
 
 
 with st.container(border=True):
-    st.subheader("🛒 Generate Grocery List")
+    st.subheader("🛒 Generate Potential Buys")
     options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
     selection = st.pills("Stores", options, selection_mode="single")
     selected_store = selection[0] if selection else "Unknown Store"
@@ -539,3 +539,4 @@ with st.container(border=True):
                     st.write("Essentials:", ", ".join(unfitted_essentials))
                 if unfitted_secondary:
                     st.write("Secondary:", ", ".join(unfitted_secondary))
+
