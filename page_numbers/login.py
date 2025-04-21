@@ -81,13 +81,18 @@ if "temp_signup" in st.session_state:
 
             user_data = {
                 "username": email,
-                "password_hash": hashed_pw  # Only needed if not default
+                "password_hash": hashed_pw,  # Only needed if not default
+                "created_at": datetime.utcnow().isoformat()
             }
 
             st.write("Inserting user data:", user_data)
 
             try:
-                res = supabase.table("users").insert(user_data).execute()
+                existing = supabase.table("users").select("id").eq("username", email).execute()
+                if existing.data:
+                    st.error("Email already registered. Try logging in.")
+                else:
+                    res = supabase.table("users").insert(user_data).execute()
                 st.success("Account created successfully!")
                 st.session_state.logged_in_user = email
                 del st.session_state.temp_signup
