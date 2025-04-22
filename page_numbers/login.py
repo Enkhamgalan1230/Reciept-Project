@@ -45,9 +45,9 @@ def send_otp_to_email(email):
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
-# ------------------- SESSION INIT -------------------
-if "logged_in_user" not in st.session_state:
-    st.session_state.logged_in_user = None
+# --- Init session key safely ---
+if "supabase_user" not in st.session_state:
+    st.session_state.supabase_user = None
 
 st.markdown("## Account")
 auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single")
