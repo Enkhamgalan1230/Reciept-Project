@@ -7,7 +7,7 @@ import json
 # --- Supabase Setup ---
 
 SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
+SUPABASE_KEY = st.secrets["SUPABASE_SERVICE"]
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- Session check ---
@@ -31,7 +31,7 @@ st.title("📂 My Shopping Lists")
 with st.spinner("Loading your saved lists..."):
 
     st.code(f"Fetching lists for: {user_email}")
-    
+
     response = supabase.table("shopping_lists")\
         .select("*")\
         .eq("user_email", user_email.lower())\
