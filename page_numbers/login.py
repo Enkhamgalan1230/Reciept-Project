@@ -71,28 +71,29 @@ if st.session_state.supabase_user:
         st.rerun()
 
 # ------------------- SIGN UP FLOW -------------------
-elif auth_tab == "Sign Up":
-    st.subheader("Create an Account")
+else:
+    auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single")
+    st.markdown("---")
 
-    with st.form("signup_form"):
-        email = st.text_input("Email")
-        password = st.text_input("Password", type="password")
-        confirm = st.text_input("Repeat Password", type="password")
-        submit = st.form_submit_button("Verify Email")
+    if auth_tab == "Sign Up":
+        st.subheader("Create an Account")
+        with st.form("signup_form"):
+            email = st.text_input("Email")
+            password = st.text_input("Password", type="password")
+            confirm = st.text_input("Repeat Password", type="password")
+            submit = st.form_submit_button("Verify Email")
 
-        if submit:
-            if password != confirm:
-                st.error("Passwords do not match.")
-            elif not is_valid_password(password):
-                st.error("Password must be 8+ chars, include a capital letter, number, and special character.")
-            else:
-                send_otp_to_email(email)
-                st.session_state.temp_signup = {"email": email, "password": password}
-                st.success("Verification code sent. Please check your email.")
+            if submit:
+                if password != confirm:
+                    st.error("Passwords do not match.")
+                elif not is_valid_password(password):
+                    st.error("Password must be 8+ chars, include a capital letter, number, and special character.")
+                else:
+                    send_otp_to_email(email)
+                    st.session_state.temp_signup = {"email": email, "password": password}
+                    st.success("Verification code sent. Please check your email.")
 
-# Step 2: OTP Verification & Final Signup
-if "temp_signup" in st.session_state:
-    with st.container():
+    if "temp_signup" in st.session_state:
         st.markdown("### Enter the verification code")
         otp_input = st.text_input("Verification Code", max_chars=6)
         verify_btn = st.button("Create Account")
@@ -102,12 +103,8 @@ if "temp_signup" in st.session_state:
                 try:
                     email = st.session_state.temp_signup["email"]
                     password = st.session_state.temp_signup["password"]
-
-                    # Create Supabase account
                     res = supabase.auth.sign_up({"email": email, "password": password})
-
                     if res.user:
-                        # Log user in immediately after sign up
                         login = supabase.auth.sign_in_with_password({
                             "email": email,
                             "password": password
@@ -115,7 +112,6 @@ if "temp_signup" in st.session_state:
                         st.session_state.supabase_user = login
                         st.success("Account created and you're now logged in!")
 
-                        # Clean up
                         del st.session_state.temp_signup
                         del st.session_state.generated_otp
                         st.rerun()
@@ -127,24 +123,23 @@ if "temp_signup" in st.session_state:
             else:
                 st.error("Incorrect verification code.")
 
-# ------------------- LOGIN FLOW -------------------
-elif auth_tab == "Log In":
-    st.subheader("Log In")
-    email = st.text_input("Email", key="login_email")
-    password = st.text_input("Password", type="password", key="login_pw")
+    if auth_tab == "Log In":
+        st.subheader("Log In")
+        email = st.text_input("Email", key="login_email")
+        password = st.text_input("Password", type="password", key="login_pw")
 
-    if st.button("Log In"):
-        try:
-            res = supabase.auth.sign_in_with_password({
-                "email": email,
-                "password": password
-            })
-            if res.user:
-                st.session_state.supabase_user = res
-                st.success("Login successful.")
-                st.rerun()
-            else:
-                st.error("Invalid credentials.")
-        except Exception as e:
-            st.error("Login failed.")
-            st.text(str(e))
+        if st.button("Log In"):
+            try:
+                res = supabase.auth.sign_in_with_password({
+                    "email": email,
+                    "password": password
+                })
+                if res.user:
+                    st.session_state.supabase_user = res
+                    st.success("Login successful.")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials.")
+            except Exception as e:
+                st.error("Login failed.")
+                st.text(str(e))
