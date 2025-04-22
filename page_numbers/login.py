@@ -54,16 +54,17 @@ auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="s
 st.markdown("---")
 
 # ------------------- LOGGED IN VIEW -------------------
-if st.session_state.logged_in_user:
-    username_raw = st.session_state.logged_in_user.split('@')[0]
+if st.session_state.supabase_user:
+    user_email = st.session_state.supabase_user.user.email
+    username_raw = user_email.split('@')[0]
     username_display = username_raw.capitalize()
     st.success(f"Welcome, {username_display}")
-    if st.button("Log Out"):
-        st.session_state.logged_in_user = None
-        st.session_state.generated_otp = None
-        st.session_state.temp_signup = None
 
-        # Optional: clear any saved lists/items too
+    if st.button("Log Out"):
+        supabase.auth.sign_out()
+        st.session_state.supabase_user = None
+
+        # Optional: clear saved session data
         for key in ["essential_list", "voice_products", "secondary_list", "final_list_df", "selected_store"]:
             st.session_state.pop(key, None)
 
@@ -71,76 +72,42 @@ if st.session_state.logged_in_user:
 
 # ------------------- SIGN UP FLOW -------------------
 elif auth_tab == "Sign Up":
-    with st.container():
-        st.subheader("Create an Account")
-        with st.form("signup_form"):
-            email = st.text_input("Email")
-            password = st.text_input("Password", type="password")
-            confirm = st.text_input("Repeat Password", type="password")
-            submit = st.form_submit_button("Verify Email")
+    st.subheader("Create an Account")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
 
-            if submit:
-                if password != confirm:
-                    st.error("Passwords do not match.")
-                elif not is_valid_password(password):
-                    st.error("Password must be 8+ chars, include a capital letter, number, and special character.")
+    if st.button("Sign Up"):
+        if len(password) < 6:
+            st.error("Password must be at least 6 characters.")
+        else:
+            try:
+                res = supabase.auth.sign_up({"email": email, "password": password})
+                if res.user:
+                    st.success("Signup successful! Please check your email to confirm.")
                 else:
-                    send_otp_to_email(email)
-                    st.session_state.temp_signup = {"email": email, "password": password}
-                    st.success("Verification code sent. Please check your email.")
-
-    if "temp_signup" in st.session_state:
-        with st.container():
-            otp_input = st.text_input("Verification Code")
-            verify_btn = st.button("Create Account")
-
-            if verify_btn:
-                if otp_input == st.session_state.generated_otp:
-                    hashed_pw = hash_password(st.session_state.temp_signup["password"])
-                    email = st.session_state.temp_signup["email"]
-                    user_data = {
-                        "username": email,
-                        "password_hash": hashed_pw,
-                        "created_at": datetime.utcnow().isoformat()
-                    }
-                    try:
-                        existing = supabase.table("users").select("id").eq("username", email).execute()
-                        if existing.data:
-                            st.error("This email is already registered.")
-                        else:
-                            supabase.table("users").insert(user_data).execute()
-                            st.success("Account created successfully!")
-                            st.session_state.logged_in_user = email
-                            del st.session_state.temp_signup
-                            del st.session_state.generated_otp
-                    except Exception as e:
-                        st.error("Signup failed.")
-                        st.text(traceback.format_exc())
-                else:
-                    st.error("Invalid verification code.")
+                    st.error("Signup failed.")
+            except Exception as e:
+                st.error("Signup failed.")
+                st.text(str(e))
 
 # ------------------- LOGIN FLOW -------------------
 elif auth_tab == "Log In":
-    with st.container():
-        st.subheader("Log In")
-        with st.form("login_form"):
-            login_email = st.text_input("Email", key="login_email")
-            login_password = st.text_input("Password", type="password", key="login_pw")
-            login_submit = st.form_submit_button("Log In")
+    st.subheader("Log In")
+    email = st.text_input("Email", key="login_email")
+    password = st.text_input("Password", type="password", key="login_pw")
 
-            if login_submit:
-                try:
-                    result = supabase.table("users").select("*").eq("username", login_email).execute()
-                    if not result.data:
-                        st.error("No account found with this email.")
-                    else:
-                        user = result.data[0]
-                        stored_hash = user["password_hash"]
-                        if bcrypt.checkpw(login_password.encode(), stored_hash.encode()):
-                            st.success("Login successful.")
-                            st.session_state.logged_in_user = login_email
-                        else:
-                            st.error("Incorrect password.")
-                except Exception:
-                    st.error("Login failed.")
-                    st.text(traceback.format_exc())
+    if st.button("Log In"):
+        try:
+            res = supabase.auth.sign_in_with_password({
+                "email": email,
+                "password": password
+            })
+            if res.user:
+                st.session_state.supabase_user = res
+                st.success("Login successful.")
+                st.rerun()
+            else:
+                st.error("Invalid credentials.")
+        except Exception as e:
+            st.error("Login failed.")
+            st.text(str(e))
