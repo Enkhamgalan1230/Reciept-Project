@@ -30,7 +30,7 @@ with st.spinner("Loading your saved lists..."):
     response = supabase.table("shopping_lists")\
         .select("*")\
         .eq("user_email", st.session_state.logged_in_user)\
-        .order("timestamp", desc=True)\
+        .order("created_at", desc=True)\
         .execute()
 
     lists = response.data
@@ -43,7 +43,7 @@ else:
         st.markdown("---")
 
         # Timestamp
-        timestamp = datetime.fromisoformat(entry["timestamp"]).strftime("%d %B %Y - %I:%M %p")
+        timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
         st.subheader(f"🕒 {timestamp}")
 
         # Input Items
