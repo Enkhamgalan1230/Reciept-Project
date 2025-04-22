@@ -73,22 +73,47 @@ if st.session_state.supabase_user:
 # ------------------- SIGN UP FLOW -------------------
 elif auth_tab == "Sign Up":
     st.subheader("Create an Account")
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
 
-    if st.button("Sign Up"):
-        if len(password) < 6:
-            st.error("Password must be at least 6 characters.")
-        else:
-            try:
-                res = supabase.auth.sign_up({"email": email, "password": password})
-                if res.user:
-                    st.success("Signup successful! Please check your email to confirm.")
-                else:
-                    st.error("Signup failed.")
-            except Exception as e:
-                st.error("Signup failed.")
-                st.text(str(e))
+    with st.form("signup_form"):
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        confirm = st.text_input("Repeat Password", type="password")
+        submit = st.form_submit_button("Verify Email")
+
+        if submit:
+            if password != confirm:
+                st.error("Passwords do not match.")
+            elif not is_valid_password(password):
+                st.error("Password must be 8+ chars, include a capital letter, number, and special character.")
+            else:
+                send_otp_to_email(email)
+                st.session_state.temp_signup = {"email": email, "password": password}
+                st.success("Verification code sent. Please check your email.")
+
+# Step 2: OTP Verification & Final Signup
+if "temp_signup" in st.session_state:
+    with st.container():
+        st.markdown("### Enter the verification code")
+        otp_input = st.text_input("Verification Code", max_chars=6)
+        verify_btn = st.button("Create Account")
+
+        if verify_btn:
+            if otp_input == st.session_state.generated_otp:
+                try:
+                    email = st.session_state.temp_signup["email"]
+                    password = st.session_state.temp_signup["password"]
+                    res = supabase.auth.sign_up({"email": email, "password": password})
+                    if res.user:
+                        st.success("Account created! Please confirm via the email Supabase sends you.")
+                        del st.session_state.temp_signup
+                        del st.session_state.generated_otp
+                    else:
+                        st.error("Signup failed.")
+                except Exception as e:
+                    st.error("Signup error.")
+                    st.text(str(e))
+            else:
+                st.error("Incorrect verification code.")
 
 # ------------------- LOGIN FLOW -------------------
 elif auth_tab == "Log In":
