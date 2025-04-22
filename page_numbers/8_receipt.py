@@ -29,6 +29,9 @@ import math
 
 # ========== SESSION STATE SETUP ==========
 
+if "supabase_user" not in st.session_state:
+    st.session_state.supabase_user = None
+
 SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MTM4ODY4MSwiZXhwIjoyMDU2OTY0NjgxfQ.8ZspiLmRb6GseBh31KWAJfnqGDdY6xK-GrYY-K_ogQA"
 
@@ -577,7 +580,7 @@ if "final_list_df" in st.session_state:
     )
     selected_store = st.session_state.get("selected_store", "Unknown")
 
-    if "logged_in_user" in st.session_state:
+    if st.session_state.supabase_user:
         st.markdown("---")
         if st.button("💾 Save This List to My Account", use_container_width=True):
 
@@ -585,7 +588,7 @@ if "final_list_df" in st.session_state:
 
             try:
                 st.write("🧪 Insert payload preview:", {
-                    "user_email": st.session_state.logged_in_user,
+                    "user_email": st.session_state.supabase_user.user.email,
                     "store": selected_store,
                     "input_items": combined_input,
                     "matched_items": matched_json,
