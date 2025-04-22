@@ -50,7 +50,6 @@ if "supabase_user" not in st.session_state:
     st.session_state.supabase_user = None
 
 st.markdown("## Account")
-st.markdown("---")
 
 # ------------------- LOGGED IN VIEW -------------------
 if st.session_state.supabase_user:
