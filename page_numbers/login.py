@@ -35,7 +35,7 @@ def send_otp_to_email(email):
     st.session_state.generated_otp = otp
     msg = EmailMessage()
     msg.set_content(
-    f"""Hi there,
+    f"""Hi there 👋,
 
         Thank you for signing up to Receipt! I'm truly grateful that you've chosen to use my service 🔥 it means a lot.
 
@@ -104,7 +104,7 @@ else:
                 else:
                     send_otp_to_email(email)
                     st.session_state.temp_signup = {"email": email, "password": password}
-                    st.success("Verification code sent. Please check your email(potentially spam folder).")
+                    st.success("Verification code sent. Please check your email (perhaps spam folder).")
 
     if "temp_signup" in st.session_state:
         st.markdown("### Enter the verification code")
