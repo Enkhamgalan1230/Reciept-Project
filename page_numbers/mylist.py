@@ -31,7 +31,7 @@ st.title("📂 My Shopping Lists")
 with st.spinner("Loading your saved lists..."):
     response = supabase.table("shopping_lists")\
         .select("*")\
-        .eq("user_email", user_email)\
+        .eq("user_email", user_email.lower())\
         .order("created_at", desc=True)\
         .execute()
 
