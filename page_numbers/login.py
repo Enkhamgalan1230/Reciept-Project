@@ -102,13 +102,25 @@ if "temp_signup" in st.session_state:
                 try:
                     email = st.session_state.temp_signup["email"]
                     password = st.session_state.temp_signup["password"]
+
+                    # Create Supabase account
                     res = supabase.auth.sign_up({"email": email, "password": password})
+
                     if res.user:
-                        st.success("Account created! Please confirm via the email Supabase sends you.")
+                        # Log user in immediately after sign up
+                        login = supabase.auth.sign_in_with_password({
+                            "email": email,
+                            "password": password
+                        })
+                        st.session_state.supabase_user = login
+                        st.success("Account created and you're now logged in!")
+
+                        # Clean up
                         del st.session_state.temp_signup
                         del st.session_state.generated_otp
+                        st.rerun()
                     else:
-                        st.error("Signup failed.")
+                        st.error("Signup failed. Please try again.")
                 except Exception as e:
                     st.error("Signup error.")
                     st.text(str(e))
