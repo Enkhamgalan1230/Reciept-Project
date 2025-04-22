@@ -50,7 +50,6 @@ if "supabase_user" not in st.session_state:
     st.session_state.supabase_user = None
 
 st.markdown("## Account")
-auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single", key="auth_mode")
 st.markdown("---")
 
 # ------------------- LOGGED IN VIEW -------------------
@@ -72,7 +71,7 @@ if st.session_state.supabase_user:
 
 # ------------------- SIGN UP FLOW -------------------
 else:
-    auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single")
+    auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single", key="auth_mode")
     st.markdown("---")
 
     if auth_tab == "Sign Up":
