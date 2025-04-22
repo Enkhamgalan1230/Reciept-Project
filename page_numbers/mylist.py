@@ -2,6 +2,7 @@ import streamlit as st
 from supabase import create_client, Client
 from datetime import datetime
 import os
+import json
 
 # --- Supabase Setup ---
 
@@ -10,16 +11,17 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- Session check ---
-if "logged_in_user" not in st.session_state:
-    st.session_state.logged_in_user = None
+if "supabase_user" not in st.session_state:
+    st.session_state.supabase_user = None
 
-# --- Welcome message ---
-if st.session_state.logged_in_user:
-    username_raw = st.session_state.logged_in_user.split('@')[0]
+# --- Authenticated view ---
+if st.session_state.supabase_user:
+    user_email = st.session_state.supabase_user.user.email
+    username_raw = user_email.split('@')[0]
     username_display = username_raw.capitalize()
     st.success(f"Welcome, {username_display}")
 else:
-    st.error("You must be logged in to view your saved lists.")
+    st.error("🔐 You must be logged in to view your saved lists.")
     st.stop()
 
 # --- Page Title ---
@@ -29,7 +31,7 @@ st.title("📂 My Shopping Lists")
 with st.spinner("Loading your saved lists..."):
     response = supabase.table("shopping_lists")\
         .select("*")\
-        .eq("user_email", st.session_state.logged_in_user)\
+        .eq("user_email", user_email)\
         .order("created_at", desc=True)\
         .execute()
 
@@ -44,20 +46,20 @@ else:
         timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
         st.subheader(f"🕒 {timestamp}")
 
-        # 📝 Parse input_items (stored as string)
+        # 📝 Parse input_items (stored as string or list)
         try:
             input_items = json.loads(entry.get("input_items", "[]"))
         except:
-            input_items = []
+            input_items = entry.get("input_items", [])
 
         st.markdown("### 📝 Shopping List")
         st.write(", ".join(input_items) if input_items else "_None_")
 
-        # 🛍️ Parse matched_items (also a stringified list of dicts)
+        # 🛍️ Parse matched_items (stored as JSON string or list)
         try:
             matched_items = json.loads(entry.get("matched_items", "[]"))
         except:
-            matched_items = []
+            matched_items = entry.get("matched_items", [])
 
         st.markdown(f"### 🛍️ Potential Buys ({entry.get('store', 'Unknown Store')})")
 
