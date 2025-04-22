@@ -27,6 +27,7 @@ st.title("📂 My Shopping Lists")
 
 # --- Fetch user's shopping lists ---
 with st.spinner("Loading your saved lists..."):
+    '''
     response = supabase.table("shopping_lists")\
         .select("*")\
         .eq("user_email", st.session_state.logged_in_user)\
@@ -34,6 +35,15 @@ with st.spinner("Loading your saved lists..."):
         .execute()
 
     lists = response.data
+    '''
+    response = supabase.table("shopping_lists")\
+    .select("*")\
+    .order("created_at", desc=True)\
+    .execute()
+
+    lists = response.data
+
+st.write(response.data)
 
 # --- Display lists ---
 if not lists:
