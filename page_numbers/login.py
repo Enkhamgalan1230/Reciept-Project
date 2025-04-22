@@ -34,7 +34,22 @@ def send_otp_to_email(email):
     otp = generate_otp()
     st.session_state.generated_otp = otp
     msg = EmailMessage()
-    msg.set_content(f"Thank you for using {APP_NAME}! Your verification code is: {otp}")
+    msg.set_content(
+    f"""Hi there,
+
+    Thank you for signing up to Receipt! I'm truly grateful that you've chosen to use my service 🔥 it means a lot.
+
+    To complete your signup, please use the verification code below:
+
+    🔐 Your code: {otp}
+
+    If you didn't request this, feel free to ignore this email.
+
+    Best regards,  
+    Entwan Enkhbayar  
+    Creator of Receipt
+    """
+    )
     msg["Subject"] = f"Your Signup Verification Code for {APP_NAME}"
     msg["From"] = FROM_EMAIL
     msg["To"] = email
