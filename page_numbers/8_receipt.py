@@ -536,34 +536,44 @@ with container5:
     if st.button("🛒 Generate List", use_container_width=True):
         if not essential_items:
             st.warning("⚠️ Add essential items first.")
+        elif not selected_store or budget == 0.0:
+            st.warning("⚠️ Please select a store and enter a budget greater than £0.")
         else:
             with st.spinner("🔍 Matching products..."):
-                selected_essentials, total_essentials, unfitted_essentials = filter_products(
-                    latest_df, all_embeddings, essential_items, budget, selected_store=selection, allow_keywords=allow_keywords
-                )
-                remaining_budget = budget - total_essentials
-                selected_secondary, total_secondary, unfitted_secondary = [], 0, []
-
-                if remaining_budget > 0:
-                    selected_secondary, total_secondary, unfitted_secondary = filter_products(
-                        latest_df, all_embeddings, secondary_items, remaining_budget, selected_store=selection
+                try:
+                    selected_essentials, total_essentials, unfitted_essentials = filter_products(
+                        latest_df, all_embeddings, essential_items, budget, selected_store=selected_store, allow_keywords=allow_keywords
                     )
+                    if not selected_essentials:
+                        st.warning("😕 Couldn’t find any essential items that fit within your budget.")
+                        st.stop()
 
-                final_list = selected_essentials + selected_secondary
-                final_total = total_essentials + total_secondary
+                    remaining_budget = budget - total_essentials
+                    selected_secondary, total_secondary, unfitted_secondary = [], 0, []
 
-            st.success(f"✅ Approximate Total cost: £{final_total:.2f}")
-            result_df = pd.DataFrame(final_list)
-            st.session_state.final_list_df = result_df 
-            st.session_state.selected_store = selected_store
-            st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
+                    if remaining_budget > 0:
+                        selected_secondary, total_secondary, unfitted_secondary = filter_products(
+                            latest_df, all_embeddings, secondary_items, remaining_budget, selected_store=selected_store
+                        )
 
-            if unfitted_essentials or unfitted_secondary:
-                st.warning("⚠️ Items that couldn’t fit within the budget:")
-                if unfitted_essentials:
-                    st.write("Essentials:", ", ".join(unfitted_essentials))
-                if unfitted_secondary:
-                    st.write("Secondary:", ", ".join(unfitted_secondary))
+                    final_list = selected_essentials + selected_secondary
+                    final_total = total_essentials + total_secondary
+
+                    st.success(f"✅ Approximate Total cost: £{final_total:.2f}")
+                    result_df = pd.DataFrame(final_list)
+                    st.session_state.final_list_df = result_df 
+                    st.session_state.selected_store = selected_store
+                    st.dataframe(result_df[["Input", "Matched Product", "Store", "Price", "Discount"]], use_container_width=True)
+
+                    if unfitted_essentials or unfitted_secondary:
+                        st.warning("⚠️ Items that couldn’t fit within the budget:")
+                        if unfitted_essentials:
+                            st.write("Essentials:", ", ".join(unfitted_essentials))
+                        if unfitted_secondary:
+                            st.write("Secondary:", ", ".join(unfitted_secondary))
+                except Exception as e:
+                    st.error("❌ An error occurred during product matching.")
+                    st.text(str(e))
 
 
 if "final_list_df" in st.session_state:
