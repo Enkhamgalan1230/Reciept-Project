@@ -587,12 +587,6 @@ if "final_list_df" in st.session_state:
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
             try:
-                st.write("🧪 Insert payload preview:", {
-                    "user_email": st.session_state.supabase_user.user.email,
-                    "store": selected_store,
-                    "input_items": combined_input,
-                    "matched_items": matched_json,
-                })
                 supabase.table("shopping_lists").insert({
                     "user_email": st.session_state.supabase_user.user.email,
                     "store": selected_store,
