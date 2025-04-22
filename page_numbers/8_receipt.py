@@ -594,7 +594,7 @@ if "final_list_df" in st.session_state:
                     "matched_items": matched_json,
                 })
                 supabase.table("shopping_lists").insert({
-                    "user_email": st.session_state.logged_in_user,
+                    "user_email": st.session_state.supabase_user.user.email,
                     "store": selected_store,
                     "input_items": combined_input,
                     "matched_items": matched_json,
