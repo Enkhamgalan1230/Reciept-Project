@@ -30,8 +30,6 @@ st.title("📂 My Shopping Lists")
 # --- Fetch user's shopping lists ---
 with st.spinner("Loading your saved lists..."):
 
-    st.code(f"Fetching lists for: {user_email}")
-
     response = supabase.table("shopping_lists")\
         .select("*")\
         .eq("user_email", user_email.lower())\
