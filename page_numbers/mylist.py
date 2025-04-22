@@ -9,10 +9,6 @@ SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-
-tables = supabase.table("shopping_lists").select("*").execute()
-st.write("Raw table query:", tables.data)
-
 # --- Session check ---
 if "logged_in_user" not in st.session_state:
     st.session_state.logged_in_user = None
@@ -31,7 +27,6 @@ st.title("📂 My Shopping Lists")
 
 # --- Fetch user's shopping lists ---
 with st.spinner("Loading your saved lists..."):
-    '''
     response = supabase.table("shopping_lists")\
         .select("*")\
         .eq("user_email", st.session_state.logged_in_user)\
@@ -39,15 +34,6 @@ with st.spinner("Loading your saved lists..."):
         .execute()
 
     lists = response.data
-    '''
-    response = supabase.table("shopping_lists")\
-    .select("*")\
-    .order("created_at", desc=True)\
-    .execute()
-
-    lists = response.data
-
-st.write(response.data)
 
 # --- Display lists ---
 if not lists:
@@ -55,20 +41,26 @@ if not lists:
 else:
     for i, entry in enumerate(lists):
         st.markdown("---")
-
-        # Timestamp
         timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
         st.subheader(f"🕒 {timestamp}")
 
-        # Input Items
+        # 📝 Parse input_items (stored as string)
+        try:
+            input_items = json.loads(entry.get("input_items", "[]"))
+        except:
+            input_items = []
+
         st.markdown("### 📝 Shopping List")
-        input_items = entry.get("input_items", [])
         st.write(", ".join(input_items) if input_items else "_None_")
 
-        # Matched Items
-        matched_items = entry.get("matched_items", [])
+        # 🛍️ Parse matched_items (also a stringified list of dicts)
+        try:
+            matched_items = json.loads(entry.get("matched_items", "[]"))
+        except:
+            matched_items = []
+
         st.markdown(f"### 🛍️ Potential Buys ({entry.get('store', 'Unknown Store')})")
-        
+
         if matched_items:
             for match in matched_items:
                 st.markdown(f"""
