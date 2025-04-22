@@ -25,7 +25,7 @@ else:
     st.stop()
 
 # --- Page Title ---
-st.title("📂 My Shopping Lists")
+st.title(" My Shopping Lists")
 
 # --- Fetch user's shopping lists ---
 with st.spinner("Loading your saved lists..."):
