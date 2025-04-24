@@ -89,3 +89,12 @@ latest_growth = (
 # Sort and get top 5
 top_risers = latest_growth.sort_values("Percent Change", ascending=False).head(5)
 top_risers.reset_index(drop=True, inplace=True)
+
+st.subheader("🔺 Top 5 Products with Highest Predicted Increase")
+st.dataframe(top_risers.style.format({"Percent Change": "{:.2f}%"}))
+
+fig = px.bar(top_risers, x="Product", y="Percent Change",
+             title="Top 5 Forecasted Price Increases",
+             labels={"Percent Change": "% Increase"},
+             color="Percent Change")
+st.plotly_chart(fig, use_container_width=True)
