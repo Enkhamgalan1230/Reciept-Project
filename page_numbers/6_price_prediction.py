@@ -44,7 +44,11 @@ if selected:
         xaxis_title="Date",
         yaxis_title="CPIH Index",
         xaxis_tickangle=-45,
-        xaxis=dict(tickformat="%b %Y")  # e.g. "Apr 2024"
+        xaxis=dict(
+            tickformat="%b %Y",  # 👈 Forces "Apr 2024", "May 2024", etc.
+            tickmode="linear",   # 👈 Avoids skipping or auto-optimizing ticks
+            tickfont=dict(size=12)
+        )
     )
 
     st.plotly_chart(fig, use_container_width=True)
