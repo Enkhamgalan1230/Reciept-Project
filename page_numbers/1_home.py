@@ -69,7 +69,7 @@ with col2:
             <a href="mailto:enkhamgalan.entwan@outlook.com" target="_blank" style="text-decoration: none;">
                 <img src="data:image/png;base64,{email_base64}" 
                     alt="Email" 
-                    style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+                    style="width: 60px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
         <style>
@@ -88,7 +88,7 @@ with col3:
             <a href="https://github.com/Enkhamgalan1230/Reciept-Project" target="_blank" style="text-decoration: none;">
                 <img src="data:image/png;base64,{github_base64}" 
                     alt="github" 
-                    style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+                    style="width: 60px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
         <style>
@@ -107,7 +107,7 @@ with col4:
             <a href="tel:07310545410" style="text-decoration: none;">
                 <img src="data:image/png;base64,{phone_base64}" 
                     alt="github" 
-                    style="width: 40px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
+                    style="width: 60px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
         </div>
         <style>
