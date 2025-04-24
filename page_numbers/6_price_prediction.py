@@ -136,10 +136,10 @@ if "Regular" in pivot.columns and occasion in pivot.columns:
     top_discount = pivot.sort_values(f"% Change {occasion} vs. Regular").head(5)
     top_spike = pivot.sort_values(f"% Change {occasion} vs. Regular", ascending=False).head(5)
 
-    st.markdown(f"### 🔻 Biggest Price Drops – {occasion}")
+    st.markdown(f"### 👍 Biggest Price Drops – {occasion}")
     st.dataframe(top_discount.style.format("{:.2f}"))
 
-    st.markdown(f"### 🔺 Biggest Price Spikes – {occasion}")
+    st.markdown(f"### 👎 Biggest Price Spikes – {occasion}")
     st.dataframe(top_spike.style.format("{:.2f}"))
 else:
     st.warning(f"Not enough data for {occasion} vs. Regular comparison.")
