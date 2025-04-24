@@ -49,9 +49,9 @@ if selected:
         xaxis_title="Date",
         yaxis_title="CPIH Index",
         xaxis_tickangle=-45,
+        xaxis_type="date",  # ✅ handles 14 datetime points properly
         xaxis=dict(
-            tickformat="%b %Y",  # 👈 Forces "Apr 2024", "May 2024", etc.
-            tickmode="linear",   # 👈 Avoids skipping or auto-optimizing ticks
+            tickformat="%b %Y",
             tickfont=dict(size=12)
         )
     )
