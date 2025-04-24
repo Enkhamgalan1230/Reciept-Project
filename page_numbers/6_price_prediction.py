@@ -18,12 +18,6 @@ cpih = pd.read_csv("clean_cpih.csv")
 # Melt wide format into long format
 df_melted = cpih.melt(id_vars="Product", var_name="Date", value_name="Index")
 
-# Convert Date to datetime
-#df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b")
-
-# Streamlit caption for context
-
-
 # Create dropdown to select products
 all_products = df_melted["Product"].unique().tolist()
 # Ensure the 'Date' column is actually datetime
@@ -49,9 +43,11 @@ if selected:
         xaxis_title="Date",
         yaxis_title="CPIH Index",
         xaxis_tickangle=-45,
-        xaxis_type="date",  # ✅ handles 14 datetime points properly
         xaxis=dict(
+            type="date",
             tickformat="%b %Y",
+            tickmode="array",  # 👉 manually control which ticks are shown
+            tickvals=filtered_df["Date"].dropna().sort_values().unique(),  # 👈 show all 14 dates
             tickfont=dict(size=12)
         )
     )
