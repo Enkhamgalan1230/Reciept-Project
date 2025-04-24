@@ -5,7 +5,7 @@ import plotly.express as px
 
 
 st.title("Price Prediction", anchor=False)
-
+st.caption("💡 Historical data is provided by ONS(Office for National Statistics)")
 
 # Check if df is stored in session state
 if "df" in st.session_state:
@@ -180,4 +180,3 @@ with con3:
     st.markdown("### 🧾 Seasonal Insight")
     st.markdown("\n\n".join(warnings))
 
-    

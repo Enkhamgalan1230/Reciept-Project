@@ -541,6 +541,7 @@ with container5:
         else:
             with st.spinner("🔍 Matching products..."):
                 try:
+                    st.caption("📌 Note: Prices and units are generalised so some items appear to be more expensive(e.g 100g -> 1kg)")
                     selected_essentials, total_essentials, unfitted_essentials = filter_products(
                         latest_df, all_embeddings, essential_items, budget, selected_store=selected_store, allow_keywords=allow_keywords
                     )
