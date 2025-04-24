@@ -3,6 +3,12 @@ import pandas as pd
 import plotly.express as px
 
 
+con1 = st.container(border=True)
+con2 = st.container(border=True)
+con3 = st.container(border=True)
+con4 = st.container(border=True)
+
+
 st.title("Price Prediction", anchor=False)
 
 
@@ -27,145 +33,148 @@ df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b", errors="co
 # Sort by date to help Plotly
 df_melted = df_melted.sort_values("Date")
 default_selection = ["Bread and cereals", "Meat", "Milk, cheese and eggs"]  # Adjust these
-
-selected = st.multiselect(
-    "Select food product categories to view inflation trends:",
-    options=all_products,
-    default=default_selection
-)
-
-# Filter and plot only selected items
-if selected:
-    filtered_df = df_melted[df_melted["Product"].isin(selected)]
-
-    fig = px.line(filtered_df, x="Date", y="Index", color="Product",
-                  title="CPIH Inflation Trend by Product")
-    fig.update_layout(
-        xaxis_title="Date",
-        yaxis_title="CPIH Index",
-        xaxis_tickangle=-45,
-        xaxis=dict(
-            type="date",
-            tickformat="%b %Y",
-            tickmode="array",  
-            tickvals=filtered_df["Date"].dropna().sort_values().unique(), 
-            tickfont=dict(size=12)
-        )
+with con1:
+    selected = st.multiselect(
+        "Select food product categories to view inflation trends:",
+        options=all_products,
+        default=default_selection
     )
 
-    st.plotly_chart(fig, use_container_width=True)
-else:
-    st.info("Please select at least one product category to display the chart.")
+    # Filter and plot only selected items
+    if selected:
+        filtered_df = df_melted[df_melted["Product"].isin(selected)]
 
-st.caption("📌 CPIH Index is relative to the base year (e.g., 2015 = 100). If a product is at 150, it means prices have risen 50% since 2015.")
+        fig = px.line(filtered_df, x="Date", y="Index", color="Product",
+                    title="CPIH Inflation Trend by Product")
+        fig.update_layout(
+            xaxis_title="Date",
+            yaxis_title="CPIH Index",
+            xaxis_tickangle=-45,
+            xaxis=dict(
+                type="date",
+                tickformat="%b %Y",
+                tickmode="array",  
+                tickvals=filtered_df["Date"].dropna().sort_values().unique(), 
+                tickfont=dict(size=12)
+            )
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("Please select at least one product category to display the chart.")
+
+    st.caption("📌 CPIH Index is relative to the base year (e.g., 2015 = 100). If a product is at 150, it means prices have risen 50% since 2015.")
 
 
 df = pd.read_csv("arima_forecast_all_products.csv")
 df["Date"] = pd.to_datetime(df["Date"])
 
-product = st.selectbox("Choose a product to view forecast:", df["Product"].unique())
-filtered = df[df["Product"] == product]
+with con2:
 
-fig = px.line(
-    filtered,
-    x="Date", y="Forecast",
-    title=f"{product} – 6 Month ARIMA Forecast",
-    markers=True
-)
+    product = st.selectbox("Choose a product to view forecast:", df["Product"].unique())
+    filtered = df[df["Product"] == product]
 
-fig.add_scatter(x=filtered["Date"], y=filtered["Lower"], mode='lines', name="Lower Bound", line=dict(dash='dot'))
-fig.add_scatter(x=filtered["Date"], y=filtered["Upper"], mode='lines', name="Upper Bound", line=dict(dash='dot'))
-
-fig.update_layout(yaxis_title="CPIH Index", xaxis_title="Date")
-st.plotly_chart(fig, use_container_width=True)
-
-# Calculate percentage change between first and last forecast for each product
-latest_growth = (
-    df.groupby("Product")
-    .apply(lambda g: (g["Forecast"].iloc[-1] - g["Forecast"].iloc[0]) / g["Forecast"].iloc[0] * 100)
-    .reset_index(name="Percent Change")
-)
-
-# Sort and get top 5
-top_risers = latest_growth.sort_values("Percent Change", ascending=False).head(5)
-top_risers.reset_index(drop=True, inplace=True)
-
-st.subheader("🔺 Top 5 Products with Highest Predicted Increase")
-st.dataframe(top_risers.style.format({"Percent Change": "{:.2f}%"}))
-
-fig = px.bar(top_risers, x="Product", y="Percent Change",
-             title="Top 5 Forecasted Price Increases",
-             labels={"Percent Change": "% Increase"},
-             color="Percent Change")
-st.plotly_chart(fig, use_container_width=True)
-
-
-def tag_occasion(date):
-    if date.month == 12:
-        return "Christmas"
-    elif date.month in [3, 4]:
-        return "Easter"
-    elif date.month in [6, 7, 8]:
-        return "Summer"
-    elif date.month == 9:
-        return "Back to School"
-    elif date.month == 2:
-        return "Valentine's Day"
-    elif date.month == 10:
-        return "Halloween"
-    elif date.month == 11:
-        return "Bonfire Night"
-    else:
-        return "Regular"
-
-df_melted["Occasion"] = df_melted["Date"].apply(tag_occasion)
-
-# Occasion dropdown
-occasion = st.selectbox("🎉 Select an Occasion:", options=df_melted["Occasion"].unique())
-
-# Occasion vs. Regular comparison
-occasion_stats = df_melted.groupby(["Product", "Occasion"])["Index"].mean().reset_index()
-pivot = occasion_stats.pivot(index="Product", columns="Occasion", values="Index").fillna(0)
-
-if "Regular" in pivot.columns and occasion in pivot.columns:
-    pivot[f"% Change {occasion} vs. Regular"] = (
-        (pivot[occasion] - pivot["Regular"]) / pivot["Regular"] * 100
+    fig = px.line(
+        filtered,
+        x="Date", y="Forecast",
+        title=f"{product} – 6 Month ARIMA Forecast",
+        markers=True
     )
 
-    # Top 5 Discounts or Spikes depending on change direction
-    top_discount = pivot.sort_values(f"% Change {occasion} vs. Regular").head(5)
-    top_spike = pivot.sort_values(f"% Change {occasion} vs. Regular", ascending=False).head(5)
+    fig.add_scatter(x=filtered["Date"], y=filtered["Lower"], mode='lines', name="Lower Bound", line=dict(dash='dot'))
+    fig.add_scatter(x=filtered["Date"], y=filtered["Upper"], mode='lines', name="Upper Bound", line=dict(dash='dot'))
 
-    st.markdown(f"### 👍 Biggest Price Drops – {occasion}")
-    st.dataframe(top_discount.style.format("{:.2f}"))
+    fig.update_layout(yaxis_title="CPIH Index", xaxis_title="Date")
+    st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown(f"### 👎 Biggest Price Spikes – {occasion}")
-    st.dataframe(top_spike.style.format("{:.2f}"))
-else:
-    st.warning(f"Not enough data for {occasion} vs. Regular comparison.")
+    # Calculate percentage change between first and last forecast for each product
+    latest_growth = (
+        df.groupby("Product")
+        .apply(lambda g: (g["Forecast"].iloc[-1] - g["Forecast"].iloc[0]) / g["Forecast"].iloc[0] * 100)
+        .reset_index(name="Percent Change")
+    )
+
+    # Sort and get top 5
+    top_risers = latest_growth.sort_values("Percent Change", ascending=False).head(5)
+    top_risers.reset_index(drop=True, inplace=True)
+
+    st.subheader("🔺 Top 5 Products with Highest Predicted Increase")
+    st.dataframe(top_risers.style.format({"Percent Change": "{:.2f}%"}))
+
+    fig = px.bar(top_risers, x="Product", y="Percent Change",
+                title="Top 5 Forecasted Price Increases",
+                labels={"Percent Change": "% Increase"},
+                color="Percent Change")
+    st.plotly_chart(fig, use_container_width=True)
+
+with con3:
+
+    def tag_occasion(date):
+        if date.month == 12:
+            return "Christmas"
+        elif date.month in [3, 4]:
+            return "Easter"
+        elif date.month in [6, 7, 8]:
+            return "Summer"
+        elif date.month == 9:
+            return "Back to School"
+        elif date.month == 2:
+            return "Valentine's Day"
+        elif date.month == 10:
+            return "Halloween"
+        elif date.month == 11:
+            return "Bonfire Night"
+        else:
+            return "Regular"
+
+    df_melted["Occasion"] = df_melted["Date"].apply(tag_occasion)
+
+    # Occasion dropdown
+    occasion = st.selectbox("🎉 Select an Occasion:", options=df_melted["Occasion"].unique())
+
+    # Occasion vs. Regular comparison
+    occasion_stats = df_melted.groupby(["Product", "Occasion"])["Index"].mean().reset_index()
+    pivot = occasion_stats.pivot(index="Product", columns="Occasion", values="Index").fillna(0)
+
+    if "Regular" in pivot.columns and occasion in pivot.columns:
+        pivot[f"% Change {occasion} vs. Regular"] = (
+            (pivot[occasion] - pivot["Regular"]) / pivot["Regular"] * 100
+        )
+
+        # Top 5 Discounts or Spikes depending on change direction
+        top_discount = pivot.sort_values(f"% Change {occasion} vs. Regular").head(5)
+        top_spike = pivot.sort_values(f"% Change {occasion} vs. Regular", ascending=False).head(5)
+
+        st.markdown(f"### 👍 Biggest Price Drops – {occasion}")
+        st.dataframe(top_discount.style.format("{:.2f}"))
+
+        st.markdown(f"### 👎 Biggest Price Spikes – {occasion}")
+        st.dataframe(top_spike.style.format("{:.2f}"))
+    else:
+        st.warning(f"Not enough data for {occasion} vs. Regular comparison.")
 
 
-    
-rising = pivot[pivot[f"% Change {occasion} vs. Regular"] >= 2]
-falling = pivot[pivot[f"% Change {occasion} vs. Regular"] <= -2]
-stable = pivot[(pivot[f"% Change {occasion} vs. Regular"] > -2) & (pivot[f"% Change {occasion} vs. Regular"] < 2)]
+        
+    rising = pivot[pivot[f"% Change {occasion} vs. Regular"] >= 2]
+    falling = pivot[pivot[f"% Change {occasion} vs. Regular"] <= -2]
+    stable = pivot[(pivot[f"% Change {occasion} vs. Regular"] > -2) & (pivot[f"% Change {occasion} vs. Regular"] < 2)]
 
-warnings = []
+    warnings = []
 
-# Add big risers
-for product in rising.index[:3]:
-    pct = rising.loc[product, f"% Change {occasion} vs. Regular"]
-    warnings.append(f"📈 **{product}** tends to increase by {pct:.2f}% during **{occasion}**.")
+    # Add big risers
+    for product in rising.index[:3]:
+        pct = rising.loc[product, f"% Change {occasion} vs. Regular"]
+        warnings.append(f"📈 **{product}** tends to increase by {pct:.2f}% during **{occasion}**.")
 
-# Add big fallers
-for product in falling.index[:3]:
-    pct = falling.loc[product, f"% Change {occasion} vs. Regular"]
-    warnings.append(f"📉 **{product}** typically drops by {pct:.2f}% during **{occasion}**.")
+    # Add big fallers
+    for product in falling.index[:3]:
+        pct = falling.loc[product, f"% Change {occasion} vs. Regular"]
+        warnings.append(f"📉 **{product}** typically drops by {pct:.2f}% during **{occasion}**.")
 
-# Add a couple stable just to round it out
-for product in stable.index[:2]:
-    warnings.append(f"🔄 **{product}** remains fairly stable during **{occasion}**.")
+    # Add a couple stable just to round it out
+    for product in stable.index[:2]:
+        warnings.append(f"🔄 **{product}** remains fairly stable during **{occasion}**.")
 
-# Display in Streamlit
-st.markdown("### 🧾 Seasonal Insight")
-st.markdown("\n\n".join(warnings))
+    # Display in Streamlit
+    st.markdown("### 🧾 Seasonal Insight")
+    st.markdown("\n\n".join(warnings))
