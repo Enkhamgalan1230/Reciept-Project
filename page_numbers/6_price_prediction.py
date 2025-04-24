@@ -100,33 +100,46 @@ fig = px.bar(top_risers, x="Product", y="Percent Change",
 st.plotly_chart(fig, use_container_width=True)
 
 
-def tag_occasions(date):
+def tag_occasion(date):
     if date.month == 12:
         return "Christmas"
-    elif date.month == 4:
+    elif date.month in [3, 4]:
         return "Easter"
     elif date.month in [6, 7, 8]:
         return "Summer"
+    elif date.month == 9:
+        return "Back to School"
+    elif date.month == 2:
+        return "Valentine's Day"
+    elif date.month == 10:
+        return "Halloween"
+    elif date.month == 11:
+        return "Bonfire Night"
     else:
         return "Regular"
 
-df_melted["Occasion"] = df_melted["Date"].apply(tag_occasions)
+df_melted["Occasion"] = df_melted["Date"].apply(tag_occasion)
 
+# Occasion dropdown
+occasion = st.selectbox("🎉 Select an Occasion:", options=df_melted["Occasion"].unique())
+
+# Occasion vs. Regular comparison
 occasion_stats = df_melted.groupby(["Product", "Occasion"])["Index"].mean().reset_index()
+pivot = occasion_stats.pivot(index="Product", columns="Occasion", values="Index").fillna(0)
 
-# Pivot for easier comparison
-pivoted = occasion_stats.pivot(index="Product", columns="Occasion", values="Index")
-pivoted["% Change Xmas vs. Regular"] = (pivoted["Christmas"] - pivoted["Regular"]) / pivoted["Regular"] * 100
-pivoted["% Change Easter vs. Regular"] = (pivoted["Easter"] - pivoted["Regular"]) / pivoted["Regular"] * 100
+if "Regular" in pivot.columns and occasion in pivot.columns:
+    pivot[f"% Change {occasion} vs. Regular"] = (
+        (pivot[occasion] - pivot["Regular"]) / pivot["Regular"] * 100
+    )
 
-# Products that become cheaper at Christmas
-xmas_drops = pivoted.sort_values("% Change Xmas vs. Regular").head(5)
+    # Top 5 Discounts or Spikes depending on change direction
+    top_discount = pivot.sort_values(f"% Change {occasion} vs. Regular").head(5)
+    top_spike = pivot.sort_values(f"% Change {occasion} vs. Regular", ascending=False).head(5)
 
-# Products that get expensive at Easter
-easter_spikes = pivoted.sort_values("% Change Easter vs. Regular", ascending=False).head(5)
+    st.markdown(f"### 🔻 Biggest Price Drops – {occasion}")
+    st.dataframe(top_discount.style.format("{:.2f}"))
 
-st.subheader("💸 Biggest Christmas Discounts")
-st.dataframe(xmas_drops.style.format("{:.2f}"))
-
-st.subheader("💥 Easter Price Spikes")
-st.dataframe(easter_spikes.style.format("{:.2f}"))
+    st.markdown(f"### 🔺 Biggest Price Spikes – {occasion}")
+    st.dataframe(top_spike.style.format("{:.2f}"))
+else:
+    st.warning(f"Not enough data for {occasion} vs. Regular comparison.")
