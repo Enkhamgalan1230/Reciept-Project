@@ -13,7 +13,7 @@ else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
 
-data = pd.read_csv("csv/clean_cpih.csv")
+data = pd.read_csv("clean_cpih.csv")
 
 # Melt wide format into long format
 df_melted = df.melt(id_vars="Product", var_name="Date", value_name="Index")

@@ -80,7 +80,7 @@ def load_nlp_model():
 
 @st.cache_data
 def load_adjectives():
-    df = pd.read_csv("csv/food_adjectives.csv")
+    df = pd.read_csv("food_adjectives.csv")
     hyphens = set(df["Food_Adjective"].str.lower().tolist())
     return hyphens, {adj.replace("-", " "): adj for adj in hyphens}
 
