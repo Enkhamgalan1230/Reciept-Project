@@ -101,9 +101,7 @@ if st.session_state.supabase_user:
 
 
 else:
-    st.markdown('<div class="centered-container">', unsafe_allow_html=True)
     auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single", key="auth_mode")
-    st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("---")
 
     if auth_tab == "Sign Up":
