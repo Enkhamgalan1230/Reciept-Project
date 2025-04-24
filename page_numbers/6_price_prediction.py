@@ -3,11 +3,6 @@ import pandas as pd
 import plotly.express as px
 
 
-con1 = st.container(border=True)
-con2 = st.container(border=True)
-con3 = st.container(border=True)
-con4 = st.container(border=True)
-
 
 st.title("Price Prediction", anchor=False)
 
@@ -18,6 +13,12 @@ if "df" in st.session_state:
     st.write("Nothing here yet!")
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
+
+
+con1 = st.container(border=True)
+con2 = st.container(border=True)
+con3 = st.container(border=True)
+con4 = st.container(border=True)
 
 
 cpih = pd.read_csv("clean_cpih.csv")
