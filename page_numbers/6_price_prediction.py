@@ -40,7 +40,12 @@ if selected:
 
     fig = px.line(filtered_df, x="Date", y="Index", color="Product",
                   title="CPIH Inflation Trend by Product")
-    fig.update_layout(xaxis_title="Date", yaxis_title="CPIH Index")
+    fig.update_layout(
+        xaxis_title="Date",
+        yaxis_title="CPIH Index",
+        xaxis_tickangle=-45  # 👈 Rotate labels
+    )
+
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.info("Please select at least one product category to display the chart.")
