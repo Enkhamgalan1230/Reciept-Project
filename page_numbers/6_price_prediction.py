@@ -13,12 +13,10 @@ else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
 
 
-data = pd.read_csv("clean_cpih.csv")
-
-st.write("Columns in the loaded DataFrame:", df.columns.tolist())
+cpih = pd.read_csv("clean_cpih.csv")
 
 # Melt wide format into long format
-df_melted = df.melt(id_vars="Product", var_name="Date", value_name="Index")
+df_melted = cpih.melt(id_vars="Product", var_name="Date", value_name="Index")
 
 # Convert Date to datetime for plotting
 df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b")
