@@ -19,13 +19,18 @@ cpih = pd.read_csv("clean_cpih.csv")
 df_melted = cpih.melt(id_vars="Product", var_name="Date", value_name="Index")
 
 # Convert Date to datetime
-df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b")
+#df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b")
 
 # Streamlit caption for context
 
 
 # Create dropdown to select products
 all_products = df_melted["Product"].unique().tolist()
+# Ensure the 'Date' column is actually datetime
+df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b", errors="coerce")
+
+# Sort by date to help Plotly
+df_melted = df_melted.sort_values("Date")
 default_selection = ["Bread and cereals", "Meat", "Milk, cheese and eggs"]  # Adjust these
 
 selected = st.multiselect(
