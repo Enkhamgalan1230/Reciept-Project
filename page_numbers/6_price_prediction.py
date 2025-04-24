@@ -143,3 +143,25 @@ if "Regular" in pivot.columns and occasion in pivot.columns:
     st.dataframe(top_spike.style.format("{:.2f}"))
 else:
     st.warning(f"Not enough data for {occasion} vs. Regular comparison.")
+
+
+def describe_change(pct):
+    if pct <= -3:
+        return "typically see a **significant drop**"
+    elif pct >= 3:
+        return "tend to **increase noticeably**"
+    elif abs(pct) < 1:
+        return "remain fairly stable"
+    else:
+        return "show moderate price change"
+    
+warnings = []
+
+for _, row in pivot.iterrows():
+    change = row[f"% Change {occasion} vs. Regular"]
+    sentence = f"🛒 {row.name} {describe_change(change)} during **{occasion}** compared to regular months."
+    warnings.append(sentence)
+
+paragraph = "\n\n".join(warnings[:5])  # only top 5 insights
+st.markdown(f"### 🧾 Seasonal Insight\n{paragraph}")
+
