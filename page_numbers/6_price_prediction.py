@@ -38,4 +38,4 @@ df_top10 = df_melted[df_melted["Product"].isin(top_10)]
 fig = px.line(df_top10, x="Date", y="Index", color="Product",
               title="Top 10 Most Inflated Food Products (CPIH)")
 fig.update_layout(xaxis_title="Date", yaxis_title="CPIH Index")
-fig.show()
+st.plotly_chart(fig, use_container_width=True)
