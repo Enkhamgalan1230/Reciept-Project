@@ -145,23 +145,27 @@ else:
     st.warning(f"Not enough data for {occasion} vs. Regular comparison.")
 
 
-def describe_change(pct):
-    if pct <= -3:
-        return "typically see a **significant drop**"
-    elif pct >= 3:
-        return "tend to **increase noticeably**"
-    elif abs(pct) < 1:
-        return "remain fairly stable"
-    else:
-        return "show moderate price change"
     
+rising = pivot[pivot[f"% Change {occasion} vs. Regular"] >= 2]
+falling = pivot[pivot[f"% Change {occasion} vs. Regular"] <= -2]
+stable = pivot[(pivot[f"% Change {occasion} vs. Regular"] > -2) & (pivot[f"% Change {occasion} vs. Regular"] < 2)]
+
 warnings = []
 
-for _, row in pivot.iterrows():
-    change = row[f"% Change {occasion} vs. Regular"]
-    sentence = f"🛒 {row.name} {describe_change(change)} during **{occasion}** compared to regular months."
-    warnings.append(sentence)
+# Add big risers
+for product in rising.index[:3]:
+    pct = rising.loc[product, f"% Change {occasion} vs. Regular"]
+    warnings.append(f"📈 **{product}** tends to increase by {pct:.2f}% during **{occasion}**.")
 
-paragraph = "\n\n".join(warnings[:5])  # only top 5 insights
-st.markdown(f"### 🧾 Seasonal Insight\n{paragraph}")
+# Add big fallers
+for product in falling.index[:3]:
+    pct = falling.loc[product, f"% Change {occasion} vs. Regular"]
+    warnings.append(f"📉 **{product}** typically drops by {pct:.2f}% during **{occasion}**.")
 
+# Add a couple stable just to round it out
+for product in stable.index[:2]:
+    warnings.append(f"🔄 **{product}** remains fairly stable during **{occasion}**.")
+
+# Display in Streamlit
+st.markdown("### 🧾 Seasonal Insight")
+st.markdown("\n\n".join(warnings))
