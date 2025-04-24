@@ -13,7 +13,7 @@ st.markdown("---")
 st.subheader("Inflation Board", anchor=False)
 
 # Load Subcategories from CSV
-subcategory_file = "subcategory.csv"
+subcategory_file = "csv/subcategory.csv"
 try:
     subcategories_df = pd.read_csv(subcategory_file)
     subcategory_list = subcategories_df["Subcategory"].unique().tolist()
