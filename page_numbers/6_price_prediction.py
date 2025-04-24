@@ -78,3 +78,14 @@ fig.add_scatter(x=filtered["Date"], y=filtered["Upper"], mode='lines', name="Upp
 
 fig.update_layout(yaxis_title="CPIH Index", xaxis_title="Date")
 st.plotly_chart(fig, use_container_width=True)
+
+# Calculate percentage change between first and last forecast for each product
+latest_growth = (
+    df.groupby("Product")
+    .apply(lambda g: (g["Forecast"].iloc[-1] - g["Forecast"].iloc[0]) / g["Forecast"].iloc[0] * 100)
+    .reset_index(name="Percent Change")
+)
+
+# Sort and get top 5
+top_risers = latest_growth.sort_values("Percent Change", ascending=False).head(5)
+top_risers.reset_index(drop=True, inplace=True)
