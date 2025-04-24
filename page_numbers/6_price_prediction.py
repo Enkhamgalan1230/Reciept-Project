@@ -98,3 +98,35 @@ fig = px.bar(top_risers, x="Product", y="Percent Change",
              labels={"Percent Change": "% Increase"},
              color="Percent Change")
 st.plotly_chart(fig, use_container_width=True)
+
+
+def tag_occasions(date):
+    if date.month == 12:
+        return "Christmas"
+    elif date.month == 4:
+        return "Easter"
+    elif date.month in [6, 7, 8]:
+        return "Summer"
+    else:
+        return "Regular"
+
+df_melted["Occasion"] = df_melted["Date"].apply(tag_occasions)
+
+occasion_stats = df_melted.groupby(["Product", "Occasion"])["Index"].mean().reset_index()
+
+# Pivot for easier comparison
+pivoted = occasion_stats.pivot(index="Product", columns="Occasion", values="Index")
+pivoted["% Change Xmas vs. Regular"] = (pivoted["Christmas"] - pivoted["Regular"]) / pivoted["Regular"] * 100
+pivoted["% Change Easter vs. Regular"] = (pivoted["Easter"] - pivoted["Regular"]) / pivoted["Regular"] * 100
+
+# Products that become cheaper at Christmas
+xmas_drops = pivoted.sort_values("% Change Xmas vs. Regular").head(5)
+
+# Products that get expensive at Easter
+easter_spikes = pivoted.sort_values("% Change Easter vs. Regular", ascending=False).head(5)
+
+st.subheader("💸 Biggest Christmas Discounts")
+st.dataframe(xmas_drops.style.format("{:.2f}"))
+
+st.subheader("💥 Easter Price Spikes")
+st.dataframe(easter_spikes.style.format("{:.2f}"))
