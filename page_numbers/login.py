@@ -101,7 +101,6 @@ if st.session_state.supabase_user:
 
 
 else:
-    st.markdown('</div>', unsafe_allow_html=True)
     auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single", key="auth_mode")
     st.markdown("---")
 
@@ -174,4 +173,3 @@ else:
                 st.error("Login failed.")
                 st.text(str(e))
     
-    st.markdown('</div>', unsafe_allow_html=True)
