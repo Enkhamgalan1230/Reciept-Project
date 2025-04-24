@@ -44,7 +44,7 @@ def get_base64_image(image_path):
 # Convert image to Base64
 email_white = "assets/email-white.png"  # Adjust this based on your file location
 github_white = "assets/github-white.png"
-phone_white = "assets/phone-white.png"
+linkedin = "assets/linkedin.png"
 
 # Convert image to Base64
 email_black = "assets/email-black.png"  # Adjust this based on your file location
@@ -53,7 +53,7 @@ phone_black = "assets/phone-white.png"
 
 email_base64 = get_base64_image(email_white)
 github_base64 = get_base64_image(github_white)
-phone_base64 = get_base64_image(phone_white)
+linkedin_base64 = get_base64_image(linkedin)
 
 
 
@@ -104,8 +104,8 @@ with col4:
     st.markdown(
             f"""
         <div style="display: flex; justify-content: center; align-items: center; text-align: center; margin-top: 20px;">
-            <a href="tel:07310545410" style="text-decoration: none;">
-                <img src="data:image/png;base64,{phone_base64}" 
+            <a href="https://www.linkedin.com/in/entwan/" target="_blank" style="text-decoration: none;">
+                <img src="data:image/png;base64,{linkedin_base64}" 
                     alt="github" 
                     style="width: 60px; height: auto; cursor: pointer; transition: transform 0.2s ease-in-out;">
             </a>
