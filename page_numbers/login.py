@@ -66,6 +66,19 @@ if "supabase_user" not in st.session_state:
 
 st.markdown("## Account")
 
+st.markdown("""
+    <style>
+        .centered-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            max-width: 400px;
+            margin: auto;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # ------------------- LOGGED IN VIEW -------------------
 if st.session_state.supabase_user:
     user_email = st.session_state.supabase_user.user.email
@@ -84,7 +97,11 @@ if st.session_state.supabase_user:
         st.rerun()
 
 # ------------------- SIGN UP FLOW -------------------
+
+
+
 else:
+    st.markdown('</div>', unsafe_allow_html=True)
     auth_tab = st.pills("Choose an action", ["Log In", "Sign Up"], selection_mode="single", key="auth_mode")
     st.markdown("---")
 
@@ -156,3 +173,5 @@ else:
             except Exception as e:
                 st.error("Login failed.")
                 st.text(str(e))
+    
+    st.markdown('</div>', unsafe_allow_html=True)
