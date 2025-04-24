@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+
 st.title("Price Prediction", anchor=False)
 
 
@@ -46,8 +47,8 @@ if selected:
         xaxis=dict(
             type="date",
             tickformat="%b %Y",
-            tickmode="array",  # 👉 manually control which ticks are shown
-            tickvals=filtered_df["Date"].dropna().sort_values().unique(),  # 👈 show all 14 dates
+            tickmode="array",  
+            tickvals=filtered_df["Date"].dropna().sort_values().unique(), 
             tickfont=dict(size=12)
         )
     )
@@ -57,3 +58,23 @@ else:
     st.info("Please select at least one product category to display the chart.")
 
 st.caption("📌 CPIH Index is relative to the base year (e.g., 2015 = 100). If a product is at 150, it means prices have risen 50% since 2015.")
+
+
+df = pd.read_csv("arima_forecast_all_products.csv")
+df["Date"] = pd.to_datetime(df["Date"])
+
+product = st.selectbox("Choose a product to view forecast:", df["Product"].unique())
+filtered = df[df["Product"] == product]
+
+fig = px.line(
+    filtered,
+    x="Date", y="Forecast",
+    title=f"{product} – 6 Month ARIMA Forecast",
+    markers=True
+)
+
+fig.add_scatter(x=filtered["Date"], y=filtered["Lower"], mode='lines', name="Lower Bound", line=dict(dash='dot'))
+fig.add_scatter(x=filtered["Date"], y=filtered["Upper"], mode='lines', name="Upper Bound", line=dict(dash='dot'))
+
+fig.update_layout(yaxis_title="CPIH Index", xaxis_title="Date")
+st.plotly_chart(fig, use_container_width=True)
