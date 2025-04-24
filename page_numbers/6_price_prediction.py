@@ -18,24 +18,29 @@ cpih = pd.read_csv("clean_cpih.csv")
 # Melt wide format into long format
 df_melted = cpih.melt(id_vars="Product", var_name="Date", value_name="Index")
 
-# Convert Date to datetime for plotting
+# Convert Date to datetime
 df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b")
 
+# Streamlit caption for context
 st.caption("📌 CPIH Index is relative to the base year (e.g., 2015 = 100). If a product is at 150, it means prices have risen 50% since 2015.")
-fig = px.line(
-    df_melted,
-    x="Date",
-    y="Index",
-    color="Product",
-    title="Food Inflation Trends (CPIH)",
+
+# Create dropdown to select products
+all_products = df_melted["Product"].unique().tolist()
+default_selection = ["Bread and cereals", "Meat", "Milk, cheese and eggs"]  # Adjust these
+
+selected = st.multiselect(
+    "Select food product categories to view inflation trends:",
+    options=all_products,
+    default=default_selection
 )
 
-# Filter top N by latest inflation
-top_n = df_melted[df_melted["Date"] == df_melted["Date"].max()]
-top_10 = top_n.sort_values("Index", ascending=False)["Product"].unique()[:10]
-df_top10 = df_melted[df_melted["Product"].isin(top_10)]
+# Filter and plot only selected items
+if selected:
+    filtered_df = df_melted[df_melted["Product"].isin(selected)]
 
-fig = px.line(df_top10, x="Date", y="Index", color="Product",
-              title="Top 10 Most Inflated Food Products (CPIH)")
-fig.update_layout(xaxis_title="Date", yaxis_title="CPIH Index")
-st.plotly_chart(fig, use_container_width=True)
+    fig = px.line(filtered_df, x="Date", y="Index", color="Product",
+                  title="CPIH Inflation Trend by Product")
+    fig.update_layout(xaxis_title="Date", yaxis_title="CPIH Index")
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.info("Please select at least one product category to display the chart.")
