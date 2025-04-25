@@ -67,25 +67,27 @@ if "supabase_user" not in st.session_state:
 query_params = st.query_params
 token = query_params.get("access_token")
 
-# If redirected from password reset email
 if token:
-    st.markdown("### Set a new password")
+    st.markdown("## 🔐 Reset Your Password")
     new_pw = st.text_input("New Password", type="password")
     confirm_pw = st.text_input("Confirm Password", type="password")
-    if st.button("Reset Password"):
+    reset_btn = st.button("Reset Password")
+
+    if reset_btn:
         if new_pw != confirm_pw:
             st.error("Passwords do not match.")
         elif not is_valid_password(new_pw):
             st.error("Password must meet complexity requirements.")
         else:
             try:
-                # Update user password using the access token
                 supabase.auth.update_user({"password": new_pw}, access_token=token)
-                st.success("Password reset successful. You may now log in.")
-                # Optionally, redirect or clear query param
+                st.success("✅ Password has been reset. You can now log in.")
+                st.experimental_set_query_params()  # Clears token from URL
+                st.rerun()
             except Exception as e:
                 st.error("Failed to reset password.")
                 st.text(str(e))
+    st.stop() 
 
 st.markdown("## Account")
 

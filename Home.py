@@ -16,6 +16,9 @@ st.set_page_config(
     layout="wide"  # Optionally, set layout to 'wide' or 'centered'
 )
 # Page Setup
+SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 home_page = st.Page(
      page = "page_numbers/1_home.py",
