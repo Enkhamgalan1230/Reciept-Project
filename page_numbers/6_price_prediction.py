@@ -147,11 +147,11 @@ with con3:
 
     with st.expander("💡What is this?"):
         st.write("""
-            This section highlights how product prices change during special occasions like Valentine's Day compared to regular months. The tables above show the top 5 price drops and top 5 price spikes based on average CPIH index values during this occasion.
-            * Products in the “Price Drops” table tend to become more affordable during the selected occasion a great time to stock up.
-            * Items in the “Price Spikes” table usually get more expensive, so you might want to buy them earlier.
+            This section reveals how average CPIH index values shift during seasonal occasions like Valentine’s Day, Easter, or Christmas compared to regular months. CPIH is an inflation index where a value of 150 means prices have risen 50% since 2015 — it's not the actual price, but a relative measure of cost change over time.
+            * Top 5 Price Drops show products that typically become cheaper during the selected occasion — great for stocking up.
+            * Top 5 Price Spikes highlight items that often see noticeable increases — it might be smarter to buy them ahead of time.
 
-            Below the tables, our Seasonal Insight boxes provide bite-sized tips on which products are mostly likely to stay stable or shift drastically, helping you make smarter decisions around your shopping plans for the season.
+            Beneath the tables, the Seasonal Insight cards offer quick tips on items likely to remain stable or fluctuate, helping you make more informed shopping decisions based on past trends.
         """)
 
     # Occasion dropdown
@@ -166,7 +166,7 @@ with con3:
     if "Regular" in pivot.columns and occasion in pivot.columns:
         # Simplified display: only Regular, Occasion, and Change
         reduced = pivot[["Regular", occasion]].copy()
-        reduced.columns = ["Regular Price", f"{occasion} Price"]
+        reduced.columns = ["Regular CPIH Index", f"{occasion} CPIH Index"]
 
         # Calculate % change
         reduced[f"% Change {occasion} vs. Regular"] = (
