@@ -32,11 +32,6 @@ def is_valid_password(pw):
 query_params = st.query_params
 token = query_params.get("access_token")
 
-# fallback for hash-style token (in case browser supports `window.location.hash`)
-if not token and "access_token" in st.get_option("client.queryString"):
-    token = st.get_option("client.queryString").split("access_token=")[-1]
-
-
 if token:
     st.markdown("## 🔐 Reset Your Password")
     new_pw = st.text_input("New Password", type="password")
@@ -55,7 +50,9 @@ if token:
             except Exception as e:
                 st.error("Failed to reset password.")
                 st.text(str(e))
-    st.stop() 
+    st.stop()
+
+    
 home_page = st.Page(
      page = "page_numbers/1_home.py",
      title= "Home Page",
