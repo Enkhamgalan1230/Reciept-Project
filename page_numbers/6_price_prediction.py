@@ -34,9 +34,8 @@ df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b", errors="co
 df_melted = df_melted.sort_values("Date")
 default_selection = ["Bread and cereals", "Meat", "Milk, cheese and eggs"]  # def
 with con1:
-    with st.container(border=True):
-        st.write("💡What is this? ")
-        st.markdown("""
+    with st.expander("💡What is this?"):
+        st.write("""
             The chart below illustrates the CPIH (Consumer Prices Index including Housing costs) trends for selected food categories over the past 14 months. Each line represents how the average price of a product category has changed relative to its baseline in 2015 (which is set to 100).
             For example, a value of 140 on the y-axis means the item has become 40% more expensive since 2015.
             Use this chart to compare how inflation has impacted different food categories. Sudden increases or consistent upward trends can signal rising costs, while stable or declining lines may indicate better value for budgeting.
@@ -78,9 +77,9 @@ df["Date"] = pd.to_datetime(df["Date"])
 
 with con2:
 
-    with st.container(border=True):
-        st.write("💡What is this? ")
-        st.markdown("""
+    
+    with st.expander("💡What is this?"):
+        st.write("""
             This chart uses the ARIMA model (AutoRegressive Integrated Moving Average) to forecast CPIH trends for the selected food category over the next 6 months. The solid line represents the predicted CPIH Index based on historical data, while the shaded area shows the confidence interval — a range of possible outcomes.
             * The Upper Bound indicates a best-case scenario (higher prices if inflation continues to rise).
             * The Lower Bound reflects a worst-case or drop scenario.
@@ -146,9 +145,8 @@ with con3:
 
     df_melted["Occasion"] = df_melted["Date"].apply(tag_occasion)
 
-    with st.container(border=True):
-        st.write("💡What is this? ")
-        st.markdown("""
+    with st.expander("💡What is this?"):
+        st.write("""
             This section highlights how product prices change during special occasions like Valentine's Day compared to regular months. The tables above show the top 5 price drops and top 5 price spikes based on average CPIH index values during this occasion.
             * Products in the “Price Drops” table tend to become more affordable during the selected occasion a great time to stock up.
             * Items in the “Price Spikes” table usually get more expensive, so you might want to buy them earlier.
