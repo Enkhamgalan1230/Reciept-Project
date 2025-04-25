@@ -146,6 +146,16 @@ with con3:
 
     df_melted["Occasion"] = df_melted["Date"].apply(tag_occasion)
 
+    with st.container(border=True):
+        st.write("💡What is this? ")
+        st.markdown("""
+            This section highlights how product prices change during special occasions like Valentine's Day compared to regular months. The tables above show the top 5 price drops and top 5 price spikes based on average CPIH index values during this occasion.
+            * Products in the “Price Drops” table tend to become more affordable during the selected occasion a great time to stock up.
+            * Items in the “Price Spikes” table usually get more expensive, so you might want to buy them earlier.
+
+            Below the tables, our Seasonal Insight boxes provide bite-sized tips on which products are mostly likely to stay stable or shift drastically, helping you make smarter decisions around your shopping plans for the season.
+        """)
+
     # Occasion dropdown
     occasion = st.selectbox(
         "🎉 Select an Occasion:",
@@ -200,6 +210,8 @@ with con3:
 
 
     st.markdown("### 🧾 Seasonal Insight")
+    st.caption("📌 1.🔻 for drops, 2.📈 for increases, 3.🔄 for stable")
+
 
     # Break warnings into rows of 4
     cols = st.columns(4)
