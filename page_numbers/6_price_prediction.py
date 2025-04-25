@@ -171,7 +171,7 @@ with con3:
 
         # Calculate % change
         reduced[f"% Change {occasion} vs. Regular"] = (
-            (reduced[f"{occasion} Price"] - reduced["Regular Price"]) / reduced["Regular Price"] * 100
+            (reduced[f"{occasion} CPIH Index"] - reduced["Regular CPIH Index"]) / reduced["Regular CPIH Index"] * 100
         )
 
         reduced = reduced.reset_index()
@@ -181,10 +181,10 @@ with con3:
         top_spike = reduced.sort_values(f"% Change {occasion} vs. Regular", ascending=False).head(5)
 
         st.markdown(f"### 👍 Biggest Price Drops – {occasion}")
-        st.dataframe(top_discount.style.format({col: "{:.2f}" for col in reduced.columns if "Price" in col or "Change" in col}))
-
+        st.dataframe(top_discount.style.format({col: "{:.2f}" for col in reduced.columns if "CPIH" in col or "Change" in col}))
         st.markdown(f"### 👎 Biggest Price Spikes – {occasion}")
-        st.dataframe(top_spike.style.format({col: "{:.2f}" for col in reduced.columns if "Price" in col or "Change" in col}))
+        st.dataframe(top_spike.style.format({col: "{:.2f}" for col in reduced.columns if "CPIH" in col or "Change" in col}))
+        
     else:
         st.warning(f"Not enough data for {occasion} vs. Regular comparison.")
 
