@@ -183,7 +183,7 @@ with con3:
     st.markdown("### 🧾 Seasonal Insight")
 
     # Break warnings into rows of 4
-    cols = st.columns(4, border=True)
+    cols = st.columns(4)
     for i, warning in enumerate(warnings):
         with cols[i % 4].container(border=True):
             st.markdown(warning)
