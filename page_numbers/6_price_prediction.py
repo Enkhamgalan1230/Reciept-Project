@@ -169,18 +169,16 @@ with con3:
     warnings = []
 
     # Add big risers
-    for product in rising.index[:3]:
-        pct = rising.loc[product, f"% Change {occasion} vs. Regular"]
-        warnings.append(f"📈 **{product}** tends to increase by {pct:.2f}% during **{occasion}**.")
+    for _, row in rising.head(3).iterrows():
+        warnings.append(f"📈 **{row['Product']}** tends to increase by {row[f'% Change {occasion} vs. Regular']:.2f}% during **{occasion}**.")
 
     # Add big fallers
-    for product in falling.index[:3]:
-        pct = falling.loc[product, f"% Change {occasion} vs. Regular"]
-        warnings.append(f"📉 **{product}** typically drops by {pct:.2f}% during **{occasion}**.")
+    for _, row in falling.head(3).iterrows():
+        warnings.append(f"📉 **{row['Product']}** typically drops by {row[f'% Change {occasion} vs. Regular']:.2f}% during **{occasion}**.")
 
-    # Add a couple stable just to round it out
-    for product in stable.index[:2]:
-        warnings.append(f"🔄 **{product}** remains fairly stable during **{occasion}**.")
+    for _, row in stable.head(2).iterrows():
+        warnings.append(f"🔄 **{row['Product']}** remains fairly stable during **{occasion}**.")
+
 
     # Display in Streamlit
     st.markdown("### 🧾 Seasonal Insight")
