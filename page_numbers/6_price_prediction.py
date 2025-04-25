@@ -15,7 +15,6 @@ else:
 
 
 con1 = st.container(border=True)
-con69= st.container(border=True)
 con2 = st.container(border=True)
 con3 = st.container(border=True)
 con4 = st.container(border=True)
@@ -35,7 +34,7 @@ df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b", errors="co
 df_melted = df_melted.sort_values("Date")
 default_selection = ["Bread and cereals", "Meat", "Milk, cheese and eggs"]  # def
 with con1:
-    with con69:
+    with st.container(border=True):
         st.write("💡What is this? ")
         st.markdown("""
             The chart below illustrates the CPIH (Consumer Prices Index including Housing costs) trends for selected food categories over the past 14 months. Each line represents how the average price of a product category has changed relative to its baseline in 2015 (which is set to 100).
