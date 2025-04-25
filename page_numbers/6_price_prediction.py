@@ -137,19 +137,26 @@ with con3:
     pivot = occasion_stats.pivot(index="Product", columns="Occasion", values="Index").fillna(0)
 
     if "Regular" in pivot.columns and occasion in pivot.columns:
-        pivot[f"% Change {occasion} vs. Regular"] = (
-            (pivot[occasion] - pivot["Regular"]) / pivot["Regular"] * 100
+        # Simplified display: only Regular, Occasion, and Change
+        reduced = pivot[["Regular", occasion]].copy()
+        reduced.columns = ["Regular Price", f"{occasion} Price"]
+
+        # Calculate % change
+        reduced[f"% Change {occasion} vs. Regular"] = (
+            (reduced[f"{occasion} Price"] - reduced["Regular Price"]) / reduced["Regular Price"] * 100
         )
 
-        # Top 5 Discounts or Spikes depending on change direction
-        top_discount = pivot.sort_values(f"% Change {occasion} vs. Regular").head(5)
-        top_spike = pivot.sort_values(f"% Change {occasion} vs. Regular", ascending=False).head(5)
+        reduced = reduced.reset_index()
+
+        # Top 5 sorted
+        top_discount = reduced.sort_values(f"% Change {occasion} vs. Regular").head(5)
+        top_spike = reduced.sort_values(f"% Change {occasion} vs. Regular", ascending=False).head(5)
 
         st.markdown(f"### 👍 Biggest Price Drops – {occasion}")
-        st.dataframe(top_discount.style.format("{:.2f}"))
+        st.dataframe(top_discount.style.format({col: "{:.2f}" for col in reduced.columns if "Price" in col or "Change" in col}))
 
         st.markdown(f"### 👎 Biggest Price Spikes – {occasion}")
-        st.dataframe(top_spike.style.format("{:.2f}"))
+        st.dataframe(top_spike.style.format({col: "{:.2f}" for col in reduced.columns if "Price" in col or "Change" in col}))
     else:
         st.warning(f"Not enough data for {occasion} vs. Regular comparison.")
 
