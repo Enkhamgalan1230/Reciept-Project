@@ -124,8 +124,7 @@ with con3:
             return "Halloween"
         elif date.month == 11:
             return "Bonfire Night"
-        else:
-            return "Regular"
+        
 
     df_melted["Occasion"] = df_melted["Date"].apply(tag_occasion)
 
