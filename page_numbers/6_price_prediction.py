@@ -130,8 +130,10 @@ with con3:
     df_melted["Occasion"] = df_melted["Date"].apply(tag_occasion)
 
     # Occasion dropdown
-    occasion = st.selectbox("🎉 Select an Occasion:", options=df_melted["Occasion"].unique())
-
+    occasion = st.selectbox(
+        "🎉 Select an Occasion:",
+        options=[o for o in df_melted["Occasion"].unique() if o != "Regular"]
+    )
     # Occasion vs. Regular comparison
     occasion_stats = df_melted.groupby(["Product", "Occasion"])["Index"].mean().reset_index()
     pivot = occasion_stats.pivot(index="Product", columns="Occasion", values="Index").fillna(0)
