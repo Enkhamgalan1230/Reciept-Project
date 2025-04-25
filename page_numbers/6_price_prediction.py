@@ -84,6 +84,7 @@ with con2:
             This chart uses the ARIMA model (AutoRegressive Integrated Moving Average) to forecast CPIH trends for the selected food category over the next 6 months. The solid line represents the predicted CPIH Index based on historical data, while the shaded area shows the confidence interval — a range of possible outcomes.
             * The Upper Bound indicates a best-case scenario (higher prices if inflation continues to rise).
             * The Lower Bound reflects a worst-case or drop scenario.
+            
             This forecast helps you anticipate upcoming price movements, so you can make smarter decisions about budgeting and shopping — especially for items likely to increase soon.
         """)
 
