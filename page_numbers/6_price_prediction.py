@@ -180,7 +180,11 @@ with con3:
         warnings.append(f"🔄 **{row['Product']}** remains fairly stable during **{occasion}**.")
 
 
-    # Display in Streamlit
     st.markdown("### 🧾 Seasonal Insight")
-    st.markdown("\n\n".join(warnings))
+
+    # Break warnings into rows of 4
+    cols = st.columns(4, border=True)
+    for i, warning in enumerate(warnings):
+        with cols[i % 4].container(border=True):
+            st.markdown(warning)
 
