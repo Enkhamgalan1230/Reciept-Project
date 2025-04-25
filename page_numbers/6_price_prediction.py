@@ -166,10 +166,8 @@ with con3:
     if "Regular" in pivot.columns and occasion in pivot.columns:
         # Simplified display: only Regular, Occasion, and Change
         reduced = pivot[["Regular", occasion]].copy()
-        reduced.columns = ["Regular Price", "Occasion Price"]
-        reduced["% Change vs. Regular"] = (
-            (reduced["Occasion Price"] - reduced["Regular Price"]) / reduced["Regular Price"] * 100
-        )
+        safe_occasion = occasion.replace("'", "")  # or use any safer mapping
+        reduced.columns = ["Regular CPIH Index", f"{occasion} CPIH Index"]
 
         # Calculate % change
         reduced[f"% Change {occasion} vs. Regular"] = (
