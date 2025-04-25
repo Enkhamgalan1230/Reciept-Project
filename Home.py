@@ -16,43 +16,6 @@ st.set_page_config(
     page_icon="📃",  # Set a custom icon (optional)
     layout="wide"  # Optionally, set layout to 'wide' or 'centered'
 )
-SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-def is_valid_password(pw):
-    return (
-        len(pw) >= 8 and
-        not any(c.isspace() for c in pw) and
-        re.search(r'[A-Z]', pw) and
-        re.search(r'[0-9]', pw) and
-        re.search(r'[!@#$%^&*(),.?":{}|<>]', pw)
-    )
-
-query_params = st.query_params
-token = query_params.get("access_token")
-
-if token:
-    st.markdown("## 🔐 Reset Your Password")
-    new_pw = st.text_input("New Password", type="password")
-    confirm_pw = st.text_input("Confirm Password", type="password")
-    if st.button("Reset Password"):
-        if new_pw != confirm_pw:
-            st.error("Passwords do not match.")
-        elif not is_valid_password(new_pw):
-            st.error("Password must meet complexity requirements.")
-        else:
-            try:
-                supabase.auth.update_user({"password": new_pw}, access_token=token)
-                st.success("✅ Password has been reset. You can now log in.")
-                st.experimental_set_query_params()  # Clear token
-                st.rerun()
-            except Exception as e:
-                st.error("Failed to reset password.")
-                st.text(str(e))
-    st.stop()
-
-    
 home_page = st.Page(
      page = "page_numbers/1_home.py",
      title= "Home Page",

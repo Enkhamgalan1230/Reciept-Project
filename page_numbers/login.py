@@ -64,31 +64,6 @@ def hash_password(password: str) -> str:
 if "supabase_user" not in st.session_state:
     st.session_state.supabase_user = None
 
-query_params = st.query_params
-token = query_params.get("access_token")
-
-if token:
-    st.markdown("## 🔐 Reset Your Password")
-    new_pw = st.text_input("New Password", type="password")
-    confirm_pw = st.text_input("Confirm Password", type="password")
-    reset_btn = st.button("Reset Password")
-
-    if reset_btn:
-        if new_pw != confirm_pw:
-            st.error("Passwords do not match.")
-        elif not is_valid_password(new_pw):
-            st.error("Password must meet complexity requirements.")
-        else:
-            try:
-                supabase.auth.update_user({"password": new_pw}, access_token=token)
-                st.success("✅ Password has been reset. You can now log in.")
-                st.experimental_set_query_params()  # Clears token from URL
-                st.rerun()
-            except Exception as e:
-                st.error("Failed to reset password.")
-                st.text(str(e))
-    st.stop() 
-
 st.markdown("## Account")
 
 st.markdown("""
@@ -198,19 +173,4 @@ else:
                 st.error("Login failed.")
                 st.text(str(e))
 
-        if st.button("Forgot Password?"):
-            st.session_state.show_reset_form = True
-
-    # PASSWORD RESET REQUEST FORM
-    if st.session_state.get("show_reset_form"):
-        st.markdown("### Reset your password")
-        reset_email = st.text_input("Enter your email for password reset")
-        if st.button("Send Reset Email"):
-            try:
-                supabase.auth.reset_password_email(reset_email)
-                st.success("Reset link sent! Please check your inbox.")
-                st.session_state.show_reset_form = False
-            except Exception as e:
-                st.error("Failed to send reset email.")
-                st.text(str(e))
     
