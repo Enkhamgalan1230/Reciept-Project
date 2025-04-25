@@ -162,9 +162,9 @@ with con3:
 
 
         
-    rising = pivot[pivot[f"% Change {occasion} vs. Regular"] >= 2]
-    falling = pivot[pivot[f"% Change {occasion} vs. Regular"] <= -2]
-    stable = pivot[(pivot[f"% Change {occasion} vs. Regular"] > -2) & (pivot[f"% Change {occasion} vs. Regular"] < 2)]
+    rising = reduced[reduced[f"% Change {occasion} vs. Regular"] >= 2]
+    falling = reduced[reduced[f"% Change {occasion} vs. Regular"] <= -2]
+    stable = reduced[(reduced[f"% Change {occasion} vs. Regular"] > -2) & (reduced[f"% Change {occasion} vs. Regular"] < 2)]
 
     warnings = []
 
