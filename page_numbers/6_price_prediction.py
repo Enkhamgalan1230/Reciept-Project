@@ -208,7 +208,7 @@ with con3:
 
 
     st.markdown("### 🧾 Seasonal Insight")
-    st.caption("📌 1.🔻 for drops, 2.📈 for increases, 3.🔄 for stable")
+    st.caption("💡 Hint:🔻 for drops, 2.📈 for increases, 3.🔄 for stable")
 
 
     # Break warnings into rows of 4
