@@ -32,8 +32,13 @@ df_melted["Date"] = pd.to_datetime(df_melted["Date"], format="%Y %b", errors="co
 
 # Sort by date to help Plotly
 df_melted = df_melted.sort_values("Date")
-default_selection = ["Bread and cereals", "Meat", "Milk, cheese and eggs"]  # Adjust these
+default_selection = ["Bread and cereals", "Meat", "Milk, cheese and eggs"]  # def
 with con1:
+    st.markdown("""
+        The chart below illustrates the CPIH (Consumer Prices Index including Housing costs) trends for selected food categories over the past 14 months. Each line represents how the average price of a product category has changed relative to its baseline in 2015 (which is set to 100).
+        For example, a value of 140 on the y-axis means the item has become 40% more expensive since 2015.
+        Use this chart to compare how inflation has impacted different food categories. Sudden increases or consistent upward trends can signal rising costs, while stable or declining lines may indicate better value for budgeting.
+    """)
     selected = st.multiselect(
         "Select food product categories to view inflation trends:",
         options=all_products,
