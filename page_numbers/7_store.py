@@ -234,7 +234,7 @@ with container1:
 
                     folium.Marker(
                         [row["Latitude"], row["Longitude"]],
-                        popup=folium.Popup(popup_html, max_width=300),
+                        popup=folium.Popup(popup_html, max_width=400),
                         tooltip=row["Store"],
                         icon=custom_icon
                     ).add_to(m)
