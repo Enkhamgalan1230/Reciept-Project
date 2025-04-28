@@ -110,6 +110,13 @@ else:
                     else:
                         st.markdown("_No matched items available._")
 
+                    # Properly format a very unique ID
+                    created_at_full = entry["created_at"]  # e.g., 2025-04-22T09:25:00.123456
+
+                    # Prepare a clean key
+                    clean_created_at = created_at_full.replace(":", "-").replace(".", "-")
+                    unique_key = f"download_button_{clean_created_at}_{entry.get('store', 'Unknown')}"
+
                     # Download button
                     st.download_button(
                         label="Download List",
@@ -117,6 +124,6 @@ else:
                         data=txt_content,
                         file_name=f"receipt_{timestamp.replace(' ', '_')}.txt",
                         mime="text/plain",
-                        key=f"download_button_{timestamp}_{entry.get('store', 'Unknown')}"
+                        key=unique_key
 
                     )
