@@ -302,9 +302,9 @@ with st.expander("💡How Does it work?"):
         Once you've built your list, you can pick a supermarket, set a budget, and the app will suggest the best products to buy and even save your list if you're logged in.
     """)
 tab1, tab2, tab3 = st.tabs([
-    "✏️ Write List",
-    "🎙️ Record List",
-    "🤖 Ask AI",
+    "Write List",
+    "Record List",
+    "Ask AI",
 ])
 # I like containers haha.
 # ========== WRITING INPUT ==========
