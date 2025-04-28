@@ -68,24 +68,25 @@ else:
 
                     # Build receipt
                     receipt = f"""
-<div style="font-family: 'Courier New', monospace; background-color: white; padding: 20px; border: 2px dashed grey; width: 300px; margin: auto; color: black;">
-    <h4 style="text-align: center;">RECEIPT</h4>
-    <p style="text-align: center; font-size: 12px;">{timestamp}</p>
-    <hr>
+                <div style="font-family: 'Courier New', monospace; background-color: white; padding: 20px; border: 2px dashed grey; width: 300px; margin: auto; color: black;">
+                    <h4 style="text-align: center;">RECEIPT</h4>
+                    <p style="text-align: center; font-size: 12px;">{timestamp}</p>
+                    <hr>
 
-    <strong>🛒 Shopping List:</strong><br>
-    {"<br>".join(f"- {item}" for item in input_items)}<br><br>
+                    <strong>🛒 Shopping List:</strong><br>
+                    {"<br>".join(f"- {item}" for item in input_items)}<br><br>
 
-    <strong>🛍️ Potential Buys ({entry.get('store', 'Unknown Store')}):</strong><br>
-    {"<br>".join(
-        f"{match.get('Input', 'Unknown')} -> {match.get('Matched Product', 'N/A')}<br>"
-        f"Price: £{match.get('Price', 0.00):.2f} | "
-        f"Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}"
-        for match in matched_items
-    )}
-    <hr>
-    <p style="text-align: center;">Thank you for using SmartCart!</p>
-</div>
+                    <strong>🛍️ Potential Buys ({entry.get('store', 'Unknown Store')}):</strong><br>
+                    {"<br>".join(
+                        f"{match.get('Input', 'Unknown')} → {match.get('Matched Product', 'N/A')}<br>"
+                        f"Price: £{match.get('Price', 0.00):.2f} | "
+                        f"Discount: {'None' if match.get('Discount') in [None, 'NULL', 'null'] else match.get('Discount')}"
+                        for match in matched_items
+                    )}
+                    <hr>
+                    <p style="text-align: center;">Thank you for shopping with us!</p>
+                </div>
                     """
 
+                        
                     st.markdown(receipt, unsafe_allow_html=True)
