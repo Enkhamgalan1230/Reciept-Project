@@ -137,13 +137,13 @@ else:
                     if st.session_state.get(f"confirm_delete_{delete_key}"):
                         st.divider()
                         with st.container(border=True):
-                            st.markdown(f"### ⚠️ Confirm Deletion")
-                            st.caption("Are you sure you want to delete this shopping list? This action **cannot** be undone.")
+                            st.markdown("### ⚠️ Confirm Deletion")
+                            st.caption("Are you sure you want to delete this shopping list? This action cannot be undone.")
 
-                            # Center the buttons nicely
-                            button_col1, button_col2, button_col3 = st.columns([1, 0.5, 1])  # Middle column smaller
+                            # Create 5 columns: [space] [Yes button] [small space] [No button] [space]
+                            col1, col2, col3, col4, col5 = st.columns([1, 2, 0.5, 2, 1])
 
-                            with button_col1:
+                            with col2:
                                 if st.button("Yes, Delete", key=f"confirm_yes_{delete_key}"):
                                     try:
                                         supabase.table("shopping_lists").delete()\
@@ -156,6 +156,6 @@ else:
                                     except Exception as e:
                                         st.error(f"Failed to delete list: {e}")
 
-                            with button_col3:
+                            with col4:
                                 if st.button("Nahh, Keep it", key=f"confirm_no_{delete_key}"):
                                     st.session_state.pop(f"confirm_delete_{delete_key}", None)
