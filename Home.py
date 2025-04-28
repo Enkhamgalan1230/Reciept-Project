@@ -104,7 +104,7 @@ pg = st.navigation(
 logo_path = "assets/logo_longer_white.png"
 
 # ✅ No base64 needed here
-st.logo(image=logo_path, icon_image="assets/logo.png", size="large")
+st.logo(image="assets/logo_longer_white.png", icon_image="assets/logo.png", size="large")
 
 pg.run()
 
