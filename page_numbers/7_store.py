@@ -10,6 +10,12 @@ import pandas as pd
 st.header("Closest Store Finder 📍",anchor=False)
 st.caption("💡 For security reasons you can erase your location from the session.")
 
+with st.expander("💡How Does it work?"):
+    st.write("""
+        This page helps you quickly find the nearest supermarket (like Tesco, Aldi, etc.) either by using your current location or by entering your postcode. 
+        It shows the closest stores on a map with their logos and tells you how far they are, so you can plan your trip easily.
+    """)
+
 comment = '''
     This function searches for a given store name near the user's location using the Photon API, 
     retrieves up to 10 possible store locations, filters them based on whether they are within the specified distance (max_distance_km), 

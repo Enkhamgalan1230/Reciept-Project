@@ -18,6 +18,11 @@ else:
     st.stop()
 
 st.title("📈 Data Analysis", anchor=False)
+
+with st.expander("💡How Does it work?"):
+    st.write("""
+        The page provides a visual and statistical overview of grocery price data collected from different stores, helping users understand patterns like average prices, price changes, and store comparisons.
+    """)
 st.markdown("---")
 
 # 🔹 Create "Date" Column

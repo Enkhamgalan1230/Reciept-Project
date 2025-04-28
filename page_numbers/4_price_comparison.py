@@ -123,8 +123,17 @@ if "df" in st.session_state:
     df = st.session_state.df
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
+    st.stop()
 
 st.title("🏷️ Price Comparison", anchor=False)
+
+with st.expander("💡How Does it work"):
+    st.write("""
+        This page helps you quickly compare the prices of common grocery items across different supermarkets. 
+        It also lets you search for specific products by name and see which store offers the best deal, making it easier to save money on your shopping.
+    """)
+st.markdown("---")
+
 st.markdown("---")
 
 st.subheader("🏆 Dashboard with 15 Popular Items", anchor=False)

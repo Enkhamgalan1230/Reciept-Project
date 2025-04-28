@@ -295,7 +295,13 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
 
 # ========== Main File ==========
 st.title("Shopping List generator 📃")
-st.caption("💡 You can write, speak or generate your shopping list here!")
+
+with st.expander("💡How Does it work?"):
+    st.write("""
+        This tool helps you quickly create a shopping list by typing, speaking, or asking an AI assistant.
+        Once you've built your list, you can pick a supermarket, set a budget, and the app will suggest the best products to buy and even save your list if you're logged in.
+    """)
+
 st.markdown("---")
 tab1, tab2, tab3 = st.tabs([
     "✏️ Write List",

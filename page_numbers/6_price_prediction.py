@@ -2,16 +2,21 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-
-
-st.title("Price Prediction", anchor=False)
-st.caption("💡 Historical data is provided by ONS(Office for National Statistics)")
-
 # Check if df is stored in session state
 if "df" in st.session_state:
     df = st.session_state.df  # Retrieve stored data
 else:
     st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
+    st.stop()
+
+st.title("Price Prediction", anchor=False)
+st.caption("💡 Historical data is provided by ONS(Office for National Statistics)")
+
+with st.expander("💡How Does it work?"):
+    st.write("""
+        This page shows how food prices have changed over time and uses forecasts to predict future price trends. 
+        It also highlights how prices usually rise or fall during seasonal events like Christmas or Easter, helping you plan smarter shopping.
+    """)
 
 
 con1 = st.container(border=True)

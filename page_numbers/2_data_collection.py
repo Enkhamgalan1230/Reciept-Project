@@ -11,6 +11,11 @@ import plotly.express as px
 
 st.title("Data Collection Process 🌐", anchor=False)
 
+with st.expander("💡How Does it work?"):
+    st.write("""
+        This is just a information page, You can explore how we collect the data and process it, so if you are not interested in what we do, you can skip this page 😉.
+    """)
+
 st.write("""
 We collect supermarket product data through web scraping, process it for accuracy, and store it in a scalable database. 
 Below is an overview of our approach:

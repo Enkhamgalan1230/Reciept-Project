@@ -76,6 +76,16 @@ def get_preloaded_fun_fact():
     return random.choice(fun_facts)
 
 st.title("🛠️ Data Fetcher Tool", anchor=False)
+
+with st.expander("💡How Does it work?"):
+    st.write("""
+        This tool fetches the latest grocery product data from our database and stores it safely in your browser's memory (cache), 
+        so that other pages like price comparison and inflation dashboards can work instantly without fetching again.
+        
+        If you see the page live-fetching (showing progress bars and fun facts), that means it’s downloading thousands of products right now.
+        Sorry for the wait! ⏳ It usually takes less than a minute — feel free to relax and enjoy a fun fact while it loads!
+    """)
+
 st.markdown("---")
 
 # Initialize Supabase connection
