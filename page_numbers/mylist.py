@@ -43,6 +43,7 @@ with st.spinner("Loading your saved lists..."):
 if not lists:
     st.info("No shopping lists found.")
 else:
+
     # Group lists by Month-Year
     grouped_lists = defaultdict(list)
     for entry in lists:
@@ -52,6 +53,7 @@ else:
     # Create tabs for each month
     month_tabs = st.tabs(list(grouped_lists.keys()))
 
+    # Inside each tab
     for tab, (month, entries) in zip(month_tabs, grouped_lists.items()):
         with tab:
             for entry in entries:
@@ -64,14 +66,8 @@ else:
                     except:
                         input_items = entry.get("input_items", [])
 
-                    st.markdown("### 📝 Shopping List")
-                    if input_items:
-                        for item in input_items:
-                            st.markdown(f"- {item}")
-                    else:
-                        st.markdown("_None_")
-
-                    st.markdown("---")  # Divider line
+                    st.markdown("### Shopping List")
+                    st.write(", ".join(input_items) if input_items else "_None_")
 
                     # 🛍️ Parse matched_items
                     try:
@@ -79,21 +75,14 @@ else:
                     except:
                         matched_items = entry.get("matched_items", [])
 
-                    st.markdown(f"### 🛍️ Potential Buys ({entry.get('store', 'Unknown Store')})")
+                    st.markdown(f"### Potential Buys ({entry.get('store', 'Unknown Store')})")
 
                     if matched_items:
                         for match in matched_items:
-                            input_name = match.get('Input', 'Unknown')
-                            matched_name = match.get('Matched Product', 'N/A')
-                            price = match.get('Price', 0.00)
-                            discount = match.get('Discount')
-
-                            discount_display = 'None' if discount in [None, 'NULL', 'null'] else discount
-
                             st.markdown(f"""
-                            - **{input_name}** → *{matched_name}*  
-                              Price: **£{price:.2f}**  
-                              Discount: {discount_display}
+                            - **{match.get('Input', 'Unknown')}** → *{match.get('Matched Product', 'N/A')}*  
+                              Price: £{match.get('Price', 0.00):.2f}  
+                              Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
                             """)
                     else:
                         st.markdown("_No matched items available._")
