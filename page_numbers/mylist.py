@@ -26,64 +26,63 @@ else:
     st.stop()
 
 # --- Page Title ---
-st.title("🧾 My Shopping Lists")
+st.title(" My Shopping Lists")
 
 # --- Fetch user's shopping lists ---
 with st.spinner("Loading your saved lists..."):
+
     response = supabase.table("shopping_lists")\
         .select("*")\
         .eq("user_email", user_email.lower())\
         .order("created_at", desc=True)\
         .execute()
+
     lists = response.data
 
 # --- Display lists grouped by month ---
 if not lists:
     st.info("No shopping lists found.")
 else:
+
+    # Group lists by Month-Year
     grouped_lists = defaultdict(list)
     for entry in lists:
-        month_year = datetime.fromisoformat(entry["created_at"]).strftime("%B %Y")
+        month_year = datetime.fromisoformat(entry["created_at"]).strftime("%B %Y")  # e.g., "April 2025"
         grouped_lists[month_year].append(entry)
 
+    # Create tabs for each month
     month_tabs = st.tabs(list(grouped_lists.keys()))
 
+    # Inside each tab
     for tab, (month, entries) in zip(month_tabs, grouped_lists.items()):
         with tab:
             for entry in entries:
                 timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
 
-                with st.expander(f"🧾 {timestamp}", expanded=False):
-                    # Parse input_items
+                with st.popover(f"🛒 {timestamp}"):
+                    # 📝 Parse input_items
                     try:
                         input_items = json.loads(entry.get("input_items", "[]"))
                     except:
                         input_items = entry.get("input_items", [])
 
+                    st.markdown("### 📝 Shopping List")
+                    st.write(", ".join(input_items) if input_items else "_None_")
+
+                    # 🛍️ Parse matched_items
                     try:
                         matched_items = json.loads(entry.get("matched_items", "[]"))
                     except:
                         matched_items = entry.get("matched_items", [])
 
-                    # Build receipt
-                    receipt = f"""
-    <div style="font-family: 'Courier New', monospace; background-color: white; padding: 20px; border: 2px dashed grey; width: 300px; margin: auto; color: black;">
-        <h4 style="text-align: center;">RECEIPT</h4>
-        <p style="text-align: center; font-size: 12px;">{timestamp}</p>
-        <hr>
+                    st.markdown(f"### 🛍️ Potential Buys ({entry.get('store', 'Unknown Store')})")
 
-        <strong>🛒 Shopping List:</strong><br>
-        {"<br>".join(f"- {item}" for item in input_items)}<br><br>
-
-        <strong>🛍️ Potential Buys ({entry.get('store', 'Unknown Store')}):</strong><br>
-        {"<br>".join(
-            f"{match.get('Input', 'Unknown')} → {match.get('Matched Product', 'N/A')}<br>"
-            f"Price: £{match.get('Price', 0.00):.2f} | "
-            f"Discount: {'None' if match.get('Discount') in [None, 'NULL', 'null'] else match.get('Discount')}"
-            for match in matched_items
-        )}
-        <hr>
-        <p style="text-align: center;">Thank you for shopping with us!</p>
-    </div>
-                    """
-                    st.markdown(receipt, unsafe_allow_html=True)
+                    if matched_items:
+                        for match in matched_items:
+                            st.markdown(f"""
+                            - **{match.get('Input', 'Unknown')}** → *{match.get('Matched Product', 'N/A')}*  
+                              Price: £{match.get('Price', 0.00):.2f}  
+                              Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
+                            """)
+                    else:
+                        st.markdown("_No matched items available._")
