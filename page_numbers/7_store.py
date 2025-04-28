@@ -8,12 +8,13 @@ import requests
 import pandas as pd
 
 st.header("Closest Store Finder 📍",anchor=False)
-st.caption("💡 For security reasons you can erase your location from the session.")
 
 with st.expander("💡How Does it work?"):
     st.write("""
         This page helps you quickly find the nearest supermarket (like Tesco, Aldi, etc.) either by using your current location or by entering your postcode. 
         It shows the closest stores on a map with their logos and tells you how far they are, so you can plan your trip easily.
+             
+        For security reasons you can erase your location from the session.
     """)
 
 comment = '''

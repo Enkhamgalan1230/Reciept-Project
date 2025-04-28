@@ -10,12 +10,13 @@ else:
     st.stop()
 
 st.title("Price Prediction", anchor=False)
-st.caption("💡 Historical data is provided by ONS(Office for National Statistics)")
 
 with st.expander("💡How Does it work?"):
     st.write("""
         This page shows how food prices have changed over time and uses forecasts to predict future price trends. 
         It also highlights how prices usually rise or fall during seasonal events like Christmas or Easter, helping you plan smarter shopping.
+             
+        Historical data is provided by ONS(Office for National Statistics)
     """)
 
 
