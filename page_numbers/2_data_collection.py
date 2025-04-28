@@ -16,13 +16,6 @@ with st.expander("💡How Does it work?"):
         This is just a information page, You can explore how we collect the data and process it, so if you are not interested in what we do, you can skip this page 😉.
     """)
 
-st.write("""
-We collect supermarket product data through web scraping, process it for accuracy, and store it in a scalable database. 
-Below is an overview of our approach:
-""")
-
-st.markdown("---")
-
 # Step-by-Step Sections
 st.subheader("1️⃣ Web Scraping with Selenium", anchor=False)
 st.write("We use **Selenium** to extract product details like name, price, and category from supermarket websites.")

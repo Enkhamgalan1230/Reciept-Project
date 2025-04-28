@@ -86,8 +86,6 @@ with st.expander("💡How Does it work?"):
         Sorry for the wait! ⏳ It usually takes less than a minute — feel free to relax and enjoy a fun fact while it loads!
     """)
 
-st.markdown("---")
-
 # Initialize Supabase connection
 conn = st.connection("supabase", type=SupabaseConnection)
 

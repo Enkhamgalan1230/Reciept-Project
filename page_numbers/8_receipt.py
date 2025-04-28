@@ -301,8 +301,6 @@ with st.expander("💡How Does it work?"):
         This tool helps you quickly create a shopping list by typing, speaking, or asking an AI assistant.
         Once you've built your list, you can pick a supermarket, set a budget, and the app will suggest the best products to buy and even save your list if you're logged in.
     """)
-
-st.markdown("---")
 tab1, tab2, tab3 = st.tabs([
     "✏️ Write List",
     "🎙️ Record List",

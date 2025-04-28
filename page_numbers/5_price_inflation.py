@@ -15,8 +15,6 @@ with st.expander("💡How Does it work"):
         This page shows how average prices for different food categories have changed over the past week at your chosen supermarket. 
         It helps you spot which types of groceries have gone up or down in price, so you can plan your shopping smarter.
     """)
-
-st.markdown("---")
 st.subheader("Inflation Board", anchor=False)
 
 # Load Subcategories from CSV
