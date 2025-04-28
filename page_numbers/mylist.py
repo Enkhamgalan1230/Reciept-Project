@@ -112,8 +112,11 @@ else:
 
                     # Download button
                     st.download_button(
-                        label="📄 Download This List",
+                        label="Download List",
+                        icon=":material/download:",
                         data=txt_content,
-                        file_name=f"shopping_list_{timestamp.replace(' ', '_')}.txt",
-                        mime="text/plain"
+                        file_name=f"receipt_{timestamp.replace(' ', '_')}.txt",
+                        mime="text/plain",
+                        key=f"download_button_{timestamp}_{entry.get('store', 'Unknown')}"
+
                     )
