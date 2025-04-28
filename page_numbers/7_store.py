@@ -43,22 +43,6 @@ with container1:
         )
     user_lat = user_lon = None
 
-    st.markdown("### Choose Distance unit")
-    unit = st.radio("Choose unit",["km", "miles"], horizontal=True,label_visibility="collapsed")
-    #st.markdown("---")
-
-    distance_input = st.number_input(
-        f"📏 Enter maximum distance (in {unit}) to search for nearby stores:",
-        min_value=1.0,
-        max_value=50.0,
-        value=5.0,
-        step=0.5,
-        placeholder='Distance'
-    )
-
-    # Convert miles to km if needed
-    max_distance_km = distance_input * 1.609 if unit == "miles" else distance_input
-
     # ========== OPTION 1: Current Geolocation ==========
     if st.session_state["location_mode"] == "📍 Use my current location":
         if st.session_state.get("reset_checkbox"):
@@ -105,6 +89,24 @@ with container1:
                 st.success(f"✅ Location found for postcode: {postcode}")
             else:
                 st.error("❌ Couldn't find coordinates for this postcode.")
+
+    st.markdown("### Choose Distance unit")
+    unit = st.radio("Choose unit",["km", "miles"], horizontal=True,label_visibility="collapsed")
+    #st.markdown("---")
+
+    distance_input = st.number_input(
+        f"📏 Enter maximum distance (in {unit}) to search for nearby stores:",
+        min_value=1.0,
+        max_value=50.0,
+        value=5.0,
+        step=0.5,
+        placeholder='Distance'
+    )
+
+    # Convert miles to km if needed
+    max_distance_km = distance_input * 1.609 if unit == "miles" else distance_input
+
+
     
 
     # ========== Store Search Logic ==========
