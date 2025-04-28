@@ -311,7 +311,7 @@ tab1, tab2, tab3 = st.tabs([
 with tab1:
     container1 = st.container(border=True)
     with container1:
-        st.subheader("✏️ **Write your grocery list**")
+        st.subheader("**Write your grocery list**")
         st.caption("📌 If you know what you are buying, write it up here...")
 
         with st.form("add_item_form"):
@@ -342,7 +342,7 @@ with tab1:
 with tab2:
     container2 = st.container(border=True)
     with container2:
-        st.subheader("🗣️ **Speak your grocery list**")
+        st.subheader("**Speak your grocery list**")
         st.caption("📌 Writing is boring IK, speak it here...")
 
         audio = audio_recorder(
@@ -403,7 +403,7 @@ with tab2:
 with tab3:
     container3 = st.container(border=True)
     with container3:
-        st.subheader("🧠 AI Shopping Assistant")
+        st.subheader("AI Shopping Assistant")
         st.caption("📌 If you don't know what to buy, explain it to AI...")
         # Input field
         user_query = st.text_input("Ask me what to cook or what to buy:", key="chat_query")
