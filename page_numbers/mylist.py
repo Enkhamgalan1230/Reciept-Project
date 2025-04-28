@@ -45,7 +45,7 @@ else:
     for i, entry in enumerate(lists):
         timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
 
-        with st.expander(f"🛒 {timestamp}"):
+        with st.popover(f"🛒 {timestamp}"):
             # 📝 Parse input_items (stored as string or list)
             try:
                 input_items = json.loads(entry.get("input_items", "[]"))
