@@ -142,7 +142,7 @@ else:
                             st.markdown("<p style='text-align: center;'>Are you sure you want to delete this shopping list? This action cannot be undone.</p>", unsafe_allow_html=True)
 
                             # Create 5 columns: [space] [Yes button] [small space] [No button] [space]
-                            col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+                            col1, col2, col3, col4 = st.columns([3, 0.5, 0.5, 3])
 
                             with col2:
                                 if st.button("Yes, Delete", key=f"confirm_yes_{delete_key}"):
