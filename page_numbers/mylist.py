@@ -39,10 +39,12 @@ with st.spinner("Loading your saved lists..."):
 
     lists = response.data
 
-# --- Display lists grouped by month ---
 if not lists:
     st.info("No shopping lists found.")
 else:
+    from collections import defaultdict
+    from datetime import datetime
+    import json
 
     # Group lists by Month-Year
     grouped_lists = defaultdict(list)
@@ -53,34 +55,37 @@ else:
     # Create tabs for each month
     month_tabs = st.tabs(list(grouped_lists.keys()))
 
-    # Inside each tab
     for tab, (month, entries) in zip(month_tabs, grouped_lists.items()):
         with tab:
             for entry in entries:
                 timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
 
-                with st.popover(f"🛒 {timestamp}"):
-                    # 📝 Parse input_items
+                with st.popover(f"Shopping List ({timestamp})"):
+                    # Parse input_items
                     try:
                         input_items = json.loads(entry.get("input_items", "[]"))
                     except:
                         input_items = entry.get("input_items", [])
 
                     st.markdown("### Shopping List")
-                    st.write(", ".join(input_items) if input_items else "_None_")
+                    if input_items:
+                        for item in input_items:
+                            st.markdown(f"- {item.title()}")
+                    else:
+                        st.markdown("_No items available._")
 
-                    # 🛍️ Parse matched_items
+                    # Parse matched_items
                     try:
                         matched_items = json.loads(entry.get("matched_items", "[]"))
                     except:
                         matched_items = entry.get("matched_items", [])
 
                     st.markdown(f"### Potential Buys ({entry.get('store', 'Unknown Store')})")
-
+                    
                     if matched_items:
                         for match in matched_items:
                             st.markdown(f"""
-                            - **{match.get('Input', 'Unknown')}** → *{match.get('Matched Product', 'N/A')}*  
+                            - **{match.get('Input', 'Unknown').title()}** → *{match.get('Matched Product', 'N/A')}*  
                               Price: £{match.get('Price', 0.00):.2f}  
                               Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
                             """)
