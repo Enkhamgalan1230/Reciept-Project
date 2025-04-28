@@ -468,7 +468,7 @@ container4 = st.container(border=True)
 with container4:
     
     st.header("Shopping List")
-    st.subheader("🧾 **Essentials List**")
+    st.subheader("🧾 **Essentials**")
 
     if st.session_state.get("show_delete_toast"):
         st.toast("✅ Selected primary item(s) deleted.")
@@ -504,7 +504,7 @@ with container4:
     st.markdown("---")
 
     # Secondary List
-    st.subheader("✨ Optional Extras List")
+    st.subheader("✨ Optional Extras")
 
     if secondary_products:
         st.caption("These are the items you'd like to include *if budget allows*. You can also remove them below.")
