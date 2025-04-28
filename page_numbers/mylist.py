@@ -122,10 +122,8 @@ else:
                         file_name=f"receipt_{timestamp.replace(' ', '_')}.txt",
                         mime="text/plain",
                         key=unique_key
-
                     )
 
-                    # Unique delete key
                     # Unique delete key
                     delete_key = f"delete_button_{clean_created_at}_{entry.get('store', 'Unknown')}"
 
@@ -135,10 +133,13 @@ else:
 
                     # If confirmation state is active
                     if st.session_state.get(f"confirm_delete_{delete_key}"):
+                        
                         st.divider()
                         with st.container(border=True):
-                            st.markdown("### ⚠️ Confirm Deletion")
-                            st.caption("Are you sure you want to delete this shopping list? This action cannot be undone.")
+                            # Centered title
+                            st.markdown("<h3 style='text-align: center;'>⚠️ Confirm Deletion</h3>", unsafe_allow_html=True)
+                            # Centered caption
+                            st.markdown("<p style='text-align: center;'>Are you sure you want to delete this shopping list? This action cannot be undone.</p>", unsafe_allow_html=True)
 
                             # Create 5 columns: [space] [Yes button] [small space] [No button] [space]
                             col1, col2, col3, col4, col5 = st.columns([1, 1, 0.5, 1, 1])
