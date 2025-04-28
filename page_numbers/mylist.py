@@ -53,7 +53,7 @@ else:
             for entry in entries:
                 timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
 
-                with st.popover(f"🧾 {timestamp}"):
+                with st.expander(f"🧾 {timestamp}"):
                     # Parse input_items
                     try:
                         input_items = json.loads(entry.get("input_items", "[]"))
