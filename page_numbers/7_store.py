@@ -208,7 +208,7 @@ with container1:
                     if icon_path:
                         custom_icon = folium.CustomIcon(
                             icon_image=icon_path,
-                            icon_size=(40, 40),  # 📏 Adjust logo size here if needed
+                            icon_size=(50, 50),  # 📏 Adjust logo size here if needed
                         )
                     else:
                         # Fallback if no logo found
