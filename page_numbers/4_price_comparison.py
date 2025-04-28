@@ -132,10 +132,6 @@ with st.expander("💡How Does it work"):
         This page helps you quickly compare the prices of common grocery items across different supermarkets. 
         It also lets you search for specific products by name and see which store offers the best deal, making it easier to save money on your shopping.
     """)
-st.markdown("---")
-
-st.markdown("---")
-
 st.subheader("🏆 Dashboard with 15 Popular Items", anchor=False)
 
 # Filter dataset for selected products
