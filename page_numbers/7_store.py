@@ -151,8 +151,7 @@ with container1:
 
             if distance <= max_distance_km:
                 found_stores.append({
-                    "Store": store_name,
-                    "Address": place["properties"].get("name", "Unknown store"),
+                    "Store": place["properties"].get("name", "Unknown store"),
                     "Distance": round(distance, 2),
                     "Latitude": store_lat,
                     "Longitude": store_lon
