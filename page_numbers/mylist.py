@@ -141,7 +141,7 @@ else:
                             st.caption("Are you sure you want to delete this shopping list? This action cannot be undone.")
 
                             # Create 5 columns: [space] [Yes button] [small space] [No button] [space]
-                            col1, col2, col3, col4, col5 = st.columns([1, 2, 0.5, 2, 1])
+                            col1, col2, col3, col4, col5 = st.columns([1, 1, 0.5, 1, 1])
 
                             with col2:
                                 if st.button("Yes, Delete", key=f"confirm_yes_{delete_key}"):
