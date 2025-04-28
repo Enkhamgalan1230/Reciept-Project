@@ -186,12 +186,40 @@ with container1:
             ).add_to(m)
 
             for _, row in df.iterrows():
-                folium.Marker(
-                    [row["Latitude"], row["Longitude"]],
-                    popup=f"{row['Store']} ({row[distance_col]} {unit})",
-                    tooltip=row["Store"],
-                    icon=folium.Icon(color="green", icon="shopping-cart")
-                ).add_to(m)
+                # Mapping store name to logo path
+                store_logos = {
+                    "tesco": "assets/tesco.png",
+                    "asda": "assets/asda.png",
+                    "aldi": "assets/aldi.png",
+                    "sainsbury": "assets/sainsbury.png",
+                    "waitrose": "assets/waitrose.png"
+                }
+
+                for _, row in df.iterrows():
+                    store_name_lower = row["Store"].lower()
+
+                    # Find matching logo based on store name
+                    icon_path = None
+                    for key in store_logos.keys():
+                        if key in store_name_lower:
+                            icon_path = store_logos[key]
+                            break
+
+                    if icon_path:
+                        custom_icon = folium.CustomIcon(
+                            icon_image=icon_path,
+                            icon_size=(40, 40),  # 📏 Adjust logo size here if needed
+                        )
+                    else:
+                        # Fallback if no logo found
+                        custom_icon = folium.Icon(color="green", icon="shopping-cart")
+
+                    folium.Marker(
+                        [row["Latitude"], row["Longitude"]],
+                        popup=f"{row['Store']} ({row[distance_col]} {unit})",
+                        tooltip=row["Store"],
+                        icon=custom_icon
+                    ).add_to(m)
 
             folium_static(m)
         else:
