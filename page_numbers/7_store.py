@@ -7,7 +7,7 @@ import folium
 import requests
 import pandas as pd
 
-st.header("Closest Store Finder 📍")
+st.header("Closest Store Finder 📍",anchor=False)
 st.caption("💡 For security reasons you can erase your location from the session.")
 
 comment = '''
