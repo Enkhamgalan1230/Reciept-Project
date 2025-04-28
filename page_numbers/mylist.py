@@ -60,69 +60,70 @@ else:
             for entry in entries:
                 timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B")
 
-                if st.button(f"Shopping List ({timestamp})", key=f"open_button_{entry['created_at']}"):
-                    with st.dialog(f"Shopping List: {timestamp}"):
-                        # Parse input_items
-                        try:
-                            input_items = json.loads(entry.get("input_items", "[]"))
-                        except:
-                            input_items = entry.get("input_items", [])
+                with st.expander(f"Shopping List: ({timestamp})"):
+                    # Parse input_items
+                    try:
+                        input_items = json.loads(entry.get("input_items", "[]"))
+                    except:
+                        input_items = entry.get("input_items", [])
 
-                        # Parse matched_items
-                        try:
-                            matched_items = json.loads(entry.get("matched_items", "[]"))
-                        except:
-                            matched_items = entry.get("matched_items", [])
+                    # Parse matched_items
+                    try:
+                        matched_items = json.loads(entry.get("matched_items", "[]"))
+                    except:
+                        matched_items = entry.get("matched_items", [])
 
-                        # Prepare text content for download
-                        txt_content = f"Shopping List ({timestamp})\n\n"
-                        txt_content += "Items to Buy:\n"
-                        if input_items:
-                            for item in input_items:
-                                txt_content += f"- {item.title()}\n"
-                        else:
-                            txt_content += "- No items available.\n"
+                    # Prepare text content for download
+                    txt_content = f"Shopping List ({timestamp})\n\n"
+                    txt_content += "Items to Buy:\n"
+                    if input_items:
+                        for item in input_items:
+                            txt_content += f"- {item.title()}\n"
+                    else:
+                        txt_content += "- No items available.\n"
 
-                        txt_content += f"\nPotential Buys ({entry.get('store', 'Unknown Store')}):\n"
-                        if matched_items:
-                            for match in matched_items:
-                                txt_content += f"- {match.get('Input', 'Unknown').title()} → {match.get('Matched Product', 'N/A')}\n"
-                                txt_content += f"  Price: £{match.get('Price', 0.00):.2f}\n"
-                                txt_content += f"  Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}\n\n"
-                        else:
-                            txt_content += "- No matched items available.\n"
+                    txt_content += f"\nPotential Buys ({entry.get('store', 'Unknown Store')}):\n"
+                    if matched_items:
+                        for match in matched_items:
+                            txt_content += f"- {match.get('Input', 'Unknown').title()} → {match.get('Matched Product', 'N/A')}\n"
+                            txt_content += f"  Price: £{match.get('Price', 0.00):.2f}\n"
+                            txt_content += f"  Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}\n\n"
+                    else:
+                        txt_content += "- No matched items available.\n"
 
-                        # Display Shopping List
-                        st.markdown("### Shopping List")
-                        if input_items:
-                            for item in input_items:
-                                st.markdown(f"- {item.title()}")
-                        else:
-                            st.markdown("_No items available._")
+                    # Display on screen
+                    st.markdown("### Shopping List")
+                    if input_items:
+                        for item in input_items:
+                            st.markdown(f"- {item.title()}")
+                    else:
+                        st.markdown("_No items available._")
 
-                        # Display Potential Buys
-                        st.markdown(f"### Potential Buys ({entry.get('store', 'Unknown Store')})")
-                        if matched_items:
-                            for match in matched_items:
-                                st.markdown(f"""
-                                - **{match.get('Input', 'Unknown').title()}** → *{match.get('Matched Product', 'N/A')}*  
-                                Price: £{match.get('Price', 0.00):.2f}  
-                                Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
-                                """)
-                        else:
-                            st.markdown("_No matched items available._")
+                    st.markdown(f"### Potential Buys ({entry.get('store', 'Unknown Store')})")
+                    if matched_items:
+                        for match in matched_items:
+                            st.markdown(f"""
+                            - **{match.get('Input', 'Unknown').title()}** → *{match.get('Matched Product', 'N/A')}*  
+                            Price: £{match.get('Price', 0.00):.2f}  
+                            Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
+                            """)
+                    else:
+                        st.markdown("_No matched items available._")
 
-                        # Unique key for download
-                        created_at_full = entry["created_at"]
-                        clean_created_at = created_at_full.replace(":", "-").replace(".", "-")
-                        unique_key = f"download_button_{clean_created_at}_{entry.get('store', 'Unknown')}"
+                    # Properly format a very unique ID
+                    created_at_full = entry["created_at"]  # e.g., 2025-04-22T09:25:00.123456
 
-                        # Download button
-                        st.download_button(
-                            label="Download List",
-                            icon=":material/download:",
-                            data=txt_content,
-                            file_name=f"receipt_{timestamp.replace(' ', '_')}.txt",
-                            mime="text/plain",
-                            key=unique_key
-                        )
+                    # Prepare a clean key
+                    clean_created_at = created_at_full.replace(":", "-").replace(".", "-")
+                    unique_key = f"download_button_{clean_created_at}_{entry.get('store', 'Unknown')}"
+
+                    # Download button
+                    st.download_button(
+                        label="Download List",
+                        icon=":material/download:",
+                        data=txt_content,
+                        file_name=f"receipt_{timestamp.replace(' ', '_')}.txt",
+                        mime="text/plain",
+                        key=unique_key
+
+                    )
