@@ -3,6 +3,7 @@ from supabase import create_client, Client
 from datetime import datetime
 import os
 import json
+from collections import defaultdict
 
 # --- Supabase Setup ---
 
@@ -38,37 +39,49 @@ with st.spinner("Loading your saved lists..."):
 
     lists = response.data
 
-# --- Display lists ---
+# --- Display lists grouped by month ---
 if not lists:
     st.info("No shopping lists found.")
 else:
-    for i, entry in enumerate(lists):
-        timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
+    # Group lists by Month-Year
+    grouped_lists = defaultdict(list)
+    for entry in lists:
+        month_year = datetime.fromisoformat(entry["created_at"]).strftime("%B %Y")  # e.g., "April 2025"
+        grouped_lists[month_year].append(entry)
 
-        with st.popover(f"🛒 {timestamp}"):
-            # 📝 Parse input_items (stored as string or list)
-            try:
-                input_items = json.loads(entry.get("input_items", "[]"))
-            except:
-                input_items = entry.get("input_items", [])
+    # Create tabs for each month
+    month_tabs = st.tabs(list(grouped_lists.keys()))
 
-            st.markdown("### 📝 Shopping List")
-            st.write(", ".join(input_items) if input_items else "_None_")
+    # Inside each tab
+    for tab, (month, entries) in zip(month_tabs, grouped_lists.items()):
+        with tab:
+            for entry in entries:
+                timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
 
-            # 🛍️ Parse matched_items (stored as JSON string or list)
-            try:
-                matched_items = json.loads(entry.get("matched_items", "[]"))
-            except:
-                matched_items = entry.get("matched_items", [])
+                with st.popover(f"🛒 {timestamp}"):
+                    # 📝 Parse input_items
+                    try:
+                        input_items = json.loads(entry.get("input_items", "[]"))
+                    except:
+                        input_items = entry.get("input_items", [])
 
-            st.markdown(f"### 🛍️ Potential Buys ({entry.get('store', 'Unknown Store')})")
+                    st.markdown("### 📝 Shopping List")
+                    st.write(", ".join(input_items) if input_items else "_None_")
 
-            if matched_items:
-                for match in matched_items:
-                    st.markdown(f"""
-                    - **{match.get('Input', 'Unknown')}** → *{match.get('Matched Product', 'N/A')}*  
-                      Price: £{match.get('Price', 0.00):.2f}  
-                      Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
-                    """)
-            else:
-                st.markdown("_No matched items available._")
+                    # 🛍️ Parse matched_items
+                    try:
+                        matched_items = json.loads(entry.get("matched_items", "[]"))
+                    except:
+                        matched_items = entry.get("matched_items", [])
+
+                    st.markdown(f"### 🛍️ Potential Buys ({entry.get('store', 'Unknown Store')})")
+
+                    if matched_items:
+                        for match in matched_items:
+                            st.markdown(f"""
+                            - **{match.get('Input', 'Unknown')}** → *{match.get('Matched Product', 'N/A')}*  
+                              Price: £{match.get('Price', 0.00):.2f}  
+                              Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
+                            """)
+                    else:
+                        st.markdown("_No matched items available._")
