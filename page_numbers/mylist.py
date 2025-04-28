@@ -58,9 +58,9 @@ else:
     for tab, (month, entries) in zip(month_tabs, grouped_lists.items()):
         with tab:
             for entry in entries:
-                timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B %Y - %I:%M %p")
+                timestamp = datetime.fromisoformat(entry["created_at"]).strftime("%d %B")
 
-                with st.popover(f"Shopping List ({timestamp})"):
+                with st.popover(f"Shopping List: ({timestamp})"):
                     # Parse input_items
                     try:
                         input_items = json.loads(entry.get("input_items", "[]"))
