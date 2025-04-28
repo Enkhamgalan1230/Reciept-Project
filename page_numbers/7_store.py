@@ -127,16 +127,23 @@ with container1:
             return []
 
         found_stores = []
+
+        irrelevant_keywords = ["car park", "opticians", "shell", "garage", "station", "fuel", "petrol", "pharmacy"]
+
         for place in places:
             coords = place["geometry"]["coordinates"]
             store_lon, store_lat = coords[0], coords[1]
-            store_address = place["properties"].get("name", "Unknown store")
+            store_address = place["properties"].get("name", "").lower()
             distance = geodesic((user_lat, user_lon), (store_lat, store_lon)).km
+
+            # ✅ Skip if irrelevant (car parks, petrol stations, etc.)
+            if any(keyword in store_address for keyword in irrelevant_keywords):
+                continue
 
             if distance <= max_distance_km:
                 found_stores.append({
                     "Store": store_name,
-                    "Address": store_address,
+                    "Address": place["properties"].get("name", "Unknown store"),
                     "Distance": round(distance, 2),
                     "Latitude": store_lat,
                     "Longitude": store_lon
