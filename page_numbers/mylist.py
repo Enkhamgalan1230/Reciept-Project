@@ -67,6 +67,31 @@ else:
                     except:
                         input_items = entry.get("input_items", [])
 
+                    # Parse matched_items
+                    try:
+                        matched_items = json.loads(entry.get("matched_items", "[]"))
+                    except:
+                        matched_items = entry.get("matched_items", [])
+
+                    # Prepare text content for download
+                    txt_content = f"Shopping List ({timestamp})\n\n"
+                    txt_content += "Items to Buy:\n"
+                    if input_items:
+                        for item in input_items:
+                            txt_content += f"- {item.title()}\n"
+                    else:
+                        txt_content += "- No items available.\n"
+
+                    txt_content += f"\nPotential Buys ({entry.get('store', 'Unknown Store')}):\n"
+                    if matched_items:
+                        for match in matched_items:
+                            txt_content += f"- {match.get('Input', 'Unknown').title()} → {match.get('Matched Product', 'N/A')}\n"
+                            txt_content += f"  Price: £{match.get('Price', 0.00):.2f}\n"
+                            txt_content += f"  Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}\n\n"
+                    else:
+                        txt_content += "- No matched items available.\n"
+
+                    # Display on screen
                     st.markdown("### Shopping List")
                     if input_items:
                         for item in input_items:
@@ -74,20 +99,21 @@ else:
                     else:
                         st.markdown("_No items available._")
 
-                    # Parse matched_items
-                    try:
-                        matched_items = json.loads(entry.get("matched_items", "[]"))
-                    except:
-                        matched_items = entry.get("matched_items", [])
-
                     st.markdown(f"### Potential Buys ({entry.get('store', 'Unknown Store')})")
-                    
                     if matched_items:
                         for match in matched_items:
                             st.markdown(f"""
                             - **{match.get('Input', 'Unknown').title()}** → *{match.get('Matched Product', 'N/A')}*  
-                              Price: £{match.get('Price', 0.00):.2f}  
-                              Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
+                            Price: £{match.get('Price', 0.00):.2f}  
+                            Discount: {'None' if match.get('Discount') in [None, 'NULL'] else match.get('Discount')}
                             """)
                     else:
                         st.markdown("_No matched items available._")
+
+                    # Download button
+                    st.download_button(
+                        label="📄 Download This List",
+                        data=txt_content,
+                        file_name=f"shopping_list_{timestamp.replace(' ', '_')}.txt",
+                        mime="text/plain"
+                    )
