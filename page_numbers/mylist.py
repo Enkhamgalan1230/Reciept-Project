@@ -126,6 +126,7 @@ else:
                     )
 
                     # Unique delete key
+                    # Unique delete key
                     delete_key = f"delete_button_{clean_created_at}_{entry.get('store', 'Unknown')}"
 
                     # Button to start delete confirmation
@@ -135,24 +136,26 @@ else:
                     # If confirmation state is active
                     if st.session_state.get(f"confirm_delete_{delete_key}"):
                         st.divider()
-                        st.markdown(f"**Are you sure you want to delete this list from {timestamp}?**")
-                        st.caption("This action cannot be undone.")
+                        with st.container(border=True):
+                            st.markdown(f"### ⚠️ Confirm Deletion")
+                            st.caption("Are you sure you want to delete this shopping list? This action **cannot** be undone.")
 
-                        confirm_col, cancel_col = st.columns(2)
-                        with confirm_col:
-                            if st.button("Yes, Delete", key=f"confirm_yes_{delete_key}"):
-                                try:
-                                    supabase.table("shopping_lists").delete()\
-                                        .eq("created_at", entry["created_at"])\
-                                        .eq("user_email", user_email)\
-                                        .execute()
+                            # Center the buttons nicely
+                            button_col1, button_col2, button_col3 = st.columns([1, 0.5, 1])  # Middle column smaller
 
-                                    st.success("List deleted successfully.")
+                            with button_col1:
+                                if st.button("Yes, Delete", key=f"confirm_yes_{delete_key}"):
+                                    try:
+                                        supabase.table("shopping_lists").delete()\
+                                            .eq("created_at", entry["created_at"])\
+                                            .eq("user_email", user_email)\
+                                            .execute()
+                                        st.success("List deleted successfully.")
+                                        st.session_state.pop(f"confirm_delete_{delete_key}", None)
+                                        st.rerun()
+                                    except Exception as e:
+                                        st.error(f"Failed to delete list: {e}")
+
+                            with button_col3:
+                                if st.button("Nahh, Keep it", key=f"confirm_no_{delete_key}"):
                                     st.session_state.pop(f"confirm_delete_{delete_key}", None)
-                                    st.rerun()
-                                except Exception as e:
-                                    st.error(f"Failed to delete list: {e}")
-
-                        with cancel_col:
-                            if st.button("Cancel", key=f"confirm_no_{delete_key}"):
-                                st.session_state.pop(f"confirm_delete_{delete_key}", None)
