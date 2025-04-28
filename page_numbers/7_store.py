@@ -217,15 +217,24 @@ with container1:
                     if icon_path:
                         custom_icon = folium.CustomIcon(
                             icon_image=icon_path,
-                            icon_size=(50, 50),  # 📏 Adjust logo size here if needed
+                            icon_size=(50, 50),
                         )
                     else:
-                        # Fallback if no logo found
                         custom_icon = folium.Icon(color="green", icon="shopping-cart")
+
+                    # 👉 Create a Google Maps link using latitude and longitude
+                    google_maps_link = f"https://www.google.com/maps/search/?api=1&query={row['Latitude']},{row['Longitude']}"
+
+                    # 🗺️ Create popup with clickable Google Maps link
+                    popup_html = f"""
+                    <b>{row['Store']}</b><br>
+                    Distance: {row[distance_col]} {unit}<br>
+                    <a href="{google_maps_link}" target="_blank">📍 Open in Google Maps</a>
+                    """
 
                     folium.Marker(
                         [row["Latitude"], row["Longitude"]],
-                        popup=f"{row['Store']} ({row[distance_col]} {unit})",
+                        popup=folium.Popup(popup_html, max_width=300),
                         tooltip=row["Store"],
                         icon=custom_icon
                     ).add_to(m)
