@@ -297,7 +297,11 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
 st.title("Shopping List generator 📃")
 st.caption("💡 You can write, speak or generate your shopping list here!")
 st.markdown("---")
-
+tab1, tab2, tab3 = st.tabs([
+    "✏️ Write List",
+    "🎙️ Record List",
+    "🤖 Ask AI",
+])
 # I like containers haha.
 container1 = st.container(border=True)
 container2 = st.container(border=True)
@@ -306,153 +310,155 @@ container4 = st.container(border=True)
 container5 = st.container(border=True)
 
 # ========== WRITING INPUT ==========
-with container1:
-    st.subheader("✏️ **Write your grocery list**")
-    st.caption("📌 If you know what you are buying, write it up here...")
+with tab1:
+    with container1:
+        st.subheader("✏️ **Write your grocery list**")
+        st.caption("📌 If you know what you are buying, write it up here...")
 
-    with st.form("add_item_form"):
-        new_item = st.text_input("Add an item to the list")
-        submitted = st.form_submit_button("➕ Add Item")
-        if submitted:
-            clean_item = new_item.strip().lower()
-            if clean_item and clean_item not in st.session_state.essential_list:
-                st.session_state.essential_list.append(clean_item)
-                st.success(f"Added '{clean_item}'")
-                st.rerun()
-            elif clean_item:
-                st.warning("Item already in the list.")
+        with st.form("add_item_form"):
+            new_item = st.text_input("Add an item to the list")
+            submitted = st.form_submit_button("➕ Add Item")
+            if submitted:
+                clean_item = new_item.strip().lower()
+                if clean_item and clean_item not in st.session_state.essential_list:
+                    st.session_state.essential_list.append(clean_item)
+                    st.success(f"Added '{clean_item}'")
+                    st.rerun()
+                elif clean_item:
+                    st.warning("Item already in the list.")
 
-    with st.form("add_secondary_form"):
-        new_item = st.text_input("I would love to include this if we can..")
-        submitted = st.form_submit_button("➕ Add Item")
-        if submitted:
-            clean_item = new_item.strip().lower()
-            if clean_item and clean_item not in st.session_state.secondary_list:
-                st.session_state.secondary_list.append(clean_item)
-                st.success(f"Added '{clean_item}'")
-                st.rerun()
-            elif clean_item:
-                st.warning("Item already in the list.")
+        with st.form("add_secondary_form"):
+            new_item = st.text_input("I would love to include this if we can..")
+            submitted = st.form_submit_button("➕ Add Item")
+            if submitted:
+                clean_item = new_item.strip().lower()
+                if clean_item and clean_item not in st.session_state.secondary_list:
+                    st.session_state.secondary_list.append(clean_item)
+                    st.success(f"Added '{clean_item}'")
+                    st.rerun()
+                elif clean_item:
+                    st.warning("Item already in the list.")
 
 # ========== VOICE INPUT ==========
+with tab2:
+    with container2:
+        st.subheader("🗣️ **Speak your grocery list**")
+        st.caption("📌 Writing is boring IK, speak it here...")
 
-with container2:
-    st.subheader("🗣️ **Speak your grocery list**")
-    st.caption("📌 Writing is boring IK, speak it here...")
+        audio = audio_recorder(
+            text="Click to Record 👉",
+            icon_name="microphone",
+            neutral_color="#00FF00",
+            recording_color="#FF0000",
+            icon_size="1.5x"
+        )
 
-    audio = audio_recorder(
-        text="Click to Record 👉",
-        icon_name="microphone",
-        neutral_color="#00FF00",
-        recording_color="#FF0000",
-        icon_size="1.5x"
-    )
+        # Placeholder to show transcript *immediately after mic button*
+        latest_transcript = st.session_state.transcribed_text
+        transcript_placeholder = st.empty()  # Reserve the space for text
 
-    # Placeholder to show transcript *immediately after mic button*
-    latest_transcript = st.session_state.transcribed_text
-    transcript_placeholder = st.empty()  # Reserve the space for text
+        if audio:
+            current_hash = get_audio_hash(audio)
 
-    if audio:
-        current_hash = get_audio_hash(audio)
+            if st.session_state.get("last_audio_hash") != current_hash:
+                st.session_state.last_audio_hash = current_hash
 
-        if st.session_state.get("last_audio_hash") != current_hash:
-            st.session_state.last_audio_hash = current_hash
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+                    f.write(audio)
+                    temp_path = f.name
 
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
-                f.write(audio)
-                temp_path = f.name
+                recognizer = sr.Recognizer()
+                with sr.AudioFile(temp_path) as source:
+                    audio_data = recognizer.record(source)
+                    try:
+                        text = recognizer.recognize_google(audio_data)
+                        text = clean_transcript(text)
+                        text = fix_multiword_adjectives(text)
 
-            recognizer = sr.Recognizer()
-            with sr.AudioFile(temp_path) as source:
-                audio_data = recognizer.record(source)
-                try:
-                    text = recognizer.recognize_google(audio_data)
-                    text = clean_transcript(text)
-                    text = fix_multiword_adjectives(text)
+                        st.session_state.transcribed_text = text
+                        latest_transcript = text  # Update immediately
 
-                    st.session_state.transcribed_text = text
-                    latest_transcript = text  # Update immediately
+                        new_items = extract_adj_noun_phrases(text)
+                        for item in new_items:
+                            clean = item.strip("'\"").strip().lower()
+                            if clean not in st.session_state.voice_products:
+                                st.session_state.voice_products.append(clean)
 
-                    new_items = extract_adj_noun_phrases(text)
-                    for item in new_items:
-                        clean = item.strip("'\"").strip().lower()
-                        if clean not in st.session_state.voice_products:
-                            st.session_state.voice_products.append(clean)
+                    except sr.UnknownValueError:
+                        transcript_placeholder.error("❌ Could not understand the audio.")
+                    except sr.RequestError as e:
+                        transcript_placeholder.error(f"❌ Could not request results; {e}")
 
-                except sr.UnknownValueError:
-                    transcript_placeholder.error("❌ Could not understand the audio.")
-                except sr.RequestError as e:
-                    transcript_placeholder.error(f"❌ Could not request results; {e}")
+                st.audio(audio, format="audio/wav")  # Still show the player after processing
 
-            st.audio(audio, format="audio/wav")  # Still show the player after processing
+        # Always display latest transcript just under mic
+        if latest_transcript:
+            transcript_placeholder.success(f"🗣️ You said: {latest_transcript}")
 
-    # Always display latest transcript just under mic
-    if latest_transcript:
-        transcript_placeholder.success(f"🗣️ You said: {latest_transcript}")
-
-# Optional: Reset flags if no audio
-if audio is None:
-    st.session_state.audio_processed = False
+    # Optional: Reset flags if no audio
+    if audio is None:
+        st.session_state.audio_processed = False
 
 # ========== AI INPUT ==========
-with container3:
-    st.subheader("🧠 AI Shopping Assistant")
-    st.caption("📌 If you don't know what to buy, explain it to AI...")
-    # Input field
-    user_query = st.text_input("Ask me what to cook or what to buy:", key="chat_query")
+with tab3:
+    with container3:
+        st.subheader("🧠 AI Shopping Assistant")
+        st.caption("📌 If you don't know what to buy, explain it to AI...")
+        # Input field
+        user_query = st.text_input("Ask me what to cook or what to buy:", key="chat_query")
 
-    # Ask button
-    if st.button("Ask"):
-        if user_query:
-            st.session_state.chat_history.append({"role": "user", "content": user_query})
+        # Ask button
+        if st.button("Ask"):
+            if user_query:
+                st.session_state.chat_history.append({"role": "user", "content": user_query})
 
-            with st.spinner("Thinking..."):
-                response = client.chat.completions.create(
-                    model="meta-llama/llama-4-scout-17b-16e-instruct",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        *st.session_state.chat_history
-                    ],
-                    temperature=0.4,
-                    max_tokens=600
-                )
+                with st.spinner("Thinking..."):
+                    response = client.chat.completions.create(
+                        model="meta-llama/llama-4-scout-17b-16e-instruct",
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            *st.session_state.chat_history
+                        ],
+                        temperature=0.4,
+                        max_tokens=600
+                    )
 
-                bot_reply = response.choices[0].message.content
-                st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
-                st.session_state.last_bot_reply = bot_reply
+                    bot_reply = response.choices[0].message.content
+                    st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
+                    st.session_state.last_bot_reply = bot_reply
 
-    # Display latest assistant message
-    if "last_bot_reply" in st.session_state:
-        st.markdown("##### 📝 Assistant's Response")
-        st.markdown(st.session_state.last_bot_reply)
+        # Display latest assistant message
+        if "last_bot_reply" in st.session_state:
+            st.markdown("##### 📝 Assistant's Response")
+            st.markdown(st.session_state.last_bot_reply)
 
-        # Finalise button
-        if st.button("Add to Grocery List"):
-            extracted_items = re.findall(r"^\s*[-*•]\s*(.+)", st.session_state.last_bot_reply, flags=re.MULTILINE)
+            # Finalise button
+            if st.button("Add to Grocery List"):
+                extracted_items = re.findall(r"^\s*[-*•]\s*(.+)", st.session_state.last_bot_reply, flags=re.MULTILINE)
 
-            # Strip formatting and remove 'Suggested items' safely
-            cleaned_items = []
-            for item in extracted_items:
-                plain = re.sub(r"[*_`]", "", item.strip().lower())  # remove markdown
-                if plain != "suggested items":
-                    cleaned_items.append(item.strip())
+                # Strip formatting and remove 'Suggested items' safely
+                cleaned_items = []
+                for item in extracted_items:
+                    plain = re.sub(r"[*_`]", "", item.strip().lower())  # remove markdown
+                    if plain != "suggested items":
+                        cleaned_items.append(item.strip())
 
-            added_items = 0
-            for item in cleaned_items:
-                clean = item.strip().lower()
-                if clean and clean not in st.session_state.essential_list:
-                    st.session_state.essential_list.append(clean)
-                    added_items += 1
+                added_items = 0
+                for item in cleaned_items:
+                    clean = item.strip().lower()
+                    if clean and clean not in st.session_state.essential_list:
+                        st.session_state.essential_list.append(clean)
+                        added_items += 1
 
-            if added_items:
-                st.success(f"✅ {added_items} item(s) added to your grocery list.")
-            else:
-                st.warning("⚠️ No valid items found to add.")
+                if added_items:
+                    st.success(f"✅ {added_items} item(s) added to your grocery list.")
+                else:
+                    st.warning("⚠️ No valid items found to add.")
 
-    with st.expander("💬 View Chat History"):
-        for entry in st.session_state.chat_history:
-            role = "👤 You" if entry["role"] == "user" else "🤖 Assistant"
-            st.markdown(f"**{role}:** {entry['content']}")
+        with st.expander("💬 View Chat History"):
+            for entry in st.session_state.chat_history:
+                role = "👤 You" if entry["role"] == "user" else "🤖 Assistant"
+                st.markdown(f"**{role}:** {entry['content']}")
 
 # ========== COMBINED LIST ==========
 all_products = st.session_state.essential_list + st.session_state.voice_products

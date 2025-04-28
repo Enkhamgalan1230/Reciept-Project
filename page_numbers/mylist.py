@@ -42,9 +42,6 @@ with st.spinner("Loading your saved lists..."):
 if not lists:
     st.info("No shopping lists found.")
 else:
-    from collections import defaultdict
-    from datetime import datetime
-    import json
 
     # Group lists by Month-Year
     grouped_lists = defaultdict(list)
@@ -119,7 +116,7 @@ else:
 
                     # Download button
                     st.download_button(
-                        label="Download List",
+                        label="Download List(.txt)",
                         icon=":material/download:",
                         data=txt_content,
                         file_name=f"receipt_{timestamp.replace(' ', '_')}.txt",
