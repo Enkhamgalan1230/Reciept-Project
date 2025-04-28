@@ -66,7 +66,7 @@ else:
                     except:
                         input_items = entry.get("input_items", [])
 
-                    st.markdown("### 📝 Shopping List")
+                    st.markdown("### Shopping List")
                     st.write(", ".join(input_items) if input_items else "_None_")
 
                     # 🛍️ Parse matched_items
@@ -75,7 +75,7 @@ else:
                     except:
                         matched_items = entry.get("matched_items", [])
 
-                    st.markdown(f"### 🛍️ Potential Buys ({entry.get('store', 'Unknown Store')})")
+                    st.markdown(f"### Potential Buys ({entry.get('store', 'Unknown Store')})")
 
                     if matched_items:
                         for match in matched_items:
