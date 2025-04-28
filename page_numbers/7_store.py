@@ -128,7 +128,7 @@ with container1:
 
         found_stores = []
 
-        irrelevant_keywords = ["car park", "opticians", "shell", "garage", "station", "fuel", "petrol", "pharmacy"]
+        irrelevant_keywords = ["car park", "opticians", "shell", "garage", "station", "fuel", "petrol", "pharmacy", "recycling centre"]
 
         for place in places:
             coords = place["geometry"]["coordinates"]
