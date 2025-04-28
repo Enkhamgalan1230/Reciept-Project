@@ -303,14 +303,9 @@ tab1, tab2, tab3 = st.tabs([
     "🤖 Ask AI",
 ])
 # I like containers haha.
-container1 = st.container(border=True)
-container2 = st.container(border=True)
-container3 = st.container(border=True)
-container4 = st.container(border=True)
-container5 = st.container(border=True)
-
 # ========== WRITING INPUT ==========
 with tab1:
+    container1 = st.container(border=True)
     with container1:
         st.subheader("✏️ **Write your grocery list**")
         st.caption("📌 If you know what you are buying, write it up here...")
@@ -341,6 +336,7 @@ with tab1:
 
 # ========== VOICE INPUT ==========
 with tab2:
+    container2 = st.container(border=True)
     with container2:
         st.subheader("🗣️ **Speak your grocery list**")
         st.caption("📌 Writing is boring IK, speak it here...")
@@ -401,6 +397,7 @@ with tab2:
 
 # ========== AI INPUT ==========
 with tab3:
+    container3 = st.container(border=True)
     with container3:
         st.subheader("🧠 AI Shopping Assistant")
         st.caption("📌 If you don't know what to buy, explain it to AI...")
@@ -460,12 +457,16 @@ with tab3:
                 role = "👤 You" if entry["role"] == "user" else "🤖 Assistant"
                 st.markdown(f"**{role}:** {entry['content']}")
 
+# Now OUTSIDE the tabs!
+st.divider()
+
 # ========== COMBINED LIST ==========
 all_products = st.session_state.essential_list + st.session_state.voice_products
 secondary_products = st.session_state.secondary_list
 
-
+container4 = st.container(border=True)
 with container4:
+    
     st.header("Shopping List")
     st.subheader("🧾 **Essentials List**")
 
@@ -525,7 +526,7 @@ with container4:
     else:
         st.info("No secondary items added yet.")
 
-
+container5 = st.container(border=True)
 with container5:
     st.subheader("🛒 Generate Potential Buys")
     options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
