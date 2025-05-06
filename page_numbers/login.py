@@ -113,7 +113,10 @@ else:
             submit = st.form_submit_button("Verify Email")
 
             if submit:
-                if password != confirm:
+                email_pattern = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+                if not re.match(email_pattern, email):
+                    st.error("Please enter a valid email address.")
+                elif password != confirm:
                     st.error("Passwords do not match.")
                 elif not is_valid_password(password):
                     st.error("Password must be 8+ chars, include a capital letter, number, and special character.")
