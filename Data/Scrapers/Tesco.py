@@ -21,8 +21,8 @@ def create_undetected_headless_driver():
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-dev-shm-usage")
 
-    # explicitly set version_main to 134
-    driver = uc.Chrome(version_main=134, options=options)
+    #
+    driver = uc.Chrome(options=options)
     driver.maximize_window()
 
     return driver

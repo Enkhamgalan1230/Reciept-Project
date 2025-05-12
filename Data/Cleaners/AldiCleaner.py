@@ -114,7 +114,7 @@ print(df['Unit'].value_counts())
 df = df[df['Unit'].isin(['kg', 'litre', 'each'])]
 
 # One-hot encode the 'Unit' column
-encoder = OneHotEncoder(sparse=False, drop='if_binary')  # Drop 'unit_nan' column if it exists
+encoder = OneHotEncoder(sparse_output=False, drop='if_binary') # Drop 'unit_nan' column if it exists
 unit_encoded = encoder.fit_transform(df[['Unit']])
 
 # Create new columns based on one-hot encoding

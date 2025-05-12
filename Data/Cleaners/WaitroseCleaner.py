@@ -132,7 +132,7 @@ if df['Discount price'].isna().all():
 '''
     One-Hot Encoding for 'Unit' Column
 '''
-encoder = OneHotEncoder(sparse=False, drop='if_binary')
+encoder = OneHotEncoder(sparse_output=False, drop='if_binary')
 unit_encoded = encoder.fit_transform(df[['Unit']])
 unit_columns = encoder.get_feature_names_out(['Unit'])
 df[unit_columns] = unit_encoded

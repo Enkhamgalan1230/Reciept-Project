@@ -131,7 +131,7 @@ df[['Standardised price per unit', 'Unit']] = df['Price per Unit'].apply(
 df = df[df['Unit'].isin(['kg', 'litre', 'each',])]
 
 # One-hot encode the 'Unit' column
-encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')  # Avoid errors for unknown units
+encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')  # Avoid errors for unknown units
 unit_encoded = encoder.fit_transform(df[['Unit']])
 
 # Create new columns based on one-hot encoding
