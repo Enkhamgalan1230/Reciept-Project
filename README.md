@@ -68,15 +68,17 @@ strategies.
 
 **Current progress:**
 
-Data gathering scraper: ✔️
-Pre-processing, cleaning, generalising: ✔️
-Database setup:✔️
-Cloud application:✔️
-Comparison logic:✔️
-Store Logic: ✔️
-User Authentication: ✔️
-Receipt Generator Logic: ✔️
-Joy in Life: ✔️
+* Data gathering scraper: ✔️
+* Pre-processing, cleaning, generalising: ✔️
+* Database setup:✔️
+* Cloud application:✔️
+* Comparison logic:✔️
+* Store Logic: ✔️
+* User Authentication: ✔️
+* Receipt Generator Logic: ✔️
+* Joy in Life: ✔️
+* Price prediction: ✔️
 
-Next Step:
-Price prediction
+
+Next Step: DOne innit
+
