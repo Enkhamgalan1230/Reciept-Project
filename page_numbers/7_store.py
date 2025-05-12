@@ -222,8 +222,8 @@ with container1:
                         custom_icon = folium.Icon(color="green", icon="shopping-cart")
 
                     # Create a Google Maps link using latitude and longitude
-                    query = f"{row['Store']} near High Wycombe"
-                    google_maps_link = f"https://www.google.com/maps/search/?api=1&query={requests.utils.quote(query)}"
+                    google_maps_link = f"https://www.google.com/maps/search/?api=1&query={row['Latitude']},{row['Longitude']}"
+
                     # Create popup with clickable Google Maps link
                     popup_html = f"""
                     <b>{row['Store']}</b><br>
