@@ -10,11 +10,13 @@ from datetime import datetime
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 
+# Choosing a file
 Tk().withdraw()
 print("Please select a csv file to load") 
 file = askopenfilename()
 df = pd.read_csv(file)
-# Ensure 'Discount price' is after 'Price'
+
+# Ensuring 'Discount price' is after 'Price'
 df.insert(df.columns.get_loc('Price') + 1, 'Discount price', None)
 
 df['Store_Name'] = "Aldi"
