@@ -4,6 +4,8 @@ import supabase
 from urllib.parse import urlparse, parse_qs
 from page_numbers.login import is_valid_password
 import streamlit.components.v1 as components
+import time
+
 
 SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
@@ -31,6 +33,12 @@ components.html(
 
 # --- Step 1: Extract token from query string ---
 params = st.query_params
+attempts = 0
+while not params.get("access_token") and attempts < 6:
+    time.sleep(0.5)
+    attempts += 1
+    params = st.query_params
+
 access_token = params.get("access_token", [None])[0]
 recovery_type = params.get("type", [None])[0]
 
