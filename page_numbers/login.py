@@ -186,7 +186,7 @@ else:
             if not email:
                 st.error("Please enter your email above before clicking 'Forgot Password'.")
             else:
-                redirect_url = "https://your-site.com/update-password"  # Replace with your actual site URL
+                redirect_url = "https://receipt-entwan.streamlit.app/update_password"  # Replace with your actual site URL
                 try:
                     res = supabase.auth.reset_password_for_email(email, {
                         "redirectTo": redirect_url
