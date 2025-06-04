@@ -160,7 +160,13 @@ else:
         email = st.text_input("Email", key="login_email")
         password = st.text_input("Password", type="password", key="login_pw")
 
-        if st.button("Log In"):
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            login_btn = st.button("Log In")
+        with col2:
+            forgot_pw = st.button("Forgot Password?")
+
+        if login_btn:
             try:
                 res = supabase.auth.sign_in_with_password({
                     "email": email,
@@ -175,5 +181,20 @@ else:
             except Exception as e:
                 st.error("Login failed.")
                 st.text(str(e))
+
+        if forgot_pw:
+            if not email:
+                st.error("Please enter your email above before clicking 'Forgot Password'.")
+            else:
+                redirect_url = "https://your-site.com/update-password"  # Replace with your actual site URL
+                try:
+                    res = supabase.auth.reset_password_for_email(email, {
+                        "redirectTo": redirect_url
+                    })
+                    if res:
+                        st.success("Password reset link sent. Check your inbox.")
+                except Exception as e:
+                    st.error("Failed to send reset email.")
+                    st.text(str(e))
 
     

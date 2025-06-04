@@ -17,12 +17,12 @@ def create_undetected_headless_driver():
     options.add_argument("--disable-gpu")
     # options.add_argument("--headless")
     options.add_argument("--window-size=1920,1200")
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.114 Safari/537.36")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-dev-shm-usage")
 
     #
-    driver = uc.Chrome(options=options)
+    driver = uc.Chrome(version_main=136, options=options)
     driver.maximize_window()
 
     return driver
@@ -85,7 +85,7 @@ category_urls = {
 
 # Generalized CSS selectors for product data
 product_box_CSS = '#list-content > li'
-product_name_CSS = 'div[class*="StyledTitleContainer"] h3 a span'
+product_name_CSS = 'div[class*="StyledTitleContainer"] h2 a'
 product_price_CSS = 'div[class*="StyledBuyBoxContainer"] div[class*="StyledPriceContainer"] p[class*="styled__PriceText-sc-v0qv7n-1"]'
 product_price_per_unit_CSS = 'div[class*="StyledBuyBoxContainer"] div[class*="StyledPriceContainer"] p[class*="ddsweb-price__subtext"]'
 product_clubcard_discount_CSS = 'div[class*="StyledPromotionsContainer"] div[class*="ContentContainer"] p[class*="ddsweb-value-bar__content-text"]'

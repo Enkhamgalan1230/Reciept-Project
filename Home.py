@@ -85,6 +85,10 @@ data_fetcher = st.Page(
      icon = "🛠️"
 )
 
+update_password = st.Page(
+     page = "page_numbers/update_password.py",
+     title= "Forgot password"
+)
 
 
 
@@ -94,7 +98,7 @@ pg = st.navigation(
         "User ": [login,mylist],
         "Data ":[data_collection,data],
         "Main Logics ": [price_comparison,price_inflation,price_prediction,store, receipt],
-        "Help": [helper],
+        "Help": [helper, update_password],
         "Boring Stuff ": [data_fetcher]
     }
 )
