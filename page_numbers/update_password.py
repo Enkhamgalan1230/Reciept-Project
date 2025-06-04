@@ -3,6 +3,7 @@ from supabase import create_client, Client
 import supabase
 from urllib.parse import urlparse, parse_qs
 from page_numbers.login import is_valid_password
+import streamlit.components.v1 as components
 
 SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzODg2ODEsImV4cCI6MjA1Njk2NDY4MX0.P_hdynXVGULdvy-fKeBMkNAMsm83bK8v-027jyA6Ohs"
@@ -10,14 +11,30 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 st.subheader("Reset Your Password")
 
-# Step 1: Extract token from URL fragment
-full_url = st.experimental_get_url()
-fragment = urlparse(full_url).fragment
-fragment_params = parse_qs(fragment)
-access_token = fragment_params.get("access_token", [None])[0]
-recovery_type = fragment_params.get("type", [None])[0]
+components.html(
+    """
+    <script>
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const access_token = hashParams.get("access_token");
+        const type = hashParams.get("type");
 
-# Step 2: Try to log the user in using the recovery token
+        if (access_token && type) {
+            const newUrl = `${window.location.pathname}?access_token=${access_token}&type=${type}`;
+            if (!window.location.search.includes("access_token")) {
+                window.location.replace(newUrl);
+            }
+        }
+    </script>
+    """,
+    height=0,
+)
+
+# --- Step 1: Extract token from query string ---
+params = st.experimental_get_query_params()
+access_token = params.get("access_token", [None])[0]
+recovery_type = params.get("type", [None])[0]
+
+# --- Step 2: Verify token and create session ---
 if recovery_type == "recovery" and access_token and "supabase_user" not in st.session_state:
     try:
         session = supabase.auth.verify_otp({
@@ -31,7 +48,7 @@ if recovery_type == "recovery" and access_token and "supabase_user" not in st.se
         st.text(str(e))
         st.stop()
 
-# Step 3: Show password reset form
+# --- Step 3: Password reset form ---
 new_pw = st.text_input("New Password", type="password")
 confirm_pw = st.text_input("Confirm Password", type="password")
 submit_pw = st.button("Update Password")
