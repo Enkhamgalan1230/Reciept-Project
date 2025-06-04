@@ -30,7 +30,7 @@ components.html(
 )
 
 # --- Step 1: Extract token from query string ---
-params = st.experimental_get_query_params()
+params = st.query_params()
 access_token = params.get("access_token", [None])[0]
 recovery_type = params.get("type", [None])[0]
 
