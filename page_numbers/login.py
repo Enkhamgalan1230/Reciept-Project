@@ -160,11 +160,8 @@ else:
         email = st.text_input("Email", key="login_email")
         password = st.text_input("Password", type="password", key="login_pw")
 
-        col1, col2 = st.columns([1, 2])
-        with col1:
-            login_btn = st.button("Log In")
-        with col2:
-            forgot_pw = st.button("Forgot Password?")
+        login_btn = st.button("Log In")
+        forgot_pw = st.button("Forgot Password?")
 
         if login_btn:
             try:
