@@ -1,7 +1,7 @@
 import streamlit as st
 from supabase import create_client, Client
 import supabase
-from login import is_valid_password
+from page_numbers.login import is_valid_password
 
 st.subheader("Reset Your Password")
 
