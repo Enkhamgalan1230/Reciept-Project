@@ -9,6 +9,23 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 st.subheader("Reset Your Password")
 
+params = st.query_params
+access_token = params.get("access_token")
+recovery_type = params.get("type")
+
+if recovery_type == "recovery" and access_token:
+    try:
+        session = supabase.auth.verify_otp({
+            "type": "recovery",
+            "token": access_token
+        })
+        st.session_state.supabase_user = session
+    except Exception as e:
+        st.error("Failed to verify token.")
+        st.stop()
+
+# --- UI ---
+st.subheader("Reset Your Password")
 new_pw = st.text_input("New Password", type="password")
 confirm_pw = st.text_input("Confirm Password", type="password")
 submit_pw = st.button("Update Password")
@@ -21,8 +38,7 @@ if submit_pw:
     else:
         try:
             supabase.auth.update_user({"password": new_pw})
-            st.success("Password updated successfully.")
-            st.experimental_rerun()
+            st.success("Password updated successfully. You can now log in.")
         except Exception as e:
             st.error("Failed to update password.")
             st.text(str(e))
