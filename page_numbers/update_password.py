@@ -22,10 +22,9 @@ components.html(
         const type = hashParams.get("type");
 
         if (access_token && type) {
-            const newUrl = `${window.location.pathname}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}`;
-            if (!window.location.search.includes("access_token")) {
-                window.location.replace(newUrl);
-            }
+            const baseUrl = window.location.href.split('#')[0];
+            const newUrl = `${baseUrl}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}`;
+            window.location.replace(newUrl);
         }
     </script>
     """,
