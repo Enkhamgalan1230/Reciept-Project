@@ -66,11 +66,16 @@ if submit_pw:
         st.error("Passwords do not match.")
     elif not is_valid_password(new_pw):
         st.error("Password must be 8+ chars with uppercase, number, special char.")
-    elif "supabase_user" not in st.session_state:
-        st.error("Auth session missing! Please use the link from your email again.")
+    elif not access_token:
+        st.error("Auth token missing! Please use the password reset link again.")
     else:
         try:
+            # Set session using access token (even though refresh token is missing)
+            supabase.auth.set_session(access_token, "")
+
+            # Now update password
             supabase.auth.update_user({"password": new_pw})
+
             st.success("Password successfully updated. You may now log in.")
         except Exception as e:
             st.error("Failed to update password.")
