@@ -36,6 +36,7 @@ with st.spinner("Preparing secure session..."):
 
 # --- Step 1: Extract token from query string ---
 params = st.query_params
+st.write("Query Parameters:", params)
 
 if not params.get("access_token"):
     st.warning("Waiting for secure session to load...")
