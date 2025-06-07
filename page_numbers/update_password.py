@@ -21,9 +21,12 @@ components.html(
         const refresh_token = hashParams.get("refresh_token");
         const type = hashParams.get("type");
 
-        if (access_token && type) {
+        const searchParams = new URLSearchParams(window.location.search);
+        const alreadyReloaded = searchParams.get("reload");
+
+        if (access_token && type && !alreadyReloaded) {
             const baseUrl = window.location.href.split('#')[0];
-            const newUrl = `${baseUrl}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}`;
+            const newUrl = `${baseUrl}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}&reload=true`;
             window.location.replace(newUrl);
         }
     </script>
@@ -36,11 +39,13 @@ with st.spinner("Preparing secure session..."):
 
 # --- Step 1: Extract token from query string ---
 params = st.query_params
-st.write("Query Parameters:", params)
 
+#  Wait until JS finishes and we see the access token
 if not params.get("access_token"):
     st.warning("Waiting for secure session to load...")
     st.stop()
+
+st.write("Query Parameters:", params)
 
 access_token = params.get("access_token", [None])[0]
 refresh_token = params.get("refresh_token", [""])[0]
