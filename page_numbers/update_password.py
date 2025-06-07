@@ -21,9 +21,11 @@ components.html(
         const refresh_token = hashParams.get("refresh_token");
         const type = hashParams.get("type");
 
-        if (access_token && type) {
+        const alreadyReloaded = window.location.href.includes("reload=true");
+
+        if (access_token && type && !alreadyReloaded) {
             const baseUrl = window.location.href.split('#')[0];
-            const newUrl = `${baseUrl}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}`;
+            const newUrl = `${baseUrl}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}&reload=true`;
             window.location.replace(newUrl);
         }
     </script>
@@ -31,9 +33,15 @@ components.html(
     height=0,
 )
 
+
 time.sleep(1)
 
 params = st.query_params
+
+if not params.get("access_token"):
+    st.warning("Waiting for secure session to load... (JavaScript redirect in progress)")
+    st.stop()
+    
 access_token = params.get("access_token", [None])[0]
 refresh_token = params.get("refresh_token", [None])[0]
 recovery_type = params.get("type", [None])[0]
