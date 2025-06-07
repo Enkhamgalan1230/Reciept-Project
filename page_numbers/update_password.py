@@ -38,12 +38,12 @@ with st.spinner("Preparing secure session..."):
     time.sleep(1.5)
 
 # --- Step 1: Extract token from query string ---
-params = st.query_params
+params = st.query_params.to_dict()
 
 #  Wait until JS finishes and we see the access token
-if not params.get("access_token"):
-    st.warning("Waiting for secure session to load...")
-    st.stop()
+#if not params.get("access_token"):
+#    st.warning("Waiting for secure session to load...")
+#    st.stop()
 
 st.write("Query Parameters:", params)
 
