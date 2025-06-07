@@ -18,10 +18,11 @@ components.html(
     <script>
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
         const access_token = hashParams.get("access_token");
+        const refresh_token = hashParams.get("refresh_token");
         const type = hashParams.get("type");
 
         if (access_token && type) {
-            const newUrl = `${window.location.pathname}?access_token=${access_token}&type=${type}`;
+            const newUrl = `${window.location.pathname}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}`;
             if (!window.location.search.includes("access_token")) {
                 window.location.replace(newUrl);
             }
@@ -40,6 +41,7 @@ while not params.get("access_token") and attempts < 6:
     params = st.query_params
 
 access_token = params.get("access_token", [None])[0]
+refresh_token = params.get("refresh_token", [""])[0]  # Default to empty if not present
 recovery_type = params.get("type", [None])[0]
 
 # --- Step 2: Verify token and create session ---
@@ -71,7 +73,7 @@ if submit_pw:
     else:
         try:
             # Set session using access token (even though refresh token is missing)
-            supabase.auth.set_session(access_token, "")
+            supabase.auth.set_session(access_token, refresh_token)
 
             # Now update password
             supabase.auth.update_user({"password": new_pw})
