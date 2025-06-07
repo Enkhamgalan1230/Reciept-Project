@@ -32,17 +32,18 @@ components.html(
     height=0,
 )
 
+with st.spinner("Preparing secure session..."):
+    time.sleep(1.5)
+
 # --- Step 1: Extract token from query string ---
 params = st.query_params
-attempts = 0
-while not params.get("access_token") and attempts < 6:
-    time.sleep(0.5)
-    attempts += 1
-    params = st.query_params
 
 access_token = params.get("access_token", [None])[0]
-refresh_token = params.get("refresh_token", [""])[0]  # Default to empty if not present
+refresh_token = params.get("refresh_token", [""])[0]
 recovery_type = params.get("type", [None])[0]
+
+st.session_state.access_token = access_token  # Save in session just in case
+st.session_state.refresh_token = refresh_token
 
 # --- Step 2: Verify token and create session ---
 if recovery_type == "recovery" and access_token and "supabase_user" not in st.session_state:
@@ -68,12 +69,15 @@ if submit_pw:
         st.error("Passwords do not match.")
     elif not is_valid_password(new_pw):
         st.error("Password must be 8+ chars with uppercase, number, special char.")
-    elif not access_token:
-        st.error("Auth token missing! Please use the password reset link again.")
+    elif not st.session_state.get("access_token"):
+        st.error("Auth token missing! Please refresh the page or use the reset link again.")
     else:
         try:
             # Set session using access token (even though refresh token is missing)
-            supabase.auth.set_session(access_token, refresh_token)
+            supabase.auth.set_session(
+                st.session_state.get("access_token"),
+                st.session_state.get("refresh_token", "")
+            )
 
             # Now update password
             supabase.auth.update_user({"password": new_pw})
