@@ -21,12 +21,9 @@ components.html(
         const refresh_token = hashParams.get("refresh_token");
         const type = hashParams.get("type");
 
-        const searchParams = new URLSearchParams(window.location.search);
-        const alreadyReloaded = searchParams.get("reload");
-
-        if (access_token && type && !alreadyReloaded) {
+        if (access_token && type) {
             const baseUrl = window.location.href.split('#')[0];
-            const newUrl = `${baseUrl}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}&reload=true`;
+            const newUrl = `${baseUrl}?access_token=${access_token}&refresh_token=${refresh_token}&type=${type}`;
             window.location.replace(newUrl);
         }
     </script>
@@ -34,23 +31,16 @@ components.html(
     height=0,
 )
 
-with st.spinner("Preparing secure session..."):
-    time.sleep(1.5)
+time.sleep(1)
 
-# --- Step 1: Extract token from query string ---
-params = st.query_params.to_dict()
-
-#  Wait until JS finishes and we see the access token
-#if not params.get("access_token"):
-#    st.warning("Waiting for secure session to load...")
-#    st.stop()
-
-st.write("Query Parameters:", params)
-
+params = st.query_params
 access_token = params.get("access_token", [None])[0]
-refresh_token = params.get("refresh_token", [""])[0]
+refresh_token = params.get("refresh_token", [None])[0]
 recovery_type = params.get("type", [None])[0]
 
+st.write("Access Token:", access_token)
+st.write("Refresh Token:", refresh_token)
+st.write("Recovery Type:", recovery_type)
 # Store in session for later
 st.session_state.access_token = access_token
 st.session_state.refresh_token = refresh_token
