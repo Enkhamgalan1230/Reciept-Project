@@ -12,66 +12,45 @@ Whether you're planning a weekly shop or looking for the cheapest essentials, Re
 
 ## 🛒 Price Comparison
 
-Compare up to 15 grocery items across Tesco, Asda, Aldi, Waitrose, and Sainsbury’s.
-
-Prices are fetched from real-time data (scraped or cached).
-
-Supports advanced filters: subcategory, store, and keyword.
-
-Visual bar charts show cheapest options clearly.
+1. Compare up to 15 grocery items across Tesco, Asda, Aldi, Waitrose, and Sainsbury’s.
+2. Prices are fetched from real-time data (scraped or cached).
+3. Supports advanced filters: subcategory, store, and keyword.
+4. Visual bar charts show cheapest options clearly.
 
 ## 📈 Price Inflation Tracker
 
-Displays week-to-week inflation across subcategories.
-
-Supports store-specific price tracking.
-
-Colour-coded percentage changes (🔺 increases / 🔻 decreases).
-
-Handles missing data gracefully.
+1. Displays week-to-week inflation across subcategories.
+2. Supports store-specific price tracking.
+3. Colour-coded percentage changes (🔺 increases / 🔻 decreases).
+3. Handles missing data gracefully.
 
 ## 📍 Nearest Store Finder
 
-Locate nearby supermarket branches via geolocation or postcode.
-
-Uses OpenStreetMap Nominatim and Photon API for accurate mapping.
-
-Results shown in a searchable table + interactive map.
+1. Locate nearby supermarket branches via geolocation or postcode.
+2. Uses OpenStreetMap Nominatim and Photon API for accurate mapping.
+3. Results shown in a searchable table + interactive map(Googlemap API).
 
 ## 🧾 Receipt Generator
+1. Input groceries via:
+* Typing
+* Voice input
+* Conversational AI assistant(LLaMa)
 
-Input groceries via:
-
-Typing
-
-Voice input
-
-Conversational AI assistant
-
-Uses NLP, fuzzy matching, and semantic search to match items.
-
-Generates a shopping list optimised for:
-
-Budget
-
-Store selection
-
-Essential vs optional items
-
-Authenticated users can save their lists securely.
+2. Uses NLP, fuzzy matching, and semantic search to match items.
+3. Generates a shopping list optimised for:
+* Budget
+* Store selection
+* Essential vs optional items
+* Authenticated users can save their lists securely.
 
 ## 🔐 Authentication & Saved Lists
 
-User sign-up/login via Supabase Auth.
+1. User sign-up/login via Supabase Auth.
+2. Each saved list includes:
 
-Each saved list includes:
-
-Items requested
-
-Matched items and prices
-
-Store selected
-
-Timestamp
+* Items requested
+* Matched items and prices
+* Store selected
+* Timestamp
 
 "My List" page shows past purchases and a 'Potential Buy' breakdown.
