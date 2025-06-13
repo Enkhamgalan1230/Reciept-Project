@@ -54,3 +54,49 @@ Whether you're planning a weekly shop or looking for the cheapest essentials, Re
 * Timestamp
 
 "My List" page shows past purchases and a 'Potential Buy' breakdown.
+
+## 🎯 Target Audience
+
+Originally built for university students in the UK, the app is also valuable for anyone looking to:
+
+* Cut down on food expenses
+* Forecast short-term price changes
+* Shop smarter during inflation
+
+## 🛠️ Tech Stack
+
+| Technology                | Purpose                                       |
+| ------------------------- | --------------------------------------------- |
+| **Streamlit**             | Frontend + app UI                             |
+| **Supabase**              | Backend database + user authentication        |
+| **Python**                | Core logic, data scraping, and utilities      |
+| **sentence-transformers** | Semantic product matching (embeddings)        |
+| **NLP + fuzzywuzzy**      | Phrase extraction & fuzzy matching            |
+| **LLaMA via Groq API**    | Conversational AI assistant for receipt input |
+| **Photon/Nominatim API**  | Store geolocation and address lookup          |
+
+## 🚧 Project Status
+
+| Module                          | Status |
+|---------------------------------|--------|
+| Data Scraping                   | ✅     |
+| Preprocessing & Generalisation | ✅     |
+| Supabase Integration            | ✅     |
+| Cloud Deployment                | ✅     |
+| Price Comparison Logic          | ✅     |
+| Store Locator                   | ✅     |
+| User Authentication             | ✅     |
+| Receipt Generator               | ✅     |
+| Price Prediction                | ✅     |
+| Joy in Life                     | ✅     |
+
+## 🧠 Future Enhancements
+
+1. Long-term price forecasting (LSTM/XGBoost models)
+2. iOS/Android mobile app version
+3. Social sharing of lists & budget tips
+4. More international stores support
+
+## 📬 Feedback & Contribution
+
+Contact me on [LinkedIn](https://www.linkedin.com/in/entwan/). If you have questions.
