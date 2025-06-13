@@ -1,6 +1,9 @@
 # Reciept-Project
 
 👉 https://receipt-entwan.streamlit.app/ 👈
+![QR code](https://github.com/Enkhamgalan1230/Reciept-Project/blob/3133878d2ce323698609ca38f00fa978ca02fdff/assets/qr-code.png)
+
+Additionally, I added the data to the data folder, so it can be used in case the database is down.
 
 ### Project Overview: Smart Budgeting and Price Prediction App for University Students
 
