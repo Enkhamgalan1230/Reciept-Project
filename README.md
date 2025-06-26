@@ -1,7 +1,15 @@
-<h1 align="center">🧾 Receipt Project</h1> <p align="center"> <strong>Smart Budgeting and Grocery Price Comparison for Students</strong><br> <a href="https://receipt-entwan.streamlit.app/" target="_blank">🌐 Live App</a> • 
-<a href="#features">📦 Features</a> • 
-<a href="#tech-stack">🛠️ Tech Stack</a> • 
-<a href="#project-status">🚧 Status</a> </p> <p align="center"> <img src="https://github.com/Enkhamgalan1230/Reciept-Project/blob/3133878d2ce323698609ca38f00fa978ca02fdff/assets/qr-code.png" alt="QR Code" width="160"/> </p>
+<h1 align="center">🧾 Receipt Project</h1> 
+<p align="center">
+  <strong>Smart Budgeting and Grocery Price Comparison for Students</strong><br>
+  <a href="https://receipt-entwan.streamlit.app/" target="_blank">🌐 Live App</a> • 
+  <a href="#-features">📦 Features</a> • 
+  <a href="#-tech-stack">🛠️ Tech Stack</a> • 
+  <a href="#-project-status">🚧 Status</a>
+</p>
+
+<p align="center">
+  <img src="https://github.com/Enkhamgalan1230/Reciept-Project/blob/3133878d2ce323698609ca38f00fa978ca02fdff/assets/qr-code.png" alt="QR Code" width="160"/>
+</p>
 
 # 📖 Introduction
 
@@ -25,48 +33,48 @@ Whether you're planning a weekly shop or looking for the cheapest essentials, Re
 1. Displays week-to-week inflation across subcategories.
 2. Supports store-specific price tracking.
 3. Colour-coded percentage changes (🔺 increases / 🔻 decreases).
-3. Handles missing data gracefully.
+4. Handles missing data gracefully.
 
 ## 📍 Nearest Store Finder
 
 1. Locate nearby supermarket branches via geolocation or postcode.
 2. Uses OpenStreetMap Nominatim and Photon API for accurate mapping.
-3. Results shown in a searchable table + interactive map(Googlemap API).
+3. Results shown in a searchable table + interactive map (Google Maps API).
 
 ## 🧾 Receipt Generator
+
 1. Input groceries via:
-* Typing
-* Voice input
-* Conversational AI assistant(LLaMa)
+   - Typing
+   - Voice input
+   - Conversational AI assistant (LLaMa)
 
 2. Uses NLP, fuzzy matching, and semantic search to match items.
 3. Generates a shopping list optimised for:
-* Budget
-* Store selection
-* Essential vs optional items
-* Authenticated users can save their lists securely.
+   - Budget
+   - Store selection
+   - Essential vs optional items
+   - Authenticated users can save their lists securely.
 
 ## 🔐 Authentication & Saved Lists
 
 1. User sign-up/login via Supabase Auth.
 2. Each saved list includes:
-
-* Items requested
-* Matched items and prices
-* Store selected
-* Timestamp
+   - Items requested
+   - Matched items and prices
+   - Store selected
+   - Timestamp
 
 "My List" page shows past purchases and a 'Potential Buy' breakdown.
 
-## 🎯 Target Audience
+# 🎯 Target Audience
 
 Originally built for university students in the UK, the app is also valuable for anyone looking to:
 
-* Cut down on food expenses
-* Forecast short-term price changes
-* Shop smarter during inflation
+- Cut down on food expenses
+- Forecast short-term price changes
+- Shop smarter during inflation
 
-## 🛠️ Tech Stack
+# 🛠️ Tech Stack
 
 | Technology                | Purpose                                       |
 | ------------------------- | --------------------------------------------- |
@@ -78,12 +86,12 @@ Originally built for university students in the UK, the app is also valuable for
 | **LLaMA via Groq API**    | Conversational AI assistant for receipt input |
 | **Photon/Nominatim API**  | Store geolocation and address lookup          |
 
-## 🚧 Project Status
+# 🚧 Project Status
 
 | Module                          | Status |
 |---------------------------------|--------|
 | Data Scraping                   | ✅     |
-| Preprocessing & Generalisation | ✅     |
+| Preprocessing & Generalisation  | ✅     |
 | Supabase Integration            | ✅     |
 | Cloud Deployment                | ✅     |
 | Price Comparison Logic          | ✅     |
@@ -93,13 +101,14 @@ Originally built for university students in the UK, the app is also valuable for
 | Price Prediction                | ✅     |
 | Joy in Life                     | ✅     |
 
-## 🧠 Future Enhancements
+# 🧠 Future Enhancements
 
 1. Long-term price forecasting (LSTM/XGBoost models)
 2. iOS/Android mobile app version
 3. Social sharing of lists & budget tips
 4. More international stores support
 
-## 📬 Feedback & Contribution
+# 📬 Feedback & Contribution
 
-Contact me on [LinkedIn](https://www.linkedin.com/in/entwan/). If you have questions.
+Contact me on [LinkedIn](https://www.linkedin.com/in/entwan/) if you have any questions or would like to collaborate.
+
