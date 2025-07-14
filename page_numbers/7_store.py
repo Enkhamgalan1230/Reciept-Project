@@ -185,7 +185,7 @@ with container1:
             st.dataframe(df)
 
             st.subheader("🗺️ Store Locations Map", anchor=False)
-            m = folium.Map(location=[user_lat, user_lon], zoom_start=13)
+            m = folium.Map(location=[user_lat, user_lon], zoom_start=14)
 
             folium.Marker(
                 [user_lat, user_lon],

@@ -12,7 +12,11 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 st.subheader("Reset Your Password")
-st.warning("Currently working on this feature! Sorry")
+
+st.markdown(
+    ":orange-badge[⚠️ Currently working on this feature! Sorry]"
+)
+
 st.stop()
 
 components.html(
