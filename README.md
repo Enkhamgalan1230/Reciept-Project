@@ -1,84 +1,114 @@
-# Reciept-Project
+<h1 align="center">🧾 Receipt Project</h1> 
+<p align="center">
+  <strong>Smart Budgeting and Grocery Price Comparison for Students</strong><br>
+  <a href="https://receipt-entwan.streamlit.app/" target="_blank">🌐 Live App</a> • 
+  <a href="#-features">📦 Features</a> • 
+  <a href="#-tech-stack">🛠️ Tech Stack</a> • 
+  <a href="#-project-status">🚧 Status</a>
+</p>
 
-👉 https://receipt-entwan.streamlit.app/ 👈
+<p align="center">
+  <img src="https://github.com/Enkhamgalan1230/Reciept-Project/blob/3133878d2ce323698609ca38f00fa978ca02fdff/assets/qr-code.png" alt="QR Code" width="160"/>
+</p>
 
-### Project Overview: Smart Budgeting and Price Prediction App for University Students
+# 📖 Introduction
 
-**Introduction**
+The Receipt App is a smart budgeting and price prediction tool built to support UK university students facing the cost of living crisis. It helps users compare supermarket prices, track inflation trends, and generate grocery lists tailored to their budget and location.
 
-In light of the ongoing cost of living crisis, many university students in the UK are facing
-increasing financial pressures. The need for effective budgeting tools has never been more
-critical. To address this issue, I propose developing a Smart Budgeting and Price Prediction
-App tailored specifically for university students. This app will assist users in managing their
-expenses, comparing grocery prices, and anticipating future price changes, empowering them
-to make informed purchasing decisions. 
+Whether you're planning a weekly shop or looking for the cheapest essentials, Receipt gives you real-time, AI-assisted, and location-aware recommendations all in one platform.
 
-### Key Features and Functionality
+💡 Offline-ready datasets are available in the /Supermarket data folder in case the live database is unavailable.
 
-**1. Price Comparison**
+# ✨ Features
 
-* The app retrieves the most recent grocery prices from major UK supermarkets, using either integrated APIs or regularly updated scraped data stored in session state.
-* Users can compare the prices of up to 15 popular items side by side across Tesco, Asda, Aldi, Waitrose, and Sainsbury’s, with a clear display of the cheapest option for each product.
-* Products are visualised in a bar chart format, enabling users to quickly identify price differences and make cost-effective choices.
-* Even when a product is not available in certain stores, the system accounts for this by indicating missing data while maintaining consistent layout and comparison structure.
-* An advanced search functionality allows users to filter items by subcategory, store, or specific keywords. The comparison table displays the filtered results sorted by price, along with units and discount prices, enabling precise and informed decision-making.
+## 🛒 Price Comparison
 
-**2. Price Inflation Status**
+1. Compare up to 15 grocery items across Tesco, Asda, Aldi, Waitrose, and Sainsbury’s.
+2. Prices are fetched from real-time data (scraped or cached).
+3. Supports advanced filters: subcategory, store, and keyword.
+4. Visual bar charts show cheapest options clearly.
 
-* The app enables users to monitor short-term price fluctuations by comparing the average cost of subcategories across two consecutive data collection dates (typically weekly).
-* Users can select a specific supermarket to view how average prices have changed over time for each product subcategory.
-* The interface presents a dynamic inflation board, where each subcategory is displayed as a separate metric showing the latest average price and the percentage change from the previous week.
-* The inflation percentage is colour-coded to reflect increases or decreases in price, helping users quickly identify inflationary trends and assess store performance.
-* In the event of missing data for a given subcategory, the system ensures continuity by filling values appropriately and defaulting to a 0% change where necessary, maintaining the consistency and reliability of insights.
+## 📈 Price Inflation Tracker
 
-**3. Nearest Store Finder**
+1. Displays week-to-week inflation across subcategories.
+2. Supports store-specific price tracking.
+3. Colour-coded percentage changes (🔺 increases / 🔻 decreases).
+4. Handles missing data gracefully.
 
-* This feature enables users to locate the closest branches of major UK supermarkets based on either their current geolocation or a manually entered UK postcode.
-* Users can customise the search radius and select between distance units (kilometres or miles) to suit their preferences, enhancing flexibility.
-* When opting to use their current location, users can grant access to geolocation services, and the system will retrieve their coordinates securely. Alternatively, they may input a UK postcode, which is converted to latitude and longitude using the OpenStreetMap Nominatim API.
-* Once the user’s location is obtained, the app queries the Photon API to identify nearby stores (Tesco, Sainsbury’s, Waitrose, Asda, Aldi) within the specified range.
-* The results are presented in a structured table displaying store names, addresses, and exact distances from the user, allowing for informed decisions regarding accessibility and convenience.
-* A dynamic map visualises the user’s location alongside nearby store locations, using interactive markers to provide an intuitive spatial understanding of store proximity.
+## 📍 Nearest Store Finder
 
-**4. Receipt**
+1. Locate nearby supermarket branches via geolocation or postcode.
+2. Uses OpenStreetMap Nominatim and Photon API for accurate mapping.
+3. Results shown in a searchable table + interactive map (Google Maps API).
 
-* This feature enables users to generate a budget-conscious shopping list using a combination of input methods typed, spoken, or assisted by an AI-powered conversational assistant.
-* Users may manually type essential or optional grocery items, speak their list using integrated voice recognition, or describe their preferences and meal plans to the AI assistant, which then suggests specific products based on user intent.
-* Natural language processing (NLP), fuzzy string matching, and semantic search are applied to extract and match input phrases to real product names in the database while filtering out unsuitable items such as snacks, beverages, processed goods, or dietary substitutes—unless explicitly permitted.
-* Once all items are gathered, the system matches them against the latest prices from a selected store (e.g., Tesco, Asda, Aldi) and filters the list based on a user-defined budget.
-* The algorithm prioritises essential items first and fills remaining budget with optional extras where possible. Items that cannot fit within the budget are clearly indicated.
-* The final list includes matched items, their prices, discounts, and the originating store. A summary of total cost is displayed to support informed decision-making.
-* Users who are signed in can save their generated shopping lists to a secure Supabase database, where items, matched products, selected store, and timestamps are recorded for future access and reference.
+## 🧾 Receipt Generator
 
-**5. User Authentication and Personalised List Management**
+1. Input groceries via:
+   - Typing
+   - Voice input
+   - Conversational AI assistant (LLaMa)
 
-* The application includes a secure login system that allows users to create personal accounts and access tailored features, such as saving and reviewing past shopping lists.
-* Authentication is managed through Supabase Auth, ensuring that user credentials are handled securely and access to data is appropriately restricted based on identity.
-* Once authenticated, users can save their generated shopping lists directly to the Supabase database. Each saved list is associated with the user’s email, the selected store, the original input items, the matched product details, and the timestamp of creation.
-* A dedicated "My List" page enables users to review previously saved shopping lists. These entries are presented in a structured format, including a breakdown of matched items and associated stores, allowing users to reflect on past spending decisions.
-* For each entry, the application clearly distinguishes between the user’s original requests and the final selected products. A supplementary section labelled "Potential Buy" provides a concise summary of the items matched under the defined budget.
+2. Uses NLP, fuzzy matching, and semantic search to match items.
+3. Generates a shopping list optimised for:
+   - Budget
+   - Store selection
+   - Essential vs optional items
+   - Authenticated users can save their lists securely.
 
-### Target Audience
+## 🔐 Authentication & Saved Lists
 
-The primary target audience for this app is university students in the UK who are seeking
-eƯective tools to manage their finances in a challenging economic environment or basically anyone. The app aims
-to empower whoever by providing them with valuable financial insights and cost-saving
-strategies. 
+1. User sign-up/login via Supabase Auth.
+2. Each saved list includes:
+   - Items requested
+   - Matched items and prices
+   - Store selected
+   - Timestamp
 
+"My List" page shows past purchases and a 'Potential Buy' breakdown.
 
-**Current progress:**
+# 🎯 Target Audience
 
-* Data gathering scraper: ✔️
-* Pre-processing, cleaning, generalising: ✔️
-* Database setup:✔️
-* Cloud application:✔️
-* Comparison logic:✔️
-* Store Logic: ✔️
-* User Authentication: ✔️
-* Receipt Generator Logic: ✔️
-* Joy in Life: ✔️
-* Price prediction: ✔️
+Originally built for university students in the UK, the app is also valuable for anyone looking to:
 
+- Cut down on food expenses
+- Forecast short-term price changes
+- Shop smarter during inflation
 
-Next Step: DOne innit
+# 🛠️ Tech Stack
+
+| Technology                | Purpose                                       |
+| ------------------------- | --------------------------------------------- |
+| **Streamlit**             | Frontend + app UI                             |
+| **Supabase**              | Backend database + user authentication        |
+| **Python**                | Core logic, data scraping, and utilities      |
+| **sentence-transformers** | Semantic product matching (embeddings)        |
+| **NLP + fuzzywuzzy**      | Phrase extraction & fuzzy matching            |
+| **LLaMA via Groq API**    | Conversational AI assistant for receipt input |
+| **Photon/Nominatim API**  | Store geolocation and address lookup          |
+
+# 🚧 Project Status
+
+| Module                          | Status |
+|---------------------------------|--------|
+| Data Scraping                   | ✅     |
+| Preprocessing & Generalisation  | ✅     |
+| Supabase Integration            | ✅     |
+| Cloud Deployment                | ✅     |
+| Price Comparison Logic          | ✅     |
+| Store Locator                   | ✅     |
+| User Authentication             | ✅     |
+| Receipt Generator               | ✅     |
+| Price Prediction                | ✅     |
+| Joy in Life                     | ✅     |
+
+# 🧠 Future Enhancements
+
+1. Long-term price forecasting (LSTM/XGBoost models)
+2. iOS/Android mobile app version
+3. Social sharing of lists & budget tips
+4. More international stores support
+
+# 📬 Feedback & Contribution
+
+Contact me on [LinkedIn](https://www.linkedin.com/in/entwan/) if you have any questions or would like to collaborate.
 
