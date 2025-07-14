@@ -101,7 +101,7 @@ if "df" not in st.session_state:
             st.write(f"There are {max_rows} rows currently in the database.")
 
             # Show an initial fun message
-            st.info("Loading fresh data from Supabase! 🍽️ Since we fetch 1,000 rows at a time, it may take a moment. Why not grab a coffee and enjoy a fun fact while you wait? ", icon="ℹ☕")
+            st.info("Loading fresh data from Supabase! 🍽️ Since we fetch 1,000 rows at a time, it may take a moment. Why not grab a coffee and enjoy a fun fact while you wait? ", icon="☕")
 
             # Step 2: Fetch data with pagination
             batch_size = 1000
