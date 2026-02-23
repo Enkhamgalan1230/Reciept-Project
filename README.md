@@ -11,6 +11,10 @@
   <img src="https://github.com/Enkhamgalan1230/Reciept-Project/blob/3133878d2ce323698609ca38f00fa978ca02fdff/assets/qr-code.png" alt="QR Code" width="160"/>
 </p>
 
+# 🚨 Update 
+
+Currently, the platform and project are offline because the database host requires frequent requests to remain active. However, you can contact me to get the data and tutorial for setting up a database/scrapers.
+
 # 📖 Introduction
 
 The Receipt App is a smart budgeting and price prediction tool built to support UK university students facing the cost of living crisis. It helps users compare supermarket prices, track inflation trends, and generate grocery lists tailored to their budget and location.
