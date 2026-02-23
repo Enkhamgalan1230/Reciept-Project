@@ -13,7 +13,7 @@
 
 # 🚨 Update 
 
-Currently, the platform and project are offline because the database host requires frequent requests to remain active. However, you can contact me to get the data and tutorial for setting up a database/scrapers.
+Currently, the platform and project are offline because the database host requires frequent requests to remain active. However, you can contact me to get the data and tutorial for setting up the database/scrapers.
 
 # 📖 Introduction
 
