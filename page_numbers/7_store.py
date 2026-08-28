@@ -17,9 +17,9 @@ def find_supermarkets(latitude, longitude, radius_km):
     query = f"""
     [out:json][timeout:25];
     (
-      node[shop=supermarket](around:{radius_m},{latitude},{longitude});
-      way[shop=supermarket](around:{radius_m},{latitude},{longitude});
-      relation[shop=supermarket](around:{radius_m},{latitude},{longitude});
+      node[shop~"^(supermarket|convenience)$"](around:{radius_m},{latitude},{longitude});
+      way[shop~"^(supermarket|convenience)$"](around:{radius_m},{latitude},{longitude});
+      relation[shop~"^(supermarket|convenience)$"](around:{radius_m},{latitude},{longitude});
     );
     out center tags;
     """
