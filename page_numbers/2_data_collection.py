@@ -277,7 +277,7 @@ st.write("The cleaned data is then stored in **Supabase**, allowing for real-tim
 with st.expander("Supabase Query Example"):
     st.code("""
     # Initialize Supabase connection
-    # Product data is loaded locally by page_numbers/data_fetcher.py.
+    # Product data is loaded locally by local_data.py.
 
     # Only fetch data if it's not already stored in session state
     if "df" not in st.session_state:

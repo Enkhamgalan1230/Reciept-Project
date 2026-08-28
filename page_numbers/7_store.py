@@ -48,7 +48,8 @@ with container1:
             label_visibility="collapsed",  # Hide label to rely on markdown title above
             horizontal=True
         )
-    user_lat = user_lon = None
+    user_lat = st.session_state.get("user_lat")
+    user_lon = st.session_state.get("user_lon")
 
     # ========== OPTION 1: Current Geolocation ==========
     if st.session_state["location_mode"] == "Use my current location":
@@ -88,8 +89,12 @@ with container1:
                 "countrycodes": "gb",
                 "limit": 1
             }
-            geo_res = requests.get(geo_url, params=geo_params, headers={"User-Agent": "ReceiptApp"})
-            if geo_res.status_code == 200 and geo_res.json():
+            try:
+                geo_res = requests.get(geo_url, params=geo_params, headers={"User-Agent": "ReceiptApp"}, timeout=10)
+            except requests.RequestException as error:
+                st.error(f"Could not contact the postcode service: {error}")
+                geo_res = None
+            if geo_res is not None and geo_res.status_code == 200 and geo_res.json():
                 location_data = geo_res.json()[0]
                 user_lat = float(location_data["lat"])
                 user_lon = float(location_data["lon"])
@@ -125,7 +130,10 @@ with container1:
             "lon": user_lon,
             "limit": 10
         }
-        response = requests.get(url, params=params)
+        try:
+            response = requests.get(url, params=params, timeout=15)
+        except requests.RequestException:
+            return []
         if response.status_code != 200:
             return []
 
@@ -193,50 +201,42 @@ with container1:
                 icon=folium.Icon(color="blue", icon="user")
             ).add_to(m)
 
-            for _, row in df.iterrows():
-                # Mapping store name to logo path
-                store_logos = {
+            # Mapping store name to logo path
+            store_logos = {
                     "tesco": "assets/tesco.png",
                     "asda": "assets/asda.png",
                     "aldi": "assets/aldi.png",
                     "sainsbury": "assets/sainsbury.png",
                     "waitrose": "assets/waitrose.png"
-                }
+            }
 
-                for _, row in df.iterrows():
-                    store_name_lower = row["Store"].lower()
+            for _, row in df.iterrows():
+                store_name_lower = row["Store"].lower()
 
-                    # Find matching logo based on store name
-                    icon_path = None
-                    for key in store_logos.keys():
-                        if key in store_name_lower:
-                            icon_path = store_logos[key]
-                            break
+                # Find matching logo based on store name
+                icon_path = next((path for key, path in store_logos.items() if key in store_name_lower), None)
 
-                    if icon_path:
-                        custom_icon = folium.CustomIcon(
-                            icon_image=icon_path,
-                            icon_size=(50, 50),
-                        )
-                    else:
-                        custom_icon = folium.Icon(color="green", icon="shopping-cart")
+                if icon_path:
+                    custom_icon = folium.CustomIcon(icon_image=icon_path, icon_size=(50, 50))
+                else:
+                    custom_icon = folium.Icon(color="green", icon="shopping-cart")
 
-                    # Create a Google Maps link using latitude and longitude
-                    google_maps_link = f"https://www.google.com/maps/search/?api=1&query={row['Latitude']},{row['Longitude']}"
+                # Create a Google Maps link using latitude and longitude
+                google_maps_link = f"https://www.google.com/maps/search/?api=1&query={row['Latitude']},{row['Longitude']}"
 
-                    # Create popup with clickable Google Maps link
-                    popup_html = f"""
+                # Create popup with clickable Google Maps link
+                popup_html = f"""
                     <b>{row['Store']}</b><br>
                     Distance: {row[distance_col]} {unit}<br>
                     <a href="{google_maps_link}" target="_blank">📍 Open in Google Maps</a>
-                    """
+                """
 
-                    folium.Marker(
-                        [row["Latitude"], row["Longitude"]],
-                        popup=folium.Popup(popup_html, max_width=400),
-                        tooltip=row["Store"],
-                        icon=custom_icon
-                    ).add_to(m)
+                folium.Marker(
+                    [row["Latitude"], row["Longitude"]],
+                    popup=folium.Popup(popup_html, max_width=400),
+                    tooltip=row["Store"],
+                    icon=custom_icon
+                ).add_to(m)
 
             folium_static(m)
         else:

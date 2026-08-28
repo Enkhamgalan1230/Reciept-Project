@@ -2,15 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Check if df is stored in session state
-if "df" in st.session_state:
-    df = st.session_state.df  # Retrieve cached data
-else:
-    st.warning("💡 Hint: No data available. Please visit the Data Fetcher page quickly and come back to this page.")
-    dfbtn = st.button("Take me to Data fetcher")
-
-    if dfbtn:
-        st.switch_page("page_numbers/data_fetcher.py")
-    st.stop()
+df = st.session_state.df
 
 st.title("Price Inflation", anchor=False)
 

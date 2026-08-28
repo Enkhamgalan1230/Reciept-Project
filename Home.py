@@ -4,6 +4,7 @@ import time
 import base64
 import os
 import re
+from local_data import load_product_data
 #os.environ["TRANSFORMERS_NO_TF"] = "1"
 
 # Set page title and icon
@@ -24,6 +25,13 @@ h1,h2,h3,h4,h5,h6 { font-family:'Space Grotesk', sans-serif !important; letter-s
 [data-testid="stSidebarNav"] li a span, [data-testid="stSidebarNav"] li a p { color:#ffffff !important; }
 [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
 [data-testid="stSidebar"] label { color:#ffffff !important; }
+[data-testid="stAppViewContainer"] p,
+[data-testid="stAppViewContainer"] label,
+[data-testid="stAppViewContainer"] [data-testid="stMarkdownContainer"] { color:#17211b !important; }
+[data-testid="stMetric"] label,
+[data-testid="stMetric"] [data-testid="stMetricValue"],
+[data-testid="stMetric"] [data-testid="stMetricDelta"] { color:#17211b !important; }
+[data-testid="stDataFrame"] { color:#17211b !important; }
 [data-testid="stSidebarNav"] li a:hover { background:#343a36 !important; color:#ffffff !important; }
 [data-testid="stSidebarNav"] li a[aria-current="page"] { background:#414943 !important; color:#ffffff !important; box-shadow:0 3px 10px rgba(0,0,0,.2); }
 [data-testid="stSidebarNav"] li a[aria-current="page"] span, [data-testid="stSidebarNav"] li a[aria-current="page"] p { color:#ffffff !important; }
@@ -36,6 +44,8 @@ h1,h2,h3,h4,h5,h6 { font-family:'Space Grotesk', sans-serif !important; letter-s
 hr { border-color:var(--receipt-border); }
 </style>
 """, unsafe_allow_html=True)
+if "df" not in st.session_state:
+    st.session_state.df = load_product_data()
 home_page = st.Page(
      page = "page_numbers/1_home.py",
      title= "Home Page",
@@ -99,12 +109,6 @@ helper = st.Page(
      title= "Helper",
 )
  
-data_fetcher = st.Page(
-     page = "page_numbers/data_fetcher.py",
-     title= "Data Fetcher",
-     icon = "🛠️"
-)
-
 update_password = st.Page(
      page = "page_numbers/update_password.py",
      title= "Forgot password"
@@ -119,7 +123,6 @@ pg = st.navigation(
         "Insights": [data_collection,data],
         "Explore": [price_comparison,price_inflation,price_prediction,store, receipt],
         "Help": [helper, update_password],
-        "Tools": [data_fetcher]
     }
 )
 
