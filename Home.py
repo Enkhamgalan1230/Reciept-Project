@@ -19,9 +19,12 @@ st.markdown("""
 :root { --receipt-ink:#17211b; --receipt-muted:#68736b; --receipt-green:#2f6b4f; --receipt-border:#dce6df; }
 html, body, [class*="css"] { font-family:'DM Sans', sans-serif; color:var(--receipt-ink); }
 h1,h2,h3,h4,h5,h6 { font-family:'Space Grotesk', sans-serif !important; letter-spacing:-.025em; color:var(--receipt-ink); }
-[data-testid="stSidebar"] { background:linear-gradient(180deg,#f5f8f5 0%,#edf4ef 100%); border-right:1px solid var(--receipt-border); }
-[data-testid="stSidebarNav"] li a { border-radius:10px; margin:3px 8px; padding:9px 12px; font-weight:600; color:#405047; transition:background .15s ease,color .15s ease; }
-[data-testid="stSidebarNav"] li a:hover,[data-testid="stSidebarNav"] li a[aria-current="page"] { background:var(--receipt-green); color:white; }
+[data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child { background:#f3f7f4 !important; border-right:1px solid var(--receipt-border); }
+[data-testid="stSidebarNav"] li a { border-radius:10px; margin:3px 8px; padding:9px 12px; font-weight:600; color:#26382e !important; transition:background .15s ease,color .15s ease; }
+[data-testid="stSidebarNav"] li a span, [data-testid="stSidebarNav"] li a p { color:#26382e !important; }
+[data-testid="stSidebarNav"] li a:hover { background:#dcebe1 !important; color:#173b27 !important; }
+[data-testid="stSidebarNav"] li a[aria-current="page"] { background:#2f6b4f !important; color:#ffffff !important; box-shadow:0 3px 10px rgba(47,107,79,.18); }
+[data-testid="stSidebarNav"] li a[aria-current="page"] span, [data-testid="stSidebarNav"] li a[aria-current="page"] p { color:#ffffff !important; }
 [data-testid="stSidebarNav"] span { font-size:.9rem; }
 .block-container { max-width:1400px; padding-top:2.5rem; padding-bottom:4rem; }
 [data-testid="stMetric"] { background:#fff; border:1px solid var(--receipt-border); border-radius:14px; padding:1rem 1.1rem; box-shadow:0 4px 18px rgba(35,67,48,.05); }
@@ -123,7 +126,7 @@ pg = st.navigation(
 logo_path = "assets/logo_longer_white.png"
 
 # ✅ No base64 needed here
-st.logo(image="assets/logo_longer_white.png", icon_image="assets/logo.png", size="large")
+st.logo(image="assets/logo_longer_black.png", icon_image="assets/logo.png", size="large")
 
 pg.run()
 
