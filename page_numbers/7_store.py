@@ -7,7 +7,7 @@ import folium
 import requests
 import pandas as pd
 
-st.header("Closest Store Finder 📍",anchor=False)
+st.header("Closest Store Finder",anchor=False)
 
 with st.expander("💡How Does it work?"):
     st.write("""
@@ -184,7 +184,7 @@ with container1:
             st.success(f"🎯 Found {len(df)} store(s) within {distance_input} {unit}!")
             st.dataframe(df)
 
-            st.subheader("🗺️ Store Locations Map", anchor=False)
+            st.subheader("Store Locations Map", anchor=False)
             m = folium.Map(location=[user_lat, user_lon], zoom_start=14)
 
             folium.Marker(

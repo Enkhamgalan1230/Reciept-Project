@@ -6,9 +6,6 @@ streamlit
 seaborn
 streamlit-option-menu
 pandas-datareader
-mysql-connector
-st-supabase-connection
-supabase
 plotly.express
 fuzzywuzzy
 wordcloud
@@ -28,4 +25,3 @@ torch
 txtai
 sentence-transformers
 bcrypt
-gotrue

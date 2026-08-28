@@ -24,16 +24,14 @@ import numpy as np
 from sentence_transformers import SentenceTransformer, util
 import torch
 from datetime import datetime
-from supabase import create_client
 import math
+from local_store import save_list
 
 # ========== SESSION STATE SETUP ==========
 
-if "supabase_user" not in st.session_state:
-    st.session_state.supabase_user = None
+if "local_user" not in st.session_state:
+    st.session_state.local_user = None
 
-SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZmhyaHZkc3B3bGV4bHltZGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MTM4ODY4MSwiZXhwIjoyMDU2OTY0NjgxfQ.8ZspiLmRb6GseBh31KWAJfnqGDdY6xK-GrYY-K_ogQA"
 
 # Check if df is stored in session state
 if "df" in st.session_state:
@@ -298,7 +296,7 @@ def filter_products(df, embeddings, query_list, budget, selected_store, allow_ke
     return selected, total, not_fitted
 
 # ========== Main File ==========
-st.title("Shopping List generator 📃")
+st.title("Shopping List Generator")
 
 with st.expander("💡How Does it work?"):
     st.write("""
@@ -476,7 +474,7 @@ container4 = st.container(border=True)
 with container4:
     
     st.header("Shopping List")
-    st.subheader("🧾 **Essentials**")
+    st.subheader("**Essentials**")
 
     if st.session_state.get("show_delete_toast"):
         st.toast("✅ Selected primary item(s) deleted.")
@@ -512,7 +510,7 @@ with container4:
     st.markdown("---")
 
     # Secondary List
-    st.subheader("✨ Optional Extras")
+    st.subheader("Optional Extras")
 
     if secondary_products:
         st.caption("These are the items you'd like to include *if budget allows*. You can also remove them below.")
@@ -536,7 +534,7 @@ with container4:
 
 container5 = st.container(border=True)
 with container5:
-    st.subheader("🛒 Generate Potential Buys")
+    st.subheader("Generate Potential Buys")
     options = ["Tesco", "Waitrose", "Asda", "Aldi", "Sainsburys"]
     selection = st.pills("Stores", options, selection_mode="single")
     selected_store = selection[0] if isinstance(selection, list) and selection else selection
@@ -606,23 +604,15 @@ if "final_list_df" in st.session_state:
     )
     selected_store = st.session_state.get("selected_store", "Unknown")
 
-    if st.session_state.supabase_user:
+    if st.session_state.local_user:
         st.markdown("---")
         if st.button("💾 Save This List to My Account", use_container_width=True):
 
-            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
             try:
-                supabase.table("shopping_lists").insert({
-                    "user_email": st.session_state.supabase_user.user.email,
-                    "store": selected_store,
-                    "input_items": combined_input,
-                    "matched_items": matched_json,
-                    "created_at": datetime.utcnow().isoformat()
-                }).execute()
+                save_list(st.session_state.local_user["email"], selected_store, combined_input, matched_json)
                 st.success("📝 Your list was saved to your account.")
             except Exception as e:
-                st.error("❌ Failed to save list to Supabase.")
+                st.error("Failed to save list.")
                 st.text(str(e))
     else:
         st.info("🔐 You must be logged in to save this shopping list.")

@@ -1,15 +1,11 @@
 import streamlit as st
-import mysql.connector
 import pandas as pd
-from st_supabase_connection import SupabaseConnection
-from supabase import create_client, Client
-import supabase
 import time
 import matplotlib.pyplot as plt
 import plotly.express as px
 
 
-st.title("Data Collection Process 🌐", anchor=False)
+st.title("Data Collection Process", anchor=False)
 
 with st.expander("💡How Does it work?"):
     st.write("""
@@ -17,7 +13,7 @@ with st.expander("💡How Does it work?"):
     """)
 
 # Step-by-Step Sections
-st.subheader("1️⃣ Web Scraping with Selenium", anchor=False)
+st.subheader("1. Web Scraping with Selenium", anchor=False)
 st.write("We use **Selenium** to extract product details like name, price, and category from supermarket websites.")
 
 with st.expander("Supermarkets"):
@@ -227,7 +223,7 @@ with st.expander("See Sample Code of Scraper"):
 
 st.markdown("---")
 
-st.subheader("2️⃣ Data Cleaning & Standardization", anchor=False)
+st.subheader("2. Data Cleaning & Standardization", anchor=False)
 st.write("We clean and format the data, ensuring all prices are correctly structured.")
 df = pd.DataFrame({"Product": ["Milk", "Eggs"], "Price (Raw)": ["£1.20", "99p"], "Cleaned Price": [1.20, 0.99]})
 st.dataframe(df)
@@ -254,7 +250,7 @@ def convert_units(value, unit):
         return value, 'other'
 
 # Streamlit UI
-st.subheader("🛠️ Try It Yourself: Unit Conversion", anchor=False)
+st.subheader("Try It Yourself: Unit Conversion", anchor=False)
 st.write("We cconvert the price into three main units for better comparison and understanding")
 # User input section
 unit_choice = st.radio("Select the unit you are entering:", ['100g', '10g', 'kg', '100ml', '75cl', 'litre', 'each'], horizontal= True)
@@ -280,13 +276,8 @@ st.subheader("3️⃣ Storing Data in Supabase", anchor=False)
 st.write("The cleaned data is then stored in **Supabase**, allowing for real-time retrieval and analysis.")
 with st.expander("Supabase Query Example"):
     st.code("""
-    import supabase
-
-    SUPABASE_URL = "********"
-    SUPABASE_KEY = "********"
-            
     # Initialize Supabase connection
-    conn = st.connection("supabase", type=SupabaseConnection)
+    # Product data is loaded locally by page_numbers/data_fetcher.py.
 
     # Only fetch data if it's not already stored in session state
     if "df" not in st.session_state:
@@ -297,7 +288,7 @@ with st.expander("Supabase Query Example"):
     """, language="python")
 
 # Visual Flowchart (optional)
-st.subheader("📊 Data Collection Flow", anchor=False)
+st.subheader("Data Collection Flow", anchor=False)
 st.image("assets/overall_flow.png")  # Replace with your diagram
 
 st.success("🎉 Data collection process is complete and automated!")

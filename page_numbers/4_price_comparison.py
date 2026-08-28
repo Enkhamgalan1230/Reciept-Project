@@ -1,9 +1,5 @@
 import streamlit as st
-import mysql.connector
 import pandas as pd
-from st_supabase_connection import SupabaseConnection
-from supabase import create_client, Client
-import supabase
 import time
 import matplotlib.pyplot as plt
 import plotly.express as px
@@ -129,14 +125,14 @@ else:
         st.switch_page("page_numbers/data_fetcher.py")
     st.stop()
 
-st.title("🏷️ Price Comparison", anchor=False)
+st.title("Price Comparison", anchor=False)
 
 with st.expander("💡How Does it work"):
     st.write("""
         This page helps you quickly compare the prices of common grocery items across different supermarkets. 
         It also lets you search for specific products by name and see which store offers the best deal, making it easier to save money on your shopping.
     """)
-st.subheader("🏆 Dashboard with 15 Popular Items", anchor=False)
+st.subheader("Dashboard with 15 Popular Items", anchor=False)
 
 # Filter dataset for selected products
 df_filtered = df[df["Name"].isin([name for products in product_mapping.values() for name in products.values()])]
@@ -206,7 +202,7 @@ st.caption("📌 Prices are based on the latest available scraped data.")
 
 st.markdown("---")
 
-st.subheader("🔍 Search Comparison", anchor=False)
+st.subheader("Search Comparison", anchor=False)
 
 # Convert date columns into a single Date column
 df["Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])

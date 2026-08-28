@@ -124,7 +124,7 @@ with con2:
     top_risers = latest_growth.sort_values("Percent Change", ascending=False).head(5)
     top_risers.reset_index(drop=True, inplace=True)
 
-    st.subheader("🔺 Top 5 Products with Highest Predicted Increase")
+    st.subheader("Top 5 Products with Highest Predicted Increase")
     st.dataframe(top_risers.style.format({"Percent Change": "{:.2f}%"}))
 
     fig = px.bar(top_risers, x="Product", y="Percent Change",

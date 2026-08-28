@@ -12,7 +12,7 @@ else:
         st.switch_page("page_numbers/data_fetcher.py")
     st.stop()
 
-st.title("💷 Price Inflation", anchor=False)
+st.title("Price Inflation", anchor=False)
 
 with st.expander("💡How Does it work"):
     st.write("""

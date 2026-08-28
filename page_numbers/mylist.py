@@ -1,23 +1,16 @@
-import streamlit as st 
-from supabase import create_client, Client
+import streamlit as st
 from datetime import datetime
-import os
 import json
 from collections import defaultdict
-
-# --- Supabase Setup ---
-
-SUPABASE_URL = "https://rgfhrhvdspwlexlymdga.supabase.co"
-SUPABASE_KEY = st.secrets["SUPABASE_SERVICE"]
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+from local_store import delete_list, get_lists
 
 # --- Session check ---
-if "supabase_user" not in st.session_state:
-    st.session_state.supabase_user = None
+if "local_user" not in st.session_state:
+    st.session_state.local_user = None
 
 # --- Authenticated view ---
-if st.session_state.supabase_user:
-    user_email = st.session_state.supabase_user.user.email
+if st.session_state.local_user:
+    user_email = st.session_state.local_user["email"]
     username_raw = user_email.split('@')[0]
     username_display = username_raw.capitalize()
     st.success(f"Welcome, {username_display}")
@@ -26,18 +19,12 @@ else:
     st.stop()
 
 # --- Page Title ---
-st.title(" My Shopping Lists")
+st.title("My Shopping Lists")
 
 # --- Fetch user's shopping lists ---
 with st.spinner("Loading your saved lists..."):
 
-    response = supabase.table("shopping_lists")\
-        .select("*")\
-        .eq("user_email", user_email.lower())\
-        .order("created_at", desc=True)\
-        .execute()
-
-    lists = response.data
+    lists = get_lists(user_email)
 
 if not lists:
     st.info("No shopping lists found.")
@@ -147,10 +134,7 @@ else:
                             with col2:
                                 if st.button("Yes, Delete", key=f"confirm_yes_{delete_key}"):
                                     try:
-                                        supabase.table("shopping_lists").delete()\
-                                            .eq("created_at", entry["created_at"])\
-                                            .eq("user_email", user_email)\
-                                            .execute()
+                                        delete_list(entry["id"], user_email)
                                         st.success("List deleted successfully.")
                                         st.session_state.pop(f"confirm_delete_{delete_key}", None)
                                         st.rerun()

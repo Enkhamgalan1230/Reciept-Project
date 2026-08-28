@@ -1,9 +1,5 @@
 import streamlit as st
-import mysql.connector
 import pandas as pd
-from st_supabase_connection import SupabaseConnection
-from supabase import create_client, Client
-#import supabase
 import time
 import base64
 import os
@@ -16,6 +12,25 @@ st.set_page_config(
     page_icon="📃",  # Set a custom icon (optional)
     layout="wide"  # Optionally, set layout to 'wide' or 'centered'
 )
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root { --receipt-ink:#17211b; --receipt-muted:#68736b; --receipt-green:#2f6b4f; --receipt-border:#dce6df; }
+html, body, [class*="css"] { font-family:'DM Sans', sans-serif; color:var(--receipt-ink); }
+h1,h2,h3,h4,h5,h6 { font-family:'Space Grotesk', sans-serif !important; letter-spacing:-.025em; color:var(--receipt-ink); }
+[data-testid="stSidebar"] { background:linear-gradient(180deg,#f5f8f5 0%,#edf4ef 100%); border-right:1px solid var(--receipt-border); }
+[data-testid="stSidebarNav"] li a { border-radius:10px; margin:3px 8px; padding:9px 12px; font-weight:600; color:#405047; transition:background .15s ease,color .15s ease; }
+[data-testid="stSidebarNav"] li a:hover,[data-testid="stSidebarNav"] li a[aria-current="page"] { background:var(--receipt-green); color:white; }
+[data-testid="stSidebarNav"] span { font-size:.9rem; }
+.block-container { max-width:1400px; padding-top:2.5rem; padding-bottom:4rem; }
+[data-testid="stMetric"] { background:#fff; border:1px solid var(--receipt-border); border-radius:14px; padding:1rem 1.1rem; box-shadow:0 4px 18px rgba(35,67,48,.05); }
+.stButton>button,.stDownloadButton>button { border-radius:9px; font-weight:600; transition:transform .15s ease,box-shadow .15s ease; }
+.stButton>button:hover,.stDownloadButton>button:hover { transform:translateY(-1px); box-shadow:0 5px 14px rgba(47,107,79,.16); }
+[data-testid="stExpander"] { border-color:var(--receipt-border); border-radius:12px; }
+hr { border-color:var(--receipt-border); }
+</style>
+""", unsafe_allow_html=True)
 home_page = st.Page(
      page = "page_numbers/1_home.py",
      title= "Home Page",
@@ -95,11 +110,11 @@ update_password = st.Page(
 pg = st.navigation(
     {
         "Info": [home_page],
-        "User ": [login,mylist],
-        "Data ":[data_collection,data],
-        "Main Logics ": [price_comparison,price_inflation,price_prediction,store, receipt],
+        "Account": [login,mylist],
+        "Insights": [data_collection,data],
+        "Explore": [price_comparison,price_inflation,price_prediction,store, receipt],
         "Help": [helper, update_password],
-        "Boring Stuff ": [data_fetcher]
+        "Tools": [data_fetcher]
     }
 )
 

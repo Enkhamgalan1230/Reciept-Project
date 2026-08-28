@@ -1,13 +1,9 @@
 import streamlit as st
-import mysql.connector
 import pandas as pd
-from st_supabase_connection import SupabaseConnection
-from supabase import create_client, Client
-import supabase
 import time
 import base64
 
-st.title("Welcome to Receipt 👋", anchor=False)
+st.title("Welcome to Receipt", anchor=False)
 
 st.markdown("---")
 
