@@ -14,7 +14,7 @@ import subprocess
 import importlib
 import hashlib
 import openai
-from groq import Groq
+from openai import OpenAI
 import re
 from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -36,8 +36,17 @@ if "local_user" not in st.session_state:
 # Check if df is stored in session state
 df = st.session_state.df
 
-# Set up Groq API Key
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+# OpenRouter exposes an OpenAI-compatible API and routes this request to an
+# available free model. Keep the key in Streamlit Cloud secrets.
+openrouter_key = st.secrets.get("OPENROUTER_API_KEY")
+client = OpenAI(
+    api_key=openrouter_key,
+    base_url="https://openrouter.ai/api/v1",
+    default_headers={
+        "HTTP-Referer": "https://receipt-entwan.streamlit.app",
+        "X-Title": "Receipt Shopping Assistant",
+    },
+) if openrouter_key else None
 
 for key in ["essential_list", "voice_products", "secondary_list"]:
     if key not in st.session_state:
@@ -404,13 +413,13 @@ with tab3:
 
         # Ask button
         if st.button("Ask"):
-            if user_query:
+            if user_query and client:
                 st.session_state.chat_history.append({"role": "user", "content": user_query})
 
                 with st.spinner("Thinking..."):
                     try:
                         response = client.chat.completions.create(
-                            model="openai/gpt-oss-120b",
+                            model="openrouter/free",
                             messages=[
                                 {"role": "system", "content": system_prompt},
                                 *st.session_state.chat_history,
@@ -424,9 +433,11 @@ with tab3:
                     except Exception as error:
                         error_text = str(error).lower()
                         if "authentication" in error_text or "401" in error_text or "api key" in error_text:
-                            st.error("Groq authentication failed. Update the GROQ_API_KEY secret in Streamlit Cloud with a current Groq API key.")
+                            st.error("OpenRouter authentication failed. Update the OPENROUTER_API_KEY secret in Streamlit Cloud with a current key.")
                         else:
                             st.error("The AI assistant is temporarily unavailable. Please try again shortly.")
+            elif not openrouter_key:
+                st.error("The AI assistant is not configured. Add OPENROUTER_API_KEY to Streamlit Cloud secrets.")
 
         # Display latest assistant message
         if "last_bot_reply" in st.session_state:

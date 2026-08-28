@@ -87,7 +87,7 @@ Originally built for university students in the UK, the app is also valuable for
 | **Python**                | Core logic, data scraping, and utilities      |
 | **sentence-transformers** | Semantic product matching (embeddings)        |
 | **NLP + fuzzywuzzy**      | Phrase extraction & fuzzy matching            |
-| **LLaMA via Groq API**    | Conversational AI assistant for receipt input |
+| **OpenRouter API**        | Conversational AI assistant for receipt input |
 | **Photon/Nominatim API**  | Store geolocation and address lookup          |
 
 # 🚧 Project Status
