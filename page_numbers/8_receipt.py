@@ -408,19 +408,25 @@ with tab3:
                 st.session_state.chat_history.append({"role": "user", "content": user_query})
 
                 with st.spinner("Thinking..."):
-                    response = client.chat.completions.create(
-                        model="meta-llama/llama-4-scout-17b-16e-instruct",
-                        messages=[
-                            {"role": "system", "content": system_prompt},
-                            *st.session_state.chat_history
-                        ],
-                        temperature=0.4,
-                        max_tokens=600
-                    )
-
-                    bot_reply = response.choices[0].message.content
-                    st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
-                    st.session_state.last_bot_reply = bot_reply
+                    try:
+                        response = client.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[
+                                {"role": "system", "content": system_prompt},
+                                *st.session_state.chat_history,
+                            ],
+                            temperature=0.4,
+                            max_tokens=600,
+                        )
+                        bot_reply = response.choices[0].message.content
+                        st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
+                        st.session_state.last_bot_reply = bot_reply
+                    except Exception as error:
+                        error_text = str(error).lower()
+                        if "authentication" in error_text or "401" in error_text or "api key" in error_text:
+                            st.error("Groq authentication failed. Update the GROQ_API_KEY secret in Streamlit Cloud with a current Groq API key.")
+                        else:
+                            st.error("The AI assistant is temporarily unavailable. Please try again shortly.")
 
         # Display latest assistant message
         if "last_bot_reply" in st.session_state:
