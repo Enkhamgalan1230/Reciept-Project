@@ -12,7 +12,7 @@ st.write("Find nearby supermarkets using your current location or a UK postcode.
 
 
 def find_supermarkets(latitude, longitude, radius_km):
-    """Query mapped supermarket objects within a radius using OpenStreetMap."""
+    """Query nearby supermarkets, using mirrors and a search fallback."""
     radius_m = int(radius_km * 1000)
     query = f"""
     [out:json][timeout:25];
@@ -23,18 +23,55 @@ def find_supermarkets(latitude, longitude, radius_km):
     );
     out center tags;
     """
-    try:
-        response = requests.post(
-            "https://overpass-api.de/api/interpreter",
-            data=query,
-            headers={"User-Agent": "ReceiptApp/1.0"},
-            timeout=35,
-        )
-        response.raise_for_status()
-        elements = response.json().get("elements", [])
-    except (requests.RequestException, ValueError) as error:
-        st.error(f"The map service is temporarily unavailable: {error}")
-        return []
+    elements = None
+    service_errors = []
+    for endpoint in (
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass.private.coffee/api/interpreter",
+        "https://overpass-api.de/api/interpreter",
+    ):
+        try:
+            response = requests.post(
+                endpoint,
+                data=query,
+                headers={"User-Agent": "ReceiptApp/1.0"},
+                timeout=35,
+            )
+            response.raise_for_status()
+            elements = response.json().get("elements", [])
+            break
+        except (requests.RequestException, ValueError) as error:
+            service_errors.append(f"{endpoint}: {error}")
+
+    # Photon is a useful fallback if every radius-query mirror is unavailable.
+    if elements is None:
+        elements = []
+        for brand in ("Tesco", "Sainsbury's", "Waitrose", "Asda", "Aldi"):
+            try:
+                response = requests.get(
+                    "https://photon.komoot.io/api/",
+                    params={"q": brand, "lat": latitude, "lon": longitude, "limit": 20},
+                    headers={"User-Agent": "ReceiptApp/1.0"},
+                    timeout=20,
+                )
+                response.raise_for_status()
+                for feature in response.json().get("features", []):
+                    properties = feature.get("properties", {})
+                    coordinates = feature.get("geometry", {}).get("coordinates", [])
+                    if len(coordinates) < 2:
+                        continue
+                    store_lon, store_lat = coordinates[:2]
+                    if geodesic((latitude, longitude), (store_lat, store_lon)).km <= radius_km:
+                        elements.append({
+                            "tags": {"name": properties.get("name", brand)},
+                            "lat": store_lat,
+                            "lon": store_lon,
+                        })
+            except (requests.RequestException, ValueError):
+                continue
+        if not elements:
+            st.error("Nearby store services are currently unavailable. Please try again shortly.")
+            return []
 
     known_brands = ("tesco", "sainsbury", "waitrose", "asda", "aldi", "morrisons", "lidl", "iceland", "co-op", "coop")
     stores = []
